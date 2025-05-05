@@ -21,14 +21,16 @@ import { LRUCache } from "lru-cache"; // for caching
 import dotenv from "dotenv";
 dotenv.config();
 
-// Your web app's Firebase configuration
+console.log('apikey', process.env.FIRESTORE_APIKEY);
+
+// pulls info from .env
 const firebaseConfig = {
-  apiKey: process.env.FIRESTORE_APIKEY,
-  authDomain: "mentorship-app-23aac.firebaseapp.com",
-  projectId: "mentorship-app-23aac",
-  storageBucket: "mentorship-app-23aac.firebasestorage.app",
-  messagingSenderId: "118949702190",
-  appId: "1:118949702190:web:4f06559f7d22122cb68dbf",
+  apiKey: process.env.FB_API_KEY,
+  authDomain: process.env.FB_AUTH_DOMAIN,
+  projectId: process.env.FB_PROJECT_ID,
+  storageBucket: process.env.FB_STORAGE_BUCKET,
+  messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
+  appId: process.env.FB_APP_ID,
 };
 
 // Initialize Firebase
