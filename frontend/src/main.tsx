@@ -44,8 +44,8 @@ createRoot(document.getElementById("root")!).render(
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: import.meta.env.VITE_AUTH0_REDIRECT_URI_BASE+'/app',
-        audience: "uhdacm",
-        scope: "openid profile email"
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: import.meta.env.VITE_AUTH0_SCOPE
       }}
       cacheLocation='localstorage'
       useRefreshTokens={true}
