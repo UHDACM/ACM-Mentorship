@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-const REQUIRED_ENVS = ['FIRESTORE_APIKEY', 'SERVER_PORT', 'TESTING', 'SAMPLE_USER_ACCESS_TOKEN', 'CLIENT_ADDRESS']
+const REQUIRED_ENVS = ['FIRESTORE_APIKEY', 'SERVER_PORT', 'CLIENT_ADDRESS']
 function ENV_VAR_CHECK() {
   for (let required_env of REQUIRED_ENVS) {
     if (!process.env[required_env]) {
