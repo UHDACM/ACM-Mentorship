@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react"
+import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateClientSocketConnection } from "../features/ClientSocket/ClientSocket";
@@ -13,19 +13,18 @@ import ConnectingPage from "../pages/ConnectingPage/ConnectingPage";
 
 export default function App() {
   const { getAccessTokenSilently, isLoading, isAuthenticated } = useAuth0();
-  
+
   const dispatch = useDispatch();
   const { state } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const navigate = useNavigate();
   const path = window.location.pathname;
 
   async function connectToServer(reconnect?: boolean) {
-    const userToken = await getAccessTokenSilently({ 'authorizationParams': { 'scope': 'email openid profile' } });
+    const userToken = await getAccessTokenSilently();
     CreateClientSocketConnection(userToken, dispatch, reconnect);
-  }  
+  }
 
   useEffect(() => {
-    
     if (isAuthenticated) {
       connectToServer();
     }
@@ -34,45 +33,59 @@ export default function App() {
   useEffect(() => {
     async function CheckAuthenticated() {
       // await sleep(500);
-      if (state == 'authed_nouser') {
-        navigate('./new-user');
-      } else if (state == 'authed_user') {
-        if (path == '/app' || path == '/app/new-user') {
-          navigate('./home');
+      if (state == "authed_nouser") {
+        navigate("./new-user");
+      } else if (state == "authed_user") {
+        if (path == "/app" || path == "/app/new-user") {
+          navigate("./home");
         }
       }
       if (!isAuthenticated && !isLoading) {
-        navigate('/');
+        navigate("/");
       }
     }
     CheckAuthenticated();
   }, [state, isAuthenticated, isLoading]);
 
   if (isLoading) {
-    return <p>Still Loading...</p>
+    return <p>Still Loading...</p>;
   }
 
   if (!isAuthenticated) {
-    return <p>Not authed</p>
+    return <p>Not authed</p>;
   }
 
-  if (!state || state == 'connecting') {
-    return <ConnectingPage/>
+  if (!state || state == "connecting") {
+    return <ConnectingPage />;
   }
 
-  if (state == 'disconnected') {
-    return <div className="pageBase" style={{justifyContent: 'center', alignItems: 'center'}} >
-      <span style={{fontSize: '1.5rem'}}>You're not connected to server.</span>
-      <span style={{fontSize: '1.1rem'}}>Please try reconnecting.</span>
-      <MinimalisticButton style={{marginTop: '0.5rem'}} onClick={() => connectToServer(true)} >Reconnect</MinimalisticButton>
-    </div>
+  if (state == "disconnected") {
+    return (
+      <div
+        className="pageBase"
+        style={{ justifyContent: "center", alignItems: "center" }}
+      >
+        <span style={{ fontSize: "1.5rem" }}>
+          You're not connected to server.
+        </span>
+        <span style={{ fontSize: "1.1rem" }}>Please try reconnecting.</span>
+        <MinimalisticButton
+          style={{ marginTop: "0.5rem" }}
+          onClick={() => connectToServer(true)}
+        >
+          Reconnect
+        </MinimalisticButton>
+      </div>
+    );
   }
 
-  return <>
-    <Chat/>
-    <DesktopChatWidget/>
-    <MobileChatWidget/>
-    <Navbar/>
-    <Outlet/>
-  </>
+  return (
+    <>
+      <Chat />
+      <DesktopChatWidget />
+      <MobileChatWidget />
+      <Navbar />
+      <Outlet />
+    </>
+  );
 }

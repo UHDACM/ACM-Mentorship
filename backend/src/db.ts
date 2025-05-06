@@ -21,8 +21,6 @@ import { LRUCache } from "lru-cache"; // for caching
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log('apikey', process.env.FIRESTORE_APIKEY);
-
 // pulls info from .env
 const firebaseConfig = {
   apiKey: process.env.FB_API_KEY,

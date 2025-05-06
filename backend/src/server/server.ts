@@ -28,11 +28,17 @@ export function CreateExpressServer() {
 
   app.use(express.json());
 
-  const jwtCheck = auth({
-    audience: "uhdacm",
-    issuerBaseURL: "https://dev-10v2hjt70uhuwqnr.us.auth0.com/",
-    tokenSigningAlg: "RS256",
+  const jwtCheck = auth({  
+    audience: process.env.AUTH0_AUDIENCE,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+    tokenSigningAlg: process.env.AUTH0_TOKEN_SIGNING_ALG,
   });
+
+  console.log('Auth middleware config:', {
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: process.env.AUTH0_ISSUER_BASE_URL,
+  algorithm: process.env.AUTH0_TOKEN_SIGNING_ALG
+});
 
   app.get("/", (_, res) => {
     res.send({ all: "good" });
