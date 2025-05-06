@@ -161,7 +161,7 @@ function _addInitialListenersToSocketIOServer() {
       }));
       const res = await resRaw.json();
 
-      const moreDetails = await (await fetch('https://dev-10v2hjt70uhuwqnr.us.auth0.com/userinfo', {
+      const moreDetails = await (await fetch(`${process.env.AUTH0_ISSUER_BASE_URL}/userinfo`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${tokenWithBearer.split(' ')[1]}`
