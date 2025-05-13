@@ -14,7 +14,7 @@ export default function useTutorialWithDialog() {
             title: "Getting Started",
             subtitle: "Learn how to make the most of this platform.",
             showComponent: (
-              <YouTubeEmbed videoID="EseAN3L7BJY?si=HQbtrOPbub-1e1qQ" />
+              <YouTubeEmbed videoID="EseAN3L7BJY" />
             ),
           })
         );
@@ -25,7 +25,7 @@ export default function useTutorialWithDialog() {
             title: "Assessments",
             subtitle: "Understand self-assessments and their importance.",
             showComponent: (
-              <YouTubeEmbed videoID="OkGdrOxPvlk?si=Fbfgk_uHbpupdkZg" />
+              <YouTubeEmbed videoID="OkGdrOxPvlk" />
             ),
           })
         );
@@ -36,7 +36,7 @@ export default function useTutorialWithDialog() {
             title: "Goals",
             subtitle: "Understand goals and their importance.",
             showComponent: (
-              <YouTubeEmbed videoID="1NqWkthcaYA?si=XmUn-pdmmc4Z-gCK" />
+              <YouTubeEmbed videoID="1NqWkthcaYA" />
             ),
           })
         );
@@ -47,7 +47,7 @@ export default function useTutorialWithDialog() {
             title: "Get A Mentor",
             subtitle: "Find out how to get a mentor.",
             showComponent: (
-              <YouTubeEmbed videoID="h6UPFmNaHM0?si=LaDe2RzWh0wEM7mR" />
+              <YouTubeEmbed videoID="h6UPFmNaHM0" />
             ),
           })
         );
@@ -58,7 +58,7 @@ export default function useTutorialWithDialog() {
             title: "Mentoring",
             subtitle: "Find out how to become a mentor, and what a mentor does.",
             showComponent: (
-              <YouTubeEmbed videoID="qikoe0O6530?si=Sm8oGhtxoRl4G9A-" />
+              <YouTubeEmbed videoID="qikoe0O6530" />
             ),
           })
         );
