@@ -8,7 +8,6 @@ import { ArrowBigDown, ArrowBigUp, Trash } from "lucide-react";
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import { setAlert } from "../../features/Alert/AlertSlice";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { isAssessment } from "../../scripts/validation";
