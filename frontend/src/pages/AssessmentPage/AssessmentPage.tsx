@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Assessment, AssessmentQuestion, ObjectAny } from "../../scripts/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,22 +16,43 @@ import MinimalisticButton from "../../components/MinimalisticButton/Minimalistic
 import MinimalisticTextArea from "../../components/MinimalisticTextArea/MinimalisticTextArea";
 import { SaveButtonFixed } from "../../components/SaveButtonFixed/SaveButtonFixed";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
+import {
+  AssessmentPageContext,
+  AssessmentPageProvider,
+} from "./AssessmentPageContext.tsx";
 // import useWarnNavigation from "../../hooks/UseWarnNavigation/useWarnNavigation";
 
+export default function AssessmentPageWithContext() {
+  return (
+    <AssessmentPageProvider>
+      <AssessmentPage />
+    </AssessmentPageProvider>
+  );
+}
+
 const FirstTimeRecommendedQuestionCount = 5;
-export default function AssessmentPage() {
+export function AssessmentPage() {
   const { availableAssessmentQuestions, user, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [saving, setSaving] = useState(false);
-  const [changed, setChanged] = useState(false);
   const [params, _] = useSearchParams();
-  const [assessmentObj, setAssessmentObj] = useState<Assessment>({});
-  const originalAssessment = useRef<AssessmentQuestion[]>([]);
-  const [assessment, setAssessment] = useState<AssessmentQuestion[]>([]);
-  const [assessmentUser, setAssessmentUser] = useState<ClientSocketUser>({});
+
+  const {
+    saving,
+    setSaving,
+    changed,
+    setChanged,
+    assessmentObj,
+    setAssessmentObj,
+    originalAssessment,
+    assessment,
+    setAssessment,
+    assessmentUser,
+    setAssessmentUser,
+  } = useContext(AssessmentPageContext);
+
   const ShowTutorial = useTutorialWithDialog();
 
   const type = params.get("type");
@@ -225,10 +246,10 @@ export default function AssessmentPage() {
     setAssessment(newAssessment);
   }
 
-  function updateAssessment(a: AssessmentQuestion[]) {
-    setChanged(true);
-    setAssessment(a);
-  }
+  // function updateAssessment(a: AssessmentQuestion[]) {
+  //   setChanged(true);
+  //   setAssessment(a);
+  // }
 
   function isAssessmentValid() {
     for (let qIndex in assessment) {
@@ -529,8 +550,8 @@ export default function AssessmentPage() {
         </span>
       )}
       <AssessmentSection
-        assessment={assessment}
-        setAssessment={updateAssessment}
+        // assessment={assessment}
+        // setAssessment={updateAssessment}
         disabled={(!userOwnsAssessment && type != "new") || saving}
       />
       {!(!userOwnsAssessment && type != "new") && (
@@ -574,20 +595,16 @@ export default function AssessmentPage() {
 
 const ShortAnswerWarning = "Answer is too short";
 const ShortQuestionWarning = "Question is too short.";
-function AssessmentSection({
-  assessment,
-  setAssessment,
-  disabled,
-}: {
-  assessment: AssessmentQuestion[];
-  setAssessment: (a: AssessmentQuestion[]) => void;
-  disabled?: boolean;
-}) {
+function AssessmentSection({ disabled }: { disabled: boolean }) {
+  const { assessment, setAssessment, setChanged } = useContext(
+    AssessmentPageContext
+  );
   function updateAssessmentQuestion(
     index: number,
     question: string,
     answer: string
   ) {
+    setChanged(true);
     let warning = undefined;
     if (question.length < 3) {
       warning = ShortQuestionWarning;
@@ -612,6 +629,7 @@ function AssessmentSection({
     if ((index == assessment.length - 1 && !up) || (index == 0 && up)) {
       return;
     }
+    setChanged(true);
     let targetIndex = index + (up ? -1 : 1);
     const newAssessment = [...assessment];
     const temp = newAssessment[targetIndex];
@@ -621,6 +639,7 @@ function AssessmentSection({
   }
 
   function deleteAssessmentQuestion(index: number) {
+    setChanged(true);
     const newAssessment = [...assessment];
     newAssessment.splice(index, 1);
     setAssessment(newAssessment);
