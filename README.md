@@ -17,6 +17,8 @@ To run the project locally, follow the setup instructions in each part of the pr
 
 - [`frontend/README.md`](./frontend/README.md)
 - [`backend/README.md`](./backend/README.md)
+- 
+**NOTE: YOU'LL NEED THE BACKEND RUNNING FOR THE FRONTEND TO WORK PROPERLY!**
 
 ---
 
