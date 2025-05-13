@@ -358,6 +358,13 @@ function NameSection({
     setName(fN || "", mN, lN || "");
   }
 
+  const fnameInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePencilClick = () =>{
+    if (fnameInputRef.current){
+      fnameInputRef.current.focus();
+    }
+  }
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       {/* <p
@@ -371,6 +378,7 @@ function NameSection({
       {fName} {mName} {lName}
     </p> */}
       <MinimalisticInput
+        ref={fnameInputRef}
         onChange={(val) => handleNameChange(val, mName, lName)}
         disabled={disabled}
         style={{
@@ -399,7 +407,11 @@ function NameSection({
         style={{ fontSize: "1.5rem", minWidth: "1.25rem" }}
       />
       {!disabled && (
-        <Pencil size={"1.25rem"} style={{ marginLeft: "0.5rem" }} />
+        <Pencil 
+        size={"1.25rem"} 
+        style={{ marginLeft: "0.5rem", cursor:"pointer" }}
+        onClick={handlePencilClick}
+         />
       )}
     </div>
   );
@@ -586,7 +598,11 @@ function TopSection() {
             @{username}
           </span>
           {CanMakeChanges && (
-            <Pencil style={{ marginLeft: "0.5rem" }} size={"1rem"} />
+            <Pencil 
+            onClick={HandleChangeUsername}
+            style={{ marginLeft: "0.5rem", cursor:"pointer" }} 
+            size={"1rem"}
+            />
           )}
         </div>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>

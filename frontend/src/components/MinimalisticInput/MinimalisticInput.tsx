@@ -1,21 +1,23 @@
 import { ObjectAny } from "../../scripts/types";
 import AutowidthInput from "react-autowidth-input";
+import {forwardRef} from 'react'
 
-export default function MinimalisticInput({
+export default forwardRef<HTMLInputElement, {
+  value?: string;
+  onChange?: (v: string) => any;
+  style?: React.CSSProperties;
+  disabled?: boolean;
+  placeholder?: string;
+}>(function MinimalisticInput({
   value,
   onChange,
   style,
   disabled,
   placeholder
-}: {
-  value?: string;
-  onChange?: (v: string) => any;
-  style?: React.CSSProperties;
-  disabled?: boolean;
-  placeholder?: string
-}) {
+}, ref){
   return (
     <AutowidthInput
+      ref={ref}
       onChange={(e: ObjectAny) => onChange && onChange(e.target.value)}
       style={{
         fontSize: "1rem",
@@ -36,4 +38,4 @@ export default function MinimalisticInput({
       placeholderIsMinWidth={true}
     />
   );
-}
+});

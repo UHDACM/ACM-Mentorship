@@ -215,7 +215,9 @@ function HomePageHeader() {
     navigate("/app/help");
   }
 
-  const { username } = user || {};
+  // const { username } = user || {};
+  const {fName} = user || {};
+  const {lName} = user || {};
   return (
     <div
       style={{
@@ -235,7 +237,7 @@ function HomePageHeader() {
       >
         <div style={{ display: "flex", alignItems: "center" }}>
           <p style={{ color: "white", fontSize: "2rem", margin: 0 }}>
-            Welcome {username || "NoUsername"}
+            Welcome {fName || "NoFName"} {lName || "NoLName"}
           </p>
         </div>
         <div>

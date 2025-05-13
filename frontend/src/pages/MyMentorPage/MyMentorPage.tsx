@@ -99,7 +99,9 @@ function MyMentorPageHeader() {
   //   return <p>Waiting for user data...</p>;
   // }
 
-  const { username } = user || {};
+  const { fName } = user || {};
+  const { lName } = user || {};
+
   return (
     <div
       style={{
@@ -119,7 +121,7 @@ function MyMentorPageHeader() {
       >
         <div style={{ display: "flex", alignItems: "center" }}>
           <p style={{ color: "white", fontSize: "2rem", margin: 0 }}>
-            Welcome {username || "NoUsername"}
+            Welcome {fName || "NoFName"} {lName || "NoLName"}
           </p>
         </div>
         <div>
