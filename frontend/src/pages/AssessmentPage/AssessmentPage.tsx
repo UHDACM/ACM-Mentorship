@@ -59,6 +59,12 @@ export function AssessmentPage() {
   const firstTime = params.get("firstTime");
 
   const isNew = type == "new";
+  const isFirstTime = firstTime == "true"
+  const enoughQuestions = assessment.length >= FirstTimeRecommendedQuestionCount
+  let questionsNeeded = 0;
+  if (FirstTimeRecommendedQuestionCount > assessment.length){
+    questionsNeeded = FirstTimeRecommendedQuestionCount - assessment.length;
+  }
 
   function handleOnResetClick() {
     setChanged(false);
@@ -544,8 +550,13 @@ export function AssessmentPage() {
         </div>
       )}
       {assessment.length == 0 && (
-        <span style={{ marginBottom: "2rem", backgroundColor: "#c85" }}>
+        <span style={{ marginBottom: ".5rem", backgroundColor: "#c85" }}>
           Press <b>Add Question+</b> and choose one you can answer best!
+        </span>
+      )}
+      {isFirstTime && !enoughQuestions && (
+        <span style={{ marginBottom: ".3rem", color:"yellow", paddingLeft:".4rem" }}>
+          You need {questionsNeeded} more question{questionsNeeded !== 1 ? "s" : ""}
         </span>
       )}
       <AssessmentSection
@@ -573,8 +584,10 @@ export function AssessmentPage() {
           borderTop: "1px solid #fff4",
         }}
       />
-      {isNew && (
-        <MinimalisticButton onClick={() => handleOnSaveClick()}>
+      {isNew &&(
+        <MinimalisticButton onClick={() => handleOnSaveClick()}
+        disabled={!enoughQuestions}
+        >
           Create Assessment
         </MinimalisticButton>
       )}
@@ -645,7 +658,7 @@ function AssessmentSection({ disabled }: { disabled: boolean }) {
   }
 
   return (
-    <div style={{ gap: "0.2rem" }}>
+    <div style={{ gap: "0.2rem", marginTop:"1rem" }}>
       {assessment.map((q, index) => {
         const { question, answer: answerRaw, warning } = q;
         const answer = answerRaw || "";
