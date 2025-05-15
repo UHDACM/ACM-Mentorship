@@ -231,37 +231,41 @@ function UserPageWithContext() {
       <div style={{ marginTop: "1rem" }} />
       <TopSection />
       <UserStuff />
-      <BioSection bio={bio} setBio={setBio} disabled={!CanMakeChanges} />
-      <SocialSection
-        socials={socials}
-        setSocials={setSocials}
-        disabled={!CanMakeChanges}
-      />
-      <EducationSection
-        education={education}
-        setEducation={setEducation}
-        disabled={!CanMakeChanges}
-      />
-      <CertificationSection
-        certifications={certifications}
-        setCertifications={setCertifications}
-        disabled={!CanMakeChanges}
-      />
-      <ExperienceSection
-        experience={experience}
-        setExperience={setExperience}
-        disabled={!CanMakeChanges}
-      />
-      <ProjectSection
-        projects={projects}
-        setProjects={setProjects}
-        disabled={!CanMakeChanges}
-      />
-      <SoftSkillSection
-        softSkills={softSkills}
-        setSoftSkills={setSoftSkills}
-        disabled={!CanMakeChanges}
-      />
+      
+      <div style={{ display:"flex", flexDirection:"column", gap:"1rem" }}>
+         <BioSection bio={bio} setBio={setBio} disabled={!CanMakeChanges} />
+          <SocialSection
+            socials={socials}
+            setSocials={setSocials}
+            disabled={!CanMakeChanges}
+          />
+          <EducationSection
+            education={education}
+            setEducation={setEducation}
+            disabled={!CanMakeChanges}
+          />
+          <CertificationSection
+            certifications={certifications}
+            setCertifications={setCertifications}
+            disabled={!CanMakeChanges}
+          />
+          <ExperienceSection
+            experience={experience}
+            setExperience={setExperience}
+            disabled={!CanMakeChanges}
+          />        
+          <ProjectSection
+            projects={projects}
+            setProjects={setProjects}
+            disabled={!CanMakeChanges}
+          />        
+          <SoftSkillSection
+            softSkills={softSkills}
+            setSoftSkills={setSoftSkills}
+            disabled={!CanMakeChanges}
+          />        
+      </div>
+
       <div style={{ height: "10vh" }} />
       {CanMakeChanges && (
         <SaveButtonFixed
@@ -456,7 +460,7 @@ function SoftSkillSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Soft Skills
@@ -531,7 +535,7 @@ function SoftSkillSection({
           </form>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -1083,7 +1087,7 @@ function ExperienceSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Experience
@@ -1122,7 +1126,7 @@ function ExperienceSection({
           Add Experience +
         </MinimalisticButton>
       )}
-    </>
+    </div>
   );
 }
 
@@ -1184,7 +1188,7 @@ function ProjectSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Projects
@@ -1222,7 +1226,7 @@ function ProjectSection({
           Add Project +
         </MinimalisticButton>
       )}
-    </>
+    </div>
   );
 }
 
@@ -1285,7 +1289,7 @@ function CertificationSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Certifications
@@ -1325,7 +1329,7 @@ function CertificationSection({
           Add Certification +
         </MinimalisticButton>
       )}
-    </>
+    </div>
   );
 }
 
@@ -1396,7 +1400,7 @@ function EducationSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Education
@@ -1443,7 +1447,7 @@ function EducationSection({
           Add Education +
         </MinimalisticButton>
       )}
-    </>
+    </div>
   );
 }
 
@@ -1586,7 +1590,7 @@ function SocialSection({
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>
           Socials
@@ -1619,7 +1623,7 @@ function SocialSection({
           Add Social +
         </MinimalisticButton>
       )}
-    </>
+    </div>
   );
 }
 
@@ -1633,8 +1637,8 @@ function BioSection({
   disabled?: boolean;
 }) {
   return (
-    <>
-      <div style={{ borderRadius: "0.5rem", marginTop: "0.5rem" }}>
+    <div>
+      <div style={{ borderRadius: "0.5rem", marginTop: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <p style={{ color: "white", fontSize: "1.25rem", margin: 0 }}>Bio</p>
           {!disabled && <Pencil style={{ marginLeft: 5 }} size={"1rem"} />}
@@ -1659,7 +1663,7 @@ function BioSection({
           </p>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
