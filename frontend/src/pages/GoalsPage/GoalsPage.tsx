@@ -6,7 +6,7 @@ import {
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { GoalPreviewObj, ObjectAny } from "../../scripts/types";
+import { ObjectAny, GoalPreviewObj } from "@shared/types/general";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { X } from "lucide-react";
 import useDeleteGoalWithDialog from "../../hooks/UseDeleteGoalWithDialog/useDeleteGoalWithDialog";

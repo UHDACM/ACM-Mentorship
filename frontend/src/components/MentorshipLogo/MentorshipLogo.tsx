@@ -1,8 +1,8 @@
 import ACMLogoTriangle from "../../assets/ACM Orange.png";
-import { AnyFunction } from "../../scripts/types";
+import { FunctionAny } from "@shared/types/general";
 import styles from './MentorshipLogo.module.css';
 
-export default function MentorshipLogo({scale = 1, hideText = false, style, onClick }: { scale?: number, hideText?: boolean, style?: React.CSSProperties, onClick?: AnyFunction }) {
+export default function MentorshipLogo({scale = 1, hideText = false, style, onClick }: { scale?: number, hideText?: boolean, style?: React.CSSProperties, onClick?: FunctionAny }) {
   let size = 0.7;
   return (
     <div onClick={onClick} style={{ display: "flex", alignItems: "center", transform: `scale(${scale})`, transition: 'transform 200ms ease-in-out', ...style }}>

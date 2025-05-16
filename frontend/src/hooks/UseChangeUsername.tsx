@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeDialog, setDialog } from "../features/Dialog/DialogSlice";
 import { ReduxRootState } from "../store";
-import { ObjectAny } from "../scripts/types";
+import { ObjectAny } from "@shared/types/general";
 import { MyClientSocket } from "../features/ClientSocket/ClientSocket";
 import { setAlert } from "../features/Alert/AlertSlice";
 

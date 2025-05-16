@@ -3,7 +3,7 @@ import { ReduxRootState } from "../../store";
 import * as DialogRadix from "@radix-ui/react-dialog";
 import { closeDialog, DialogButton, DialogInput } from "./DialogSlice";
 import { useEffect, useState } from "react";
-import { ObjectAny } from "../../scripts/types";
+import { ObjectAny } from "@shared/types/general";
 import { XIcon } from "lucide-react";
 // import { Checkbox } from "@radix-ui/react-checkbox";
 import { Checkbox } from "radix-ui";

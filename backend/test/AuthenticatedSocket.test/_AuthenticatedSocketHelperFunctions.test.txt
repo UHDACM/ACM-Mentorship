@@ -1,5 +1,6 @@
 import { io, ManagerOptions, Socket, SocketOptions } from "socket.io-client";
-import { ObjectAny } from "../../src/types";
+import { ObjectAny } from '@shared/types/general';
+
 import dotenv from 'dotenv';
 import { expect, it } from "vitest";
 import { DBDelete } from "../../src/db";

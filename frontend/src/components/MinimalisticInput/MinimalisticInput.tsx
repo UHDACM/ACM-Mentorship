@@ -1,4 +1,4 @@
-import { ObjectAny } from "../../scripts/types";
+import { ObjectAny } from "@shared/types/general";
 import AutowidthInput from "react-autowidth-input";
 import {forwardRef} from 'react'
 

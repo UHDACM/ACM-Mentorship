@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useState, useRef } from "react";
-import { Assessment, AssessmentQuestion } from "../../scripts/types";
+import { AssessmentQuestion, Assessment } from "@shared/types/general";
 import { ClientSocketUser } from "../../features/ClientSocket/ClientSocket";
 
 // types

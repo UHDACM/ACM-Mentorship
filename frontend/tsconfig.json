@@ -6,6 +6,9 @@
   ],
   "compilerOptions": {
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+
+    // no need to put aliases here, they are in tsconfig.app.json
   }
+  // this file should have no includes
 }

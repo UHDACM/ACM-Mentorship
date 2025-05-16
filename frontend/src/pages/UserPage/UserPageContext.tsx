@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 import { ClientSocketUser } from "../../features/ClientSocket/ClientSocket";
-import { MentorshipRequestObj } from "../../scripts/types";
+import { MentorshipRequestObj } from "@shared/types/general";
 
 type UserPageContextType = {
   user?: ClientSocketUser|undefined,

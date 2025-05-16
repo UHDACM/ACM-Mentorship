@@ -1,4 +1,4 @@
-import { AnyFunction } from "../../scripts/types";
+import { FunctionAny } from "@shared/types/general";
 
 export function SaveButtonFixed({
   show = false,
@@ -8,8 +8,8 @@ export function SaveButtonFixed({
   disabled = true,
 }: {
   show?: boolean;
-  onSave?: AnyFunction;
-  onReset?: AnyFunction;
+  onSave?: FunctionAny;
+  onReset?: FunctionAny;
   saving?: boolean;
   disabled?: boolean;
 }) {

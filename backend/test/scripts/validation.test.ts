@@ -1,7 +1,6 @@
 import { expect, describe, it } from "vitest";
 import {
   isValidAssessmentQuestion,
-  isValidCertification,
   isValidEducation,
   isValidExperience,
   isValidMonthInteger,
@@ -12,7 +11,6 @@ import {
   MAX_NAME_LENGTH,
   MAX_USERNAME_LENGTH,
   MIN_USERNAME_LENGTH,
-  AssessmentQuestionObj,
   AnsweredAssessmentQuestionObj,
   isValidAnsweredAssessmentQuestion,
   isValidAnsweredAssessmentQuestions,
@@ -20,8 +18,14 @@ import {
   isValidGoal,
   isSubmitGoalAction,
   isTaskObj,
-} from "../../src/scripts/validation";
-import { ObjectAny, SubmitGoalActions } from "../../src/types";
+} from '../../src/scripts/validation'
+import {
+  ObjectAny,
+  SocialTypes,
+  SubmitGoalActions,
+} from "@shared/types/general";
+
+console.log(SocialTypes);
 
 describe("Tests validation script", () => {
   describe("isValidNames", () => {

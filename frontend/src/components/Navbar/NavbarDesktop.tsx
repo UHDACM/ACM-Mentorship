@@ -116,7 +116,7 @@ export function NavbarProfile({
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const { logout } = useAuth0();
   const [open, setOpen] = useState(false);
-  const openDelayRef = useRef(0);
+  const openDelayRef = useRef<number|undefined>(undefined);
 
   const MenuButtons: ButtonMenuButtonProperties[] = [
     {

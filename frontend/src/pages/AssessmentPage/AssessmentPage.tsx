@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Assessment, AssessmentQuestion, ObjectAny } from "../../scripts/types";
+import { Assessment, AssessmentQuestion, ObjectAny } from "@shared/types/general";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
@@ -18,7 +18,7 @@ import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorial
 import {
   AssessmentPageContext,
   AssessmentPageProvider,
-} from "./AssessmentPageContext.tsx";
+} from "./AssessmentPageContext";
 // import useWarnNavigation from "../../hooks/UseWarnNavigation/useWarnNavigation";
 
 export default function AssessmentPageWithContext() {

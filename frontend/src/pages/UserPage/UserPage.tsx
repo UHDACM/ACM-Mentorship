@@ -6,15 +6,16 @@ import {
   ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
+
 import {
-  AnyFunction,
-  MentorshipRequestObj,
-  MentorshipRequestResponseAction,
-  Months,
   ObjectAny,
+  FunctionAny,
   SocialType,
   SocialTypes,
-} from "../../scripts/types";
+  Months,
+  MentorshipRequestObj,
+  MentorshipRequestResponseAction,
+} from "@shared/types/general";
 import {
   ArrowBigDown,
   ArrowBigUp,
@@ -30,7 +31,17 @@ import {
   DialogInput,
   setDialog,
 } from "../../features/Dialog/DialogSlice";
-import { FaDiscord, FaFacebook, FaGithub, FaHackerrank, FaInstagram, FaLinkedin, FaStackOverflow, FaTwitter, FaYoutube } from "react-icons/fa";
+import {
+  FaDiscord,
+  FaFacebook,
+  FaGithub,
+  FaHackerrank,
+  FaInstagram,
+  FaLinkedin,
+  FaStackOverflow,
+  FaTwitter,
+  FaYoutube,
+} from "react-icons/fa";
 import { getMonthName, getMonthNumber, sleep } from "../../scripts/tools";
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
@@ -231,39 +242,39 @@ function UserPageWithContext() {
       <div style={{ marginTop: "1rem" }} />
       <TopSection />
       <UserStuff />
-      
-      <div style={{ display:"flex", flexDirection:"column", gap:"1rem" }}>
-         <BioSection bio={bio} setBio={setBio} disabled={!CanMakeChanges} />
-          <SocialSection
-            socials={socials}
-            setSocials={setSocials}
-            disabled={!CanMakeChanges}
-          />
-          <EducationSection
-            education={education}
-            setEducation={setEducation}
-            disabled={!CanMakeChanges}
-          />
-          <CertificationSection
-            certifications={certifications}
-            setCertifications={setCertifications}
-            disabled={!CanMakeChanges}
-          />
-          <ExperienceSection
-            experience={experience}
-            setExperience={setExperience}
-            disabled={!CanMakeChanges}
-          />        
-          <ProjectSection
-            projects={projects}
-            setProjects={setProjects}
-            disabled={!CanMakeChanges}
-          />        
-          <SoftSkillSection
-            softSkills={softSkills}
-            setSoftSkills={setSoftSkills}
-            disabled={!CanMakeChanges}
-          />        
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <BioSection bio={bio} setBio={setBio} disabled={!CanMakeChanges} />
+        <SocialSection
+          socials={socials}
+          setSocials={setSocials}
+          disabled={!CanMakeChanges}
+        />
+        <EducationSection
+          education={education}
+          setEducation={setEducation}
+          disabled={!CanMakeChanges}
+        />
+        <CertificationSection
+          certifications={certifications}
+          setCertifications={setCertifications}
+          disabled={!CanMakeChanges}
+        />
+        <ExperienceSection
+          experience={experience}
+          setExperience={setExperience}
+          disabled={!CanMakeChanges}
+        />
+        <ProjectSection
+          projects={projects}
+          setProjects={setProjects}
+          disabled={!CanMakeChanges}
+        />
+        <SoftSkillSection
+          softSkills={softSkills}
+          setSoftSkills={setSoftSkills}
+          disabled={!CanMakeChanges}
+        />
       </div>
 
       <div style={{ height: "10vh" }} />
@@ -352,7 +363,7 @@ function NameSection({
   fName?: string;
   mName?: string;
   lName?: string;
-  setName?: AnyFunction;
+  setName?: FunctionAny;
   disabled?: boolean;
 }) {
   function handleNameChange(fN?: string, mN?: string, lN?: string) {
@@ -364,11 +375,11 @@ function NameSection({
 
   const fnameInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePencilClick = () =>{
-    if (fnameInputRef.current){
+  const handlePencilClick = () => {
+    if (fnameInputRef.current) {
       fnameInputRef.current.focus();
     }
-  }
+  };
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       {/* <p
@@ -411,11 +422,11 @@ function NameSection({
         style={{ fontSize: "1.5rem", minWidth: "1.25rem" }}
       />
       {!disabled && (
-        <Pencil 
-        size={"1.25rem"} 
-        style={{ marginLeft: "0.5rem", cursor:"pointer" }}
-        onClick={handlePencilClick}
-         />
+        <Pencil
+          size={"1.25rem"}
+          style={{ marginLeft: "0.5rem", cursor: "pointer" }}
+          onClick={handlePencilClick}
+        />
       )}
     </div>
   );
@@ -427,7 +438,7 @@ function SoftSkillSection({
   disabled = true,
 }: {
   softSkills?: string[];
-  setSoftSkills: AnyFunction;
+  setSoftSkills: FunctionAny;
   disabled?: boolean;
 }) {
   const [inputSS, setInputSS] = useState("");
@@ -602,10 +613,10 @@ function TopSection() {
             @{username}
           </span>
           {CanMakeChanges && (
-            <Pencil 
-            onClick={HandleChangeUsername}
-            style={{ marginLeft: "0.5rem", cursor:"pointer" }} 
-            size={"1rem"}
+            <Pencil
+              onClick={HandleChangeUsername}
+              style={{ marginLeft: "0.5rem", cursor: "pointer" }}
+              size={"1rem"}
             />
           )}
         </div>
@@ -1035,7 +1046,7 @@ function ExperienceSection({
   disabled = true,
 }: {
   experience?: ObjectAny[];
-  setExperience?: AnyFunction;
+  setExperience?: FunctionAny;
   disabled?: boolean;
 }) {
   function handleExperienceChange(index: number, dat: ObjectAny) {
@@ -1136,7 +1147,7 @@ function ProjectSection({
   disabled = true,
 }: {
   projects?: ObjectAny[];
-  setProjects?: AnyFunction;
+  setProjects?: FunctionAny;
   disabled?: boolean;
 }) {
   function handleProjectChange(index: number, dat: ObjectAny) {
@@ -1236,7 +1247,7 @@ function CertificationSection({
   disabled = true,
 }: {
   certifications?: ObjectAny[];
-  setCertifications?: AnyFunction;
+  setCertifications?: FunctionAny;
   disabled?: boolean;
 }) {
   function handleCertificationChange(
@@ -1339,7 +1350,7 @@ function EducationSection({
   disabled = true,
 }: {
   education?: ObjectAny[];
-  setEducation: AnyFunction;
+  setEducation: FunctionAny;
   disabled?: boolean;
 }) {
   function handleEducationOnChange(index: number, newEduObjRaw: ObjectAny) {
@@ -1457,7 +1468,7 @@ function SocialSection({
   disabled = true,
 }: {
   socials?: ObjectAny[];
-  setSocials: AnyFunction;
+  setSocials: FunctionAny;
   disabled?: boolean;
 }) {
   const dispatch = useDispatch();
@@ -1548,7 +1559,7 @@ function SocialSection({
       dispatch(
         setAlert({
           title: "Invalid Social",
-          body: "Your social is missing a url or icon."
+          body: "Your social is missing a url or icon.",
         })
       );
       return;
@@ -1597,7 +1608,7 @@ function SocialSection({
         </p>
         {!disabled && <Pencil style={{ marginLeft: 5 }} size={"1rem"} />}
       </div>
-      <div style={{ marginLeft: 10, display: 'flex' }}>
+      <div style={{ marginLeft: 10, display: "flex" }}>
         {socials?.map((social, socialIndex) => {
           const { type, url } = social;
           return (
@@ -1633,7 +1644,7 @@ function BioSection({
   disabled = true,
 }: {
   bio?: string;
-  setBio?: AnyFunction;
+  setBio?: FunctionAny;
   disabled?: boolean;
 }) {
   return (
@@ -1675,7 +1686,7 @@ function SoftSkill({
 }: {
   children?: React.ReactNode;
   style?: React.CSSProperties;
-  onClose?: AnyFunction;
+  onClose?: FunctionAny;
   disabled?: boolean;
 }) {
   return (
@@ -1766,22 +1777,22 @@ function ExperienceLikeSection({
   onDelete,
   onMove,
   index,
-  sectionSize
+  sectionSize,
 }: {
   title?: string;
   subtitle?: string;
   description?: string;
   range?: ObjectAny;
-  onChange?: AnyFunction;
+  onChange?: FunctionAny;
   disabled?: boolean;
   hideTitle?: boolean;
   hideSubtitle?: boolean;
   hideDescription?: boolean;
   hideRange?: boolean;
-  onDelete: AnyFunction;
-  onMove: (i: number, up: boolean) => void,
-  index: number,
-  sectionSize: number
+  onDelete: FunctionAny;
+  onMove: (i: number, up: boolean) => void;
+  index: number;
+  sectionSize: number;
 }) {
   const dispatch = useDispatch();
   const { start, end } = range || {};
@@ -1897,123 +1908,129 @@ function ExperienceLikeSection({
   }
 
   return (
-    <div style={{display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '0.5rem'}}>
-      {
-              !disabled && 
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "start",
+        alignItems: "center",
+        marginTop: "0.5rem",
+      }}
+    >
+      {!disabled && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginRight: "0.25rem",
+            gap: "0.2rem",
+          }}
+        >
+          {index != 0 && (
             <div
+              onClick={() => onMove(index, true)}
               style={{
-                display: "flex",
-                flexDirection: "column",
-                marginRight: "0.25rem",
-                gap: "0.2rem",
+                padding: "0.25rem",
+                border: "1px solid #fff2",
+                backgroundColor: "#333",
+                borderTopLeftRadius: "0.5rem",
+                borderTopRightRadius: "0.5rem",
+                cursor: "pointer",
               }}
             >
-              {index != 0 && (
-                <div
-                  onClick={() => onMove(index, true)}
-                  style={{
-                    padding: "0.25rem",
-                    border: "1px solid #fff2",
-                    backgroundColor: "#333",
-                    borderTopLeftRadius: "0.5rem",
-                    borderTopRightRadius: "0.5rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  {<ArrowBigUp size={"1.5rem"} />}
-                </div>
-              )}
-              {index != sectionSize - 1 && (
-                <div
-                  onClick={() => onMove(index, false)}
-                  style={{
-                    padding: "0.25rem",
-                    border: "1px solid #fff2",
-                    backgroundColor: "#333",
-                    borderBottomLeftRadius: "0.5rem",
-                    borderBottomRightRadius: "0.5rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  {<ArrowBigDown size={"1.5rem"} />}
-                </div>
-              )}
+              {<ArrowBigUp size={"1.5rem"} />}
             </div>
-      }
-    <div>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {!hideTitle && (
-          <MinimalisticInput
-            value={title}
-            onChange={handleChangeTitle}
-            style={{ fontWeight: "bold", minWidth: "0.5rem" }}
-            disabled={disabled}
-          />
-        )}
-        {!hideSubtitle && (
-          <>
-            <span style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}>
-              |
-            </span>
-            <MinimalisticInput
-              onChange={handleChangeSubtitle}
-              style={{ minWidth: "1rem" }}
-              value={subtitle}
-              disabled={disabled}
-            />
-          </>
-        )}
-        {!hideRange && (
-          <>
-            <span style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}>
-              |
-            </span>
+          )}
+          {index != sectionSize - 1 && (
             <div
+              onClick={() => onMove(index, false)}
               style={{
-                borderBottom: disabled ? "none" : "1px solid #fff4",
-                cursor: !disabled ? "pointer" : "text",
+                padding: "0.25rem",
+                border: "1px solid #fff2",
+                backgroundColor: "#333",
+                borderBottomLeftRadius: "0.5rem",
+                borderBottomRightRadius: "0.5rem",
+                cursor: "pointer",
               }}
-              onClick={handleChangeRange}
             >
-              {start && (
-                <span>
-                  {getMonthName(start[0])} {Math.abs(start[1])}{" "}
-                  {start[1] < 0 ? "B.C." : start[1] < 1776 ? "A.D." : ""}
-                </span>
-              )}
-              <span style={{ marginRight: "0.2rem" }}>-</span>
-              <span>
-                {end
-                  ? `${getMonthName(end[0])} ${Math.abs(end[1])} ${
-                      end[1] < 0 ? "B.C." : end[1] < 1700 ? "A.D." : ""
-                    }`
-                  : "Current"}
-              </span>
+              {<ArrowBigDown size={"1.5rem"} />}
             </div>
-          </>
-        )}
-
-        {!disabled && (
-          <Trash
-            style={{ marginLeft: 5, cursor: "pointer" }}
-            size={"1.5rem"}
-            onClick={onDelete}
-          />
-        )}
-      </div>
-      {!hideDescription && (
-        <div style={{ marginLeft: 0 }}>
-          <MinimalisticTextArea
-            placeholder="Your Experience"
-            value={description}
-            onChange={(v) =>
-              handleChangeDescription && handleChangeDescription(v)
-            }
-            disabled={disabled}
-          />
+          )}
         </div>
       )}
-    </div>
+      <div>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {!hideTitle && (
+            <MinimalisticInput
+              value={title}
+              onChange={handleChangeTitle}
+              style={{ fontWeight: "bold", minWidth: "0.5rem" }}
+              disabled={disabled}
+            />
+          )}
+          {!hideSubtitle && (
+            <>
+              <span style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}>
+                |
+              </span>
+              <MinimalisticInput
+                onChange={handleChangeSubtitle}
+                style={{ minWidth: "1rem" }}
+                value={subtitle}
+                disabled={disabled}
+              />
+            </>
+          )}
+          {!hideRange && (
+            <>
+              <span style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}>
+                |
+              </span>
+              <div
+                style={{
+                  borderBottom: disabled ? "none" : "1px solid #fff4",
+                  cursor: !disabled ? "pointer" : "text",
+                }}
+                onClick={handleChangeRange}
+              >
+                {start && (
+                  <span>
+                    {getMonthName(start[0])} {Math.abs(start[1])}{" "}
+                    {start[1] < 0 ? "B.C." : start[1] < 1776 ? "A.D." : ""}
+                  </span>
+                )}
+                <span style={{ marginRight: "0.2rem" }}>-</span>
+                <span>
+                  {end
+                    ? `${getMonthName(end[0])} ${Math.abs(end[1])} ${
+                        end[1] < 0 ? "B.C." : end[1] < 1700 ? "A.D." : ""
+                      }`
+                    : "Current"}
+                </span>
+              </div>
+            </>
+          )}
+
+          {!disabled && (
+            <Trash
+              style={{ marginLeft: 5, cursor: "pointer" }}
+              size={"1.5rem"}
+              onClick={onDelete}
+            />
+          )}
+        </div>
+        {!hideDescription && (
+          <div style={{ marginLeft: 0 }}>
+            <MinimalisticTextArea
+              placeholder="Your Experience"
+              value={description}
+              onChange={(v) =>
+                handleChangeDescription && handleChangeDescription(v)
+              }
+              disabled={disabled}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -2032,11 +2049,11 @@ function SocialTile({
 }: {
   social: ObjectAny;
   canRemove?: boolean;
-  onRemove?: AnyFunction;
+  onRemove?: FunctionAny;
   canEdit?: boolean;
-  onEdit?: AnyFunction;
+  onEdit?: FunctionAny;
 }) {
-  const { type, url }: { type?: SocialType, url?: string } = social;
+  const { type, url }: { type?: SocialType; url?: string } = social;
   const dispatch = useDispatch();
   function HandleOpenSocial() {
     const btns: ObjectAny[] = [
@@ -2142,11 +2159,7 @@ function SocialTile({
         />
       )}
       {type == "portfolio" && (
-        <Globe
-          size={30}
-          onClick={HandleOpenSocial}
-          style={defaultIconStyle}
-        />
+        <Globe size={30} onClick={HandleOpenSocial} style={defaultIconStyle} />
       )}
       {type == "stackOverflow" && (
         <FaStackOverflow

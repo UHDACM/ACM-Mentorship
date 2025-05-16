@@ -5,7 +5,19 @@
       "target": "ES2020",
       "sourceMap": true,
       "outDir": "dist",
+      "baseUrl": "./",
+      "paths": {
+        // used to reference shared types (outside of base directory)
+        "@shared/*": ["../shared/*"]
+      },
+
+      // skips lib check for test files
+      // test files run into build issues due to vitest import.
+      // they aren't used after being compiled, so this is safe
+      "skipLibCheck": true
   },
-  "include": ["./src"],
-  "compileOnSave": true
+  // lets ts know where to look for files
+  // note: files not included will not be compiled, nor will they be able to use aliases
+  "include": ["./src", "../shared", "./test"],
+  "compileOnSave": true,
 }

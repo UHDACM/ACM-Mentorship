@@ -1,7 +1,7 @@
 import React from "react";
-import { AnyFunction } from "../../scripts/types";
+import { FunctionAny } from "@shared/types/general";
 
-export default function MinimalisticButton({ children, onClick, style, disabled }: { children?: React.ReactNode, onClick?: AnyFunction, style?: React.CSSProperties, disabled?: boolean }) {
+export default function MinimalisticButton({ children, onClick, style, disabled }: { children?: React.ReactNode, onClick?: FunctionAny, style?: React.CSSProperties, disabled?: boolean }) {
   return (
     <button
       style={{

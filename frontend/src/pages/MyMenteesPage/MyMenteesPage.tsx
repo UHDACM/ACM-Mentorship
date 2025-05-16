@@ -11,12 +11,12 @@ import MinimalisticButton from "../../components/MinimalisticButton/Minimalistic
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
+import { Check, HelpCircle } from "lucide-react";
+import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import {
   MentorshipRequestObj,
   MentorshipRequestResponseAction,
-} from "../../scripts/types";
-import { Check, HelpCircle } from "lucide-react";
-import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
+} from "@shared/types/general";
 
 export default function MyMenteesPage() {
   const { user, ready } = useSelector(
@@ -323,7 +323,7 @@ function MyMentorPageHeader() {
   // }
 
   const { fName } = user || {};
-  const {lName} = user || {};
+  const { lName } = user || {};
 
   return (
     <div
@@ -579,7 +579,14 @@ function CurrentMentorInfo() {
   const { menteeIDs } = user;
 
   return (
-    <div style={{ width: "100%", display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "start",
+      }}
+    >
       <span
         style={{
           marginLeft: "1rem",
@@ -587,18 +594,25 @@ function CurrentMentorInfo() {
           borderBottom: "1px #fff6 solid",
           cursor: "pointer",
         }}
-        onClick={() => ShowTutorial('mentoring')}
+        onClick={() => ShowTutorial("mentoring")}
       >
         How does this work?
       </span>
       <span style={{ fontSize: "1.5rem" }}>Mentees</span>
       {menteeIDs && (
-        <div style={{ width: "100%", display: "flex", flexWrap: "wrap", boxSizing: 'border-box' }}>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexWrap: "wrap",
+            boxSizing: "border-box",
+          }}
+        >
           {menteeIDs.map((menteeID) => {
             return (
               <div
                 className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
-                style={{ padding: "0.25rem", boxSizing: 'border-box' }}
+                style={{ padding: "0.25rem", boxSizing: "border-box" }}
                 key={`mentee_${menteeID}`}
               >
                 <MenteeTile menteeID={menteeID} />

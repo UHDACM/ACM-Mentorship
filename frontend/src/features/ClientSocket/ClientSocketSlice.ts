@@ -1,7 +1,7 @@
 // written in JS because typing is such an issue with redux
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
 import { ClientSocketState, ClientSocketUser } from "./ClientSocket";
-import { AssessmentQuestion } from "../../scripts/types";
+import { AssessmentQuestion } from "@shared/types/general";
 
 type ClientSocketMentorshipRequest = {
   mentorID: string;

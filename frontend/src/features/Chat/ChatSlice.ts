@@ -1,6 +1,6 @@
 // written in JS because typing is such an issue with redux
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
-import { ChatObj, MessageObj } from "../../scripts/types";
+import { ChatObj, MessageObj } from '@shared/types/general';
 
 
 interface ChatState {

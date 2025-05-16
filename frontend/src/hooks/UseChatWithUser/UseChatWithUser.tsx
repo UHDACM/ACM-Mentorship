@@ -6,7 +6,7 @@ import {
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
-import { ObjectAny } from "../../scripts/types";
+import { ObjectAny } from "@shared/types/general";
 
 export default function useChatWithUser() {
   const { user: self } = useSelector(

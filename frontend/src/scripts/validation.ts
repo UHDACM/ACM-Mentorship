@@ -1,5 +1,29 @@
-import { ClientDataPayloadType, ClientDataPayloadTypes, ClientSocketState, ClientSocketStates, SubmitAssessmentAction, SubmitAssessmentActions } from "../features/ClientSocket/ClientSocket";
-import { Assessment, AssessmentQuestion, AssessmentQuestionInputTypes, MentorshipRequestStatuses, MentorshipRequestStatus, MentorshipRequestObj, MentorshipRequestResponseAction, MentorshipRequestResponseActions, Month, Months, ObjectAny, SocialType, SocialTypes, SubmitGoalAction, SubmitGoalActions } from "./types";
+import {
+  ClientDataPayloadType,
+  ClientDataPayloadTypes,
+  ClientSocketState,
+  ClientSocketStates,
+  SubmitAssessmentAction,
+  SubmitAssessmentActions,
+} from "../features/ClientSocket/ClientSocket";
+
+import {
+  ObjectAny,
+  AssessmentQuestion,
+  Assessment,
+  SocialType,
+  SocialTypes,
+  AssessmentQuestionInputTypes,
+  Month,
+  Months,
+  MentorshipRequestStatuses,
+  MentorshipRequestStatus,
+  MentorshipRequestObj,
+  MentorshipRequestResponseAction,
+  MentorshipRequestResponseActions,
+  SubmitGoalAction,
+  SubmitGoalActions,
+} from "@shared/types/general";
 
 export function isClientSocketState(s: string): s is ClientSocketState {
   return ClientSocketStates.includes(s);
@@ -10,12 +34,12 @@ export function isClientDataPayloadType(s: string): s is ClientDataPayloadType {
 }
 
 export function isAssessmentQuestion(q: object): q is AssessmentQuestion {
-  if (!q || typeof(q) != 'object') {
+  if (!q || typeof q != "object") {
     return false;
   }
   const qAny = q as ObjectAny;
   const { question, inputType } = qAny;
-  if (!question || typeof(question) != 'string') {
+  if (!question || typeof question != "string") {
     return false;
   } else if (!inputType || !AssessmentQuestionInputTypes.includes(inputType)) {
     return false;
@@ -23,57 +47,70 @@ export function isAssessmentQuestion(q: object): q is AssessmentQuestion {
   return true;
 }
 
-export function isAssessmentQuestions(qArr: object[]): qArr is AssessmentQuestion[] {
-  if (!qArr||!(qArr instanceof Array)) {
+export function isAssessmentQuestions(
+  qArr: object[]
+): qArr is AssessmentQuestion[] {
+  if (!qArr || !(qArr instanceof Array)) {
     return false;
   }
   for (let q of qArr) {
-    if (!q || typeof(q) != 'object') {
+    if (!q || typeof q != "object") {
       return false;
     }
     const qAny = q as ObjectAny;
     const { question, inputType } = qAny;
-    if (!question || typeof(question) != 'string') {
+    if (!question || typeof question != "string") {
       return false;
-    } else if (!inputType || !AssessmentQuestionInputTypes.includes(inputType)) {
+    } else if (
+      !inputType ||
+      !AssessmentQuestionInputTypes.includes(inputType)
+    ) {
       return false;
     }
   }
   return true;
 }
 
-export function isSubmitAssessmentAction(s: string): s is SubmitAssessmentAction {
+export function isSubmitAssessmentAction(
+  s: string
+): s is SubmitAssessmentAction {
   return SubmitAssessmentActions.includes(s);
 }
 
 export function isAssessment(s: object): s is Assessment {
-  if (!s || typeof(s) != 'object') {
+  if (!s || typeof s != "object") {
     return false;
   }
   const sConv: ObjectAny = s;
   const { date, published, questions, userID } = sConv;
-  if (!date || typeof(date) != 'number') {
+  if (!date || typeof date != "number") {
     return false;
-  } else if (typeof(published) != 'boolean') {
+  } else if (typeof published != "boolean") {
     return false;
-  } else if (!userID || typeof(userID) != 'string') {
+  } else if (!userID || typeof userID != "string") {
     return false;
-  } else if (!questions || !(questions instanceof Array) || !isAssessmentQuestions(questions)) {
+  } else if (
+    !questions ||
+    !(questions instanceof Array) ||
+    !isAssessmentQuestions(questions)
+  ) {
     return false;
   }
   return true;
 }
 
-export function isSocialType(s: string): s is SocialType {
-  return SocialTypes.includes(s);
+export function isSocialType(s: unknown): s is SocialType {
+  return SocialTypes.includes(s as SocialType);
 }
 
 export function isMonth(s: string): s is Month {
   return Months.includes(s);
 }
 
-export function isMentorshipRequestObject(s: unknown): s is MentorshipRequestObj {
-  if (!s || typeof(s) != 'object') {
+export function isMentorshipRequestObject(
+  s: unknown
+): s is MentorshipRequestObj {
+  if (!s || typeof s != "object") {
     return false;
   }
 
@@ -81,15 +118,15 @@ export function isMentorshipRequestObject(s: unknown): s is MentorshipRequestObj
 
   const { mentorID, menteeID, status, id } = mentorshipRequest; // Destructure here
 
-  if (!id || typeof id !== 'string') {
+  if (!id || typeof id !== "string") {
     return false;
   }
 
-  if (!mentorID || typeof mentorID !== 'string') {
+  if (!mentorID || typeof mentorID !== "string") {
     return false;
   }
 
-  if (!menteeID || typeof menteeID !== 'string') {
+  if (!menteeID || typeof menteeID !== "string") {
     return false;
   }
 
@@ -100,24 +137,27 @@ export function isMentorshipRequestObject(s: unknown): s is MentorshipRequestObj
   return true;
 }
 
-export function isMentorshipRequestStatus(s: unknown): s is MentorshipRequestStatus {
-  if (!s || typeof(s) != 'string') {
+export function isMentorshipRequestStatus(
+  s: unknown
+): s is MentorshipRequestStatus {
+  if (!s || typeof s != "string") {
     return false;
   }
   return MentorshipRequestStatuses.includes(s);
 }
 
-export function isMentorshipRequestResponseAction(s: unknown): s is MentorshipRequestResponseAction {
-  if (!s || typeof(s) != 'string') {
+export function isMentorshipRequestResponseAction(
+  s: unknown
+): s is MentorshipRequestResponseAction {
+  if (!s || typeof s != "string") {
     return false;
   }
   return MentorshipRequestResponseActions.includes(s);
 }
 
 export function isSubmitGoalAction(s: unknown): s is SubmitGoalAction {
-  if (!s || typeof(s) != 'string') {
+  if (!s || typeof s != "string") {
     return false;
   }
   return SubmitGoalActions.includes(s);
 }
-

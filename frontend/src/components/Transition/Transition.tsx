@@ -3,9 +3,8 @@ import { easingType } from "../../scripts/easingFunctions";
 import WipeTransition from "./Transitions/WipeTransition";
 import DiagonalTransition from "./Transitions/DiagonalExpandTransition";
 import FadeTransition from "./Transitions/FadeTransition";
-import { CardinalDirection } from "../../scripts/types";
+import { CardinalDirection, TransitionType } from "./types";
 
-type TransitionType = "wipe" | "diagonal" | "fade";
 /**
  *
  * Note: container width and height do not work very well at the moment.
@@ -55,10 +54,10 @@ export default function Transition({
     throw new Error("Cannot combine delay with delayBefore and delayAfter");
   }
   const [trueToggle, setTrueToggle] = useState(initialToggle);
-  const trueToggleTimeoutRef = useRef(-1000);
+  const trueToggleTimeoutRef = useRef<number|undefined>(undefined);
   
   const [tV, setTV] = useState(initialToggle?1:0); // short for Transition Value
-  const tVIntervalRef = useRef(-1294); // stores interval to cancel later if toggle is changed mid transition
+  const tVIntervalRef = useRef<number|undefined>(); // stores interval to cancel later if toggle is changed mid transition
   const numFrames = Math.max((transitionSpeedMS/1000) * fps, 2);
   const transitionUpdateDelayMS = transitionSpeedMS / numFrames;
 

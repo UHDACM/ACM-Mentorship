@@ -5,8 +5,8 @@ import {
   ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
+import { ObjectAny, AssessmentPreviewObj } from "@shared/types/general";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AssessmentPreviewObj, ObjectAny } from "../../scripts/types";
 import { unixToDateString } from "../../scripts/tools";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 

@@ -1,18 +1,18 @@
 import { DBGet } from "../db";
 import {
-  AssessmentAction,
-  AssessmentActions,
   GoalObj,
-  MentorshipRequestAction,
-  MentorshipRequestActions,
-  ObjectAny,
-  SendMessageAction,
-  SendMessageActions,
-  SocialTypes,
+  TaskObj,
   SubmitGoalAction,
   SubmitGoalActions,
-  TaskObj,
-} from "../types";
+  AssessmentAction,
+  AssessmentActions,
+  MentorshipRequestAction,
+  MentorshipRequestActions,
+  SendMessageAction,
+  SendMessageActions,
+  ObjectAny,
+  SocialTypes
+} from "@shared/types/general";
 
 export const MAX_NAME_LENGTH = 36;
 /**
@@ -307,7 +307,7 @@ export function isValidMonthYearRange(
     !Array.isArray(range.start) ||
     range.start.length !== 2
   ) {
-    throw new Error('Invalid range format');
+    throw new Error("Invalid range format");
   }
   const { start, end } = range;
 
@@ -432,35 +432,35 @@ export const MAX_BIO_LENGTH = 200;
 
 /**
  * Checks if a goal is valid.
- * 
+ *
  * Throws error with message if invalid, true otherwise.
- * 
+ *
  * mutates goal, trimming strings for space.
- * @param s 
- * @returns 
+ * @param s
+ * @returns
  */
 export function isValidGoal(s: unknown): s is GoalObj {
-  if (!s || typeof(s) != 'object') {
-    throw new Error('Goal object is invalid');
+  if (!s || typeof s != "object") {
+    throw new Error("Goal object is invalid");
   }
 
   const { tasks, name } = s as GoalObj;
   if (!name) {
-    throw new Error('Name is missing from goal')
+    throw new Error("Name is missing from goal");
   }
 
-  if (typeof(name) != 'string') {
-    throw new Error('Name is invalid');
+  if (typeof name != "string") {
+    throw new Error("Name is invalid");
   }
 
   if (name.trim().length < 3) {
-    throw new Error('Name is too short');
+    throw new Error("Name is too short");
   }
 
-  s['name'] = name.trim();
+  s["name"] = name.trim();
 
   if (!tasks || !(tasks instanceof Array)) {
-    throw new Error('Format of tasks array is invalid');
+    throw new Error("Format of tasks array is invalid");
   }
 
   for (let item of tasks) {
@@ -476,66 +476,68 @@ export function isValidGoal(s: unknown): s is GoalObj {
 }
 
 export function isSubmitGoalAction(s: unknown): s is SubmitGoalAction {
-  if (!s || typeof(s) != 'string') {
+  if (!s || typeof s != "string") {
     return false;
   }
   return SubmitGoalActions.includes(s);
 }
 
-
 export const MIN_TASK_NAME_LENGTH = 3;
 export const MIN_DESCRIPTION_NAME_LENGTH = 3;
 export function isTaskObj(s: unknown): s is TaskObj {
-  if (!s || typeof(s) != 'object') {
-    throw new Error('Task object is invalid');
+  if (!s || typeof s != "object") {
+    throw new Error("Task object is invalid");
   }
 
   const { name, description, completitionDate } = s as TaskObj;
 
   if (!name || !description) {
-    throw new Error('Name, description, or completitionDate is missing');
+    throw new Error("Name, description, or completitionDate is missing");
   }
 
-  if (typeof(name) != 'string') {
-    throw new Error('Task Name is invalid');
+  if (typeof name != "string") {
+    throw new Error("Task Name is invalid");
   } else if (name.trim().length < MIN_TASK_NAME_LENGTH) {
-    throw new Error('Task name is too short');
+    throw new Error("Task name is too short");
   }
 
-  if (typeof(description) != 'string') {
-    throw new Error('Description is invalid');
+  if (typeof description != "string") {
+    throw new Error("Description is invalid");
   } else if (description.trim().length < MIN_DESCRIPTION_NAME_LENGTH) {
-    throw new Error('Description is too short');
+    throw new Error("Description is too short");
   }
 
-  if ((completitionDate != undefined || completitionDate != null) && (typeof(completitionDate) != 'number' || isNaN(new Date(completitionDate).getTime()))) {
-    throw new Error('Completion date is invalid');
+  if (
+    (completitionDate != undefined || completitionDate != null) &&
+    (typeof completitionDate != "number" ||
+      isNaN(new Date(completitionDate).getTime()))
+  ) {
+    throw new Error("Completion date is invalid");
   }
 
   return true;
 }
 
 export function isSendMessageAction(s: unknown): s is SendMessageAction {
-  if (!s || typeof(s) != 'string') {
+  if (!s || typeof s != "string") {
     return false;
   }
   return SendMessageActions.includes(s);
 }
 
-
 /**
  * Checks s is valid message.
- * 
+ *
  * Throws descriptive error if invalid. Returns true otherwise.
- * @param s 
- * @returns 
+ * @param s
+ * @returns
  */
 export function isValidMessageContent(s: unknown): s is string {
-  if (!s || typeof(s) != 'string') {
-    throw new Error('No message content was provided');
+  if (!s || typeof s != "string") {
+    throw new Error("No message content was provided");
   }
   if (s.trim().length == 0) {
-    throw new Error('Message content is too short');
+    throw new Error("Message content is too short");
   }
   return true;
 }

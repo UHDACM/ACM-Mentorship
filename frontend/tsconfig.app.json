@@ -20,7 +20,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // required to resolve shared
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    },
+
+    // required for vite. was not required before, but including shared folder affected the auto import
+    // of vite types in vite.config.ts
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src", "../shared"]
 }

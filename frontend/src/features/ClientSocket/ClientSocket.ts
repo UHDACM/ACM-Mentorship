@@ -14,27 +14,32 @@ import {
   setClientState,
   setClientUser,
 } from "./ClientSocketSlice";
+
 import {
-  AnyFunction,
-  AssessmentPreviewMap,
+  FunctionAny,
   AssessmentQuestion,
-  ChatObj,
-  GoalObj,
-  GoalPreviewMap,
   MentorshipRequestObj,
   MentorshipRequestResponseAction,
-  MessageObj,
-  ObjectAny,
+  AssessmentPreviewMap,
+  GoalPreviewMap,
+  GoalObj,
   SubmitGoalAction,
-} from "../../scripts/types";
+  ChatObj,
+  MessageObj,
+  ObjectAny
+} from "@shared/types/general";
+
+
 import { setAlert } from "../Alert/AlertSlice";
 import { GetRandomAvatarURL, NothingFunction } from "../../scripts/tools";
 import { addChat } from "../Chat/ChatSlice";
-import { playMessageReceiveNotificationSound, playMessageSendNotificationSound } from "../../scripts/sounds";
+import {
+  playMessageReceiveNotificationSound,
+  playMessageSendNotificationSound,
+} from "../../scripts/sounds";
 import { OBSCURE_MODE } from "../../scripts/shared";
 
 export let MyClientSocket: ClientSocket | undefined = undefined;
-
 
 const MAX_FAILED_CONNECTION_ATTEMPTS = 3;
 let CreatingConnection = false;
@@ -55,7 +60,7 @@ export function CreateClientSocketConnection(
   // set creating = true, so subsequent calls while connecting are denied.
   CreatingConnection = true;
 
-  dispatch(setClientState('connecting'));
+  dispatch(setClientState("connecting"));
   const socket = io(import.meta.env.VITE_SERVER_SOCKET_URL, {
     auth: {
       token: `Bearer ${userToken}`,
@@ -64,12 +69,12 @@ export function CreateClientSocketConnection(
 
   let failedConnects = 0;
   socket.on("connect_error", async () => {
-    dispatch(setClientState('connecting'));
+    dispatch(setClientState("connecting"));
     failedConnects++;
     if (failedConnects >= MAX_FAILED_CONNECTION_ATTEMPTS) {
       socket.disconnect();
       console.log("Failed to connect. Disconnecting");
-      dispatch(setClientState('disconnected'));
+      dispatch(setClientState("disconnected"));
       return;
     }
   });
@@ -116,8 +121,17 @@ export type ClientSocketUser = {
   chats?: string[];
 };
 
-export type ClientDataPayloadType = "initialData" | "mentorshipRequest" | "chat" | "updateSelf";
-export const ClientDataPayloadTypes = ["initialData", "mentorshipRequest", "chat", "updateSelf"];
+export type ClientDataPayloadType =
+  | "initialData"
+  | "mentorshipRequest"
+  | "chat"
+  | "updateSelf";
+export const ClientDataPayloadTypes = [
+  "initialData",
+  "mentorshipRequest",
+  "chat",
+  "updateSelf",
+];
 
 export type SubmitAssessmentAction =
   | "create"
@@ -148,9 +162,13 @@ export const ClientSocketStates = [
   "connecting",
   "authed_nouser",
   "authed_user",
-  "disconnected"
+  "disconnected",
 ];
-export type ClientSocketState = "connecting" | "authed_nouser" | "authed_user" | "disconnected";
+export type ClientSocketState =
+  | "connecting"
+  | "authed_nouser"
+  | "authed_user"
+  | "disconnected";
 class ClientSocket {
   dispatch: Dispatch;
   socket: Socket;
@@ -163,15 +181,15 @@ class ClientSocket {
     this.socket = socket;
     this.dispatch = dispatch;
 
-    this.socket.on('disconnect', () => {
-      this.dispatch(setClientState('disconnected'));
-      this.state = 'disconnected';
+    this.socket.on("disconnect", () => {
+      this.dispatch(setClientState("disconnected"));
+      this.state = "disconnected";
     });
     // clean listeners from socket
     this.InstallBaseListeners();
   }
 
-  createAccount(params: ClientCreateUserPayload, callback?: AnyFunction) {
+  createAccount(params: ClientCreateUserPayload, callback?: FunctionAny) {
     // don't submit if already submitting some information.
     const CreateAccountErrorHeader = "Create Account Error";
     if (this.state != "authed_nouser") {
@@ -253,8 +271,8 @@ class ClientSocket {
           callback(v);
         }
       );
-    } else if (action == 'delete') {
-      if (!id || typeof(id) != 'string') {
+    } else if (action == "delete") {
+      if (!id || typeof id != "string") {
         callback(false);
         return;
       }
@@ -419,13 +437,13 @@ class ClientSocket {
         return;
       }
       if (OBSCURE_MODE) {
-        (v as ObjectAny).fName = 'Obscured';
-        (v as ObjectAny).mName = '';
-        (v as ObjectAny).lName = '';
-        (v as ObjectAny).username = 'obscured';
+        (v as ObjectAny).fName = "Obscured";
+        (v as ObjectAny).mName = "";
+        (v as ObjectAny).lName = "";
+        (v as ObjectAny).username = "obscured";
         (v as ObjectAny).displayPictureURL = GetRandomAvatarURL();
       }
-      
+
       callback(v);
     });
   }
@@ -441,10 +459,10 @@ class ClientSocket {
       if (OBSCURE_MODE) {
         if (v instanceof Array) {
           for (let item of v) {
-            item.fName = 'Obscured';
-            item.mName = '';
-            item.lName = '';
-            item.username = 'obscured';
+            item.fName = "Obscured";
+            item.mName = "";
+            item.lName = "";
+            item.username = "obscured";
             item.displayPictureURL = GetRandomAvatarURL();
           }
         }
@@ -478,7 +496,6 @@ class ClientSocket {
         return;
       }
       if (v instanceof Array) {
-
       }
       callback(v);
     });
@@ -486,14 +503,18 @@ class ClientSocket {
 
   GetMentorshipRequest(mentorshipRequestID: string, cb: Function) {
     const callback = cb || NothingFunction;
-    if (!mentorshipRequestID || typeof(mentorshipRequestID) != 'string') {
+    if (!mentorshipRequestID || typeof mentorshipRequestID != "string") {
       callback(false);
       return;
     }
 
-    this.socket.emit("getMentorshipRequest", mentorshipRequestID, (v: string|boolean) => {
-      callback(v);
-    });
+    this.socket.emit(
+      "getMentorshipRequest",
+      mentorshipRequestID,
+      (v: string | boolean) => {
+        callback(v);
+      }
+    );
   }
 
   BecomeMentor(cb?: Function) {
@@ -539,7 +560,7 @@ class ClientSocket {
   GetMentorshipRequestBetweenMentorMentee(
     mentorID: string,
     menteeID: string,
-    callback: AnyFunction
+    callback: FunctionAny
   ) {
     if (!mentorID || !menteeID) {
       callback(false);
@@ -699,7 +720,11 @@ class ClientSocket {
     }, 300);
 
     if (status) {
-      if (status == "accepted" || status == "declined" || status == 'cancelled') {
+      if (
+        status == "accepted" ||
+        status == "declined" ||
+        status == "cancelled"
+      ) {
         let mentorObj = await new Promise((res) => {
           this.GetUser(mentorID, (v: ObjectAny | boolean) => {
             res(v);
@@ -710,7 +735,10 @@ class ClientSocket {
           return;
         }
 
-        if (this.user.id == menteeID && (status == 'accepted' || status == 'declined')) {
+        if (
+          this.user.id == menteeID &&
+          (status == "accepted" || status == "declined")
+        ) {
           const { fName, lName } = mentorObj as ObjectAny;
           this.dispatch(
             setAlert({

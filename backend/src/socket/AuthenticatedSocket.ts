@@ -1,14 +1,13 @@
 import { Socket } from "socket.io";
 import {
   DBCreate,
-  DBDelete,
   DBDeleteWithID,
   DBGet,
   DBGetWithID,
   DBObj,
   DBSetWithID,
 } from "../db";
-import { AssessmentPreviewMap, GoalPreviewMap, ObjectAny } from "../types";
+import { AssessmentPreviewMap, GoalPreviewMap, ObjectAny } from "@shared/types/general";
 import {
   Certification,
   Education,

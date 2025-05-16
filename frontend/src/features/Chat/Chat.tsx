@@ -3,7 +3,7 @@ import { ReduxRootState } from "../../store";
 import { useEffect } from "react";
 import { addChat, addChatMessages, chatsAreLoaded, markChatRead } from "./ChatSlice";
 import { MyClientSocket } from "../ClientSocket/ClientSocket";
-import { ChatObj, MessageObj } from "../../scripts/types";
+import { ChatObj, MessageObj } from '@shared/types/general';
 
 
 export const placeholderPreviewPicture =

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AnyFunction, GoalObj, TaskObj } from "../../scripts/types";
+import { GoalObj, TaskObj, FunctionAny } from "@shared/types/general";
+
+
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import {
   ArrowBigDown,
@@ -427,7 +429,7 @@ function Task({
 }: {
   task: TaskObj;
   setTask: (v: TaskObj) => any;
-  onDelete: AnyFunction;
+  onDelete: FunctionAny;
   disabled: boolean;
 }) {
   const [openCalendar, setOpenCalendar] = useState(false);
@@ -514,7 +516,7 @@ function SelectDayOverlay({
   onCancel,
 }: {
   onClickDay?: (d?: Date) => any;
-  onCancel?: AnyFunction;
+  onCancel?: FunctionAny;
 }) {
   return (
     <div

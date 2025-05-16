@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { setActiveChat } from "./ChatSlice";
-import { ChatObj } from "../../scripts/types";
+import { ChatObj } from "@shared/types/general";
 import { placeholderPreviewPicture } from "./Chat";
 import { OBSCURE_MODE } from "../../scripts/shared";
 import { GetRandomAvatarURL } from "../../scripts/tools";

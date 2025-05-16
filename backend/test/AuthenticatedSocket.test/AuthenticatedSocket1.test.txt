@@ -8,7 +8,7 @@ import {
 } from "../../src/socket/socketServer";
 
 import { DBDelete, DBDeleteWithID, DBGet, DBGetWithID } from "../../src/db";
-import { ObjectAny } from "../../src/types";
+import { ObjectAny } from "@shared/types/general";
 import AuthenticatedSocket from "../../src/socket/AuthenticatedSocket";
 import { MAX_BIO_LENGTH } from "../../src/scripts/validation";
 import { ConnectWithParams, CreateUser, deleteAllTestingObjects, handleData, updateSelf, updateState } from "./_AuthenticatedSocketHelperFunctions.test";

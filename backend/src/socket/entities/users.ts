@@ -1,5 +1,5 @@
 import { DBGetWithID, DBSetWithID } from "../../db";
-import { ObjectAny } from "../../types";
+import { ObjectAny } from "@shared/types/general";
 import { AllAcceptingMentorIDs } from "../AuthenticatedSocket";
 
 /**

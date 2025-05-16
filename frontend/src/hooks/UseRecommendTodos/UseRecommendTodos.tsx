@@ -3,7 +3,7 @@ import { ReduxRootState } from "../../store";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { useNavigate } from "react-router-dom";
 import Transition from "../../components/Transition/Transition";
-import { ChatObj } from "../../scripts/types";
+import { ChatObj } from "@shared/types/general";
 import useChatWithUser from "../UseChatWithUser/UseChatWithUser";
 
 type RecommendedTodo =

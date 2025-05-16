@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
 import { describe, it, expect, afterAll } from "vitest";
-import { ObjectAny } from "../../src/types";
+import { ObjectAny } from "@shared/types/general";
 import { sleep } from "../../src/scripts/tools";
 import {
   isSocketServerOnline,
