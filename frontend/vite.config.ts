@@ -14,7 +14,7 @@ export default defineConfig({
   },
   server: {
     fs: {
-      allow: ['../shared']
+      allow: ['../shared', '.']
     },
     port: 5173
   }
