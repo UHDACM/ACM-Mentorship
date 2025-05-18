@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { GoalObj, TaskObj, FunctionAny } from "@shared/types/general";
 
@@ -28,19 +28,37 @@ import MinimalisticTextArea from "../../components/MinimalisticTextArea/Minimali
 import styles from "./GoalPage.module.css";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import { FaRegQuestionCircle } from "react-icons/fa";
+import { GoalPageContext, GoalPageProvider } from "./GoalPageContext";
 
-export default function GoalPage() {
+export default function GoalPageWithContext(){
+  return(
+  <GoalPageProvider>
+    <GoalPage/>
+  </GoalPageProvider>
+  )
+}
+
+
+export function GoalPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [saving, setSaving] = useState(false);
-  const [changed, setChanged] = useState(false);
   const [params, _] = useSearchParams();
-  const [goal, setGoal] = useState<GoalObj | boolean | undefined>(undefined);
   const originalGoal = useRef<GoalObj | boolean | undefined>({});
-  const [goalOwner, setGoalOwner] = useState<ClientSocketUser | boolean>();
   const id = params.get("id");
   const newParam = params.get("new");
   const isNew = newParam == "true";
+
+  const {
+    saving, 
+    setSaving, 
+    changed, 
+    setChanged, 
+    goal, 
+    setGoal, 
+    goalOwner, 
+    setGoalOwner
+  } = useContext(GoalPageContext)
+
   const { user: self, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
   );
@@ -117,11 +135,6 @@ export default function GoalPage() {
 
   const selfIsOwner = self.id == goalOwner.id;
 
-  const setTasks = (tasks: TaskObj[]) => {
-    setGoal({ ...goal, tasks });
-    setChanged(true);
-  };
-
   const setGoalName = (name: string) => {
     setGoal({ ...goal, name });
     setChanged(true);
@@ -197,7 +210,7 @@ export default function GoalPage() {
     );
   };
 
-  const { name, tasks } = goal;
+  const { name } = goal;
   const { fName, mName, lName } = goalOwner;
 
   const handleOnBack = () => {
@@ -259,8 +272,8 @@ export default function GoalPage() {
         <div style={{ marginLeft: 10 }}>
           <TasksSection
             disabled={!selfIsOwner}
-            tasks={tasks}
-            setTasks={setTasks}
+            // tasks={tasks}
+            // setTasks={setTasks}
           />
         </div>
       </div>
@@ -277,25 +290,36 @@ export default function GoalPage() {
 }
 
 function TasksSection({
-  tasks,
-  setTasks,
   disabled,
 }: {
-  tasks?: TaskObj[];
-  setTasks: Function;
   disabled: boolean;
 }) {
+  const {goal,setGoal,setChanged} = useContext(GoalPageContext)
   const dispatch = useDispatch();
+  // type guard for tasks
+  if (typeof goal === "boolean" || !goal){
+    return null;
+  }
+
+  const { tasks } = goal;
+
+  const setTasks = (tasks: TaskObj[]) => {
+    setGoal({ ...goal, tasks });
+    setChanged(true);
+  };
+
   function handleAddTask() {
     const newTasks = [...(tasks || [])];
     const newTask: TaskObj = {
       name: "New Task",
       description: "Task description",
     };
+    
     newTasks.push(newTask);
     setTasks(newTasks);
   }
 
+  
   function handleEditTask(tIndex: number, newTask: TaskObj) {
     if (!tasks) {
       return;
