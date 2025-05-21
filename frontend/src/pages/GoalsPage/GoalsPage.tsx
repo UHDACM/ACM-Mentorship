@@ -2,11 +2,10 @@ import { useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ObjectAny, GoalPreviewObj } from "@shared/types/general";
+import { ObjectAny, GoalPreviewObj, UserObj } from "@shared/types/general";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { X } from "lucide-react";
 import useDeleteGoalWithDialog from "../../hooks/UseDeleteGoalWithDialog/useDeleteGoalWithDialog";
@@ -15,7 +14,7 @@ export default function GoalsPage() {
   const navigate = useNavigate();
   const { ready, user: self } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const [params, _] = useSearchParams();
-  const [user, setUser] = useState<ClientSocketUser | undefined | false>();
+  const [user, setUser] = useState<UserObj | undefined | false>();
   const deleteGoalWithDialog = useDeleteGoalWithDialog();
 
   const id = params.get("id");

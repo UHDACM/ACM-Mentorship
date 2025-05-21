@@ -2,11 +2,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setActiveChat, setChatOpen } from "../../features/Chat/ChatSlice";
 import { ReduxRootState } from "../../store";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
-import { ObjectAny } from "@shared/types/general";
+import { ObjectAny, UserObj } from "@shared/types/general";
 
 export default function useChatWithUser() {
   const { user: self } = useSelector(
@@ -15,7 +14,7 @@ export default function useChatWithUser() {
   const { chats } = useSelector((store: ReduxRootState) => store.Chat);
   const dispatch = useDispatch();
   async function chatWithUser(targetUserID: string) {
-    let user: ClientSocketUser | undefined;
+    let user: UserObj | undefined;
     try {
       if (!MyClientSocket) {
         return;
@@ -23,7 +22,7 @@ export default function useChatWithUser() {
       user = await new Promise((res) => {
         MyClientSocket?.GetUser(
           targetUserID,
-          (v: ClientSocketUser | boolean) => {
+          (v: UserObj | boolean) => {
             if (!v || typeof v == "boolean") {
               return;
             }

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { Pencil } from "lucide-react";
@@ -12,6 +11,7 @@ import { setAlert } from "../../features/Alert/AlertSlice";
 import { useNavigate } from "react-router-dom";
 import { useChangeUsernameWithDialog } from "../../hooks/UseChangeUsername";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
+import { UserObj } from "@shared/types/general";
 
 type HomeSubPage = "view_mentor" | "view_mentees";
 export default function HomePage() {
@@ -330,7 +330,7 @@ function MenteeInformation() {
 
 function CurrentMentorInfo() {
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const [mentorObj, setMentorObj] = useState<ClientSocketUser | undefined>(
+  const [mentorObj, setMentorObj] = useState<UserObj | undefined>(
     undefined
   );
 
@@ -372,7 +372,7 @@ function CurrentMentorInfo() {
 }
 
 function MentorSearchTool() {
-  const [mentors, setMentors] = useState<ClientSocketUser[] | undefined>(
+  const [mentors, setMentors] = useState<UserObj[] | undefined>(
     undefined
   );
 
@@ -423,7 +423,7 @@ function MentorSearchTool() {
   );
 }
 
-function UserProfileCard({ user, style }: { user: ClientSocketUser, style?: React.CSSProperties }) {
+function UserProfileCard({ user, style }: { user: UserObj, style?: React.CSSProperties }) {
   const { fName, mName, lName, username, id, displayPictureURL, bio } = user;
   const navigate = useNavigate();
 

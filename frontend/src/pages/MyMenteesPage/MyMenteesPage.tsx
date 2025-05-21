@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
@@ -16,6 +15,7 @@ import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorial
 import {
   MentorshipRequestObj,
   MentorshipRequestResponseAction,
+  UserObj,
 } from "@shared/types/general";
 
 export default function MyMenteesPage() {
@@ -117,7 +117,7 @@ function MentorshipRequestTile({
     (store: ReduxRootState) => store.ClientSocket
   );
   const navigate = useNavigate();
-  const [otherUserObj, setOtherUserObj] = useState<ClientSocketUser>();
+  const [otherUserObj, setOtherUserObj] = useState<UserObj>();
 
   useEffect(() => {
     if (!ready || !MyClientSocket || !user) {
@@ -144,7 +144,7 @@ function MentorshipRequestTile({
         const otherUserID = user.id == mentorID ? menteeID : mentorID;
         MyClientSocket!.GetUser(
           otherUserID,
-          (v: boolean | ClientSocketUser) => {
+          (v: boolean | UserObj) => {
             if (typeof v == "boolean") {
               return;
             }
@@ -632,13 +632,13 @@ function MenteeTile({ menteeID }: { menteeID: string }) {
   const chatWithUser = useChatWithUser();
   const navigate = useNavigate();
   const { ready } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const [menteeObj, setMenteeObj] = useState<ClientSocketUser>();
+  const [menteeObj, setMenteeObj] = useState<UserObj>();
 
   useEffect(() => {
     if (!ready || !MyClientSocket) {
       return;
     }
-    MyClientSocket.GetUser(menteeID, (v: ClientSocketUser) => {
+    MyClientSocket.GetUser(menteeID, (v: UserObj) => {
       setMenteeObj(v);
     });
   }, [ready]);

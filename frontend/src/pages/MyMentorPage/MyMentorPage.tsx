@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +13,7 @@ import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
 import { PreviewAssessmentsPage, PreviewGoalsPage } from "../HomePage/HomePage";
 import { HelpCircle } from "lucide-react";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
+import { UserObj } from "@shared/types/general";
 
 export default function MymentorPage() {
   const { user, ready } = useSelector(
@@ -149,7 +149,7 @@ function CurrentMentorInfo() {
   const { user, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
   );
-  const [mentorObj, setMentorObj] = useState<ClientSocketUser | undefined>(
+  const [mentorObj, setMentorObj] = useState<UserObj | undefined>(
     undefined
   );
 
@@ -185,7 +185,7 @@ function CurrentMentorInfo() {
   );
 }
 
-function MentorTile({ mentor }: { mentor: ClientSocketUser }) {
+function MentorTile({ mentor }: { mentor: UserObj }) {
   const chatWithUser = useChatWithUser();
   const navigate = useNavigate();
   const {
@@ -276,7 +276,7 @@ function MentorTile({ mentor }: { mentor: ClientSocketUser }) {
 }
 
 function MentorSearchTool() {
-  const [mentors, setMentors] = useState<ClientSocketUser[] | undefined>(
+  const [mentors, setMentors] = useState<UserObj[] | undefined>(
     undefined
   );
 

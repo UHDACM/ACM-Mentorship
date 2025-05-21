@@ -1,6 +1,5 @@
 import { ReactNode, createContext, useState, useRef } from "react";
-import { AssessmentQuestion, Assessment } from "@shared/types/general";
-import { ClientSocketUser } from "../../features/ClientSocket/ClientSocket";
+import { AssessmentQuestion, Assessment, UserObj } from "@shared/types/general";
 
 // types
 type AssessmentPageType = {
@@ -13,8 +12,8 @@ type AssessmentPageType = {
   originalAssessment: React.MutableRefObject<AssessmentQuestion[]>;
   assessment: AssessmentQuestion[];
   setAssessment: (v: AssessmentQuestion[]) => void;
-  assessmentUser: ClientSocketUser;
-  setAssessmentUser: (v: ClientSocketUser) => void;
+  assessmentUser: UserObj;
+  setAssessmentUser: (v: UserObj) => void;
 };
 
 // createContext
@@ -44,7 +43,7 @@ export const AssessmentPageProvider = ({
   const [assessmentObj, setAssessmentObj] = useState<Assessment>({});
   const originalAssessment = useRef<AssessmentQuestion[]>([]);
   const [assessment, setAssessment] = useState<AssessmentQuestion[]>([]);
-  const [assessmentUser, setAssessmentUser] = useState<ClientSocketUser>({});
+  const [assessmentUser, setAssessmentUser] = useState<UserObj>({});
 
   return (
     <AssessmentPageContext.Provider

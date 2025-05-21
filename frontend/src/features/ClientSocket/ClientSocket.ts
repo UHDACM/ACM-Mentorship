@@ -95,31 +95,6 @@ type ClientCreateUserPayload = {
   username: string;
 };
 
-// export type ClientSocketUser = {
-//   fName?: string;
-//   mName?: string;
-//   lName?: string;
-//   username?: string;
-//   id?: string;
-//   socials?: ObjectAny[];
-//   experience?: ObjectAny[];
-//   education?: ObjectAny[];
-//   certifications?: ObjectAny[];
-//   projects?: ObjectAny[];
-//   softSkills?: string[];
-//   isMentor?: boolean;
-//   isMentee?: boolean;
-//   acceptingMentees?: boolean;
-//   assessments?: AssessmentPreviewMap;
-//   menteeIDs?: string[];
-//   mentorID?: string;
-//   displayPictureURL?: string;
-//   bio?: string;
-//   mentorshipRequests?: string[];
-//   goals?: GoalPreviewMap;
-//   chats?: string[];
-// };
-
 export type ClientDataPayloadType =
   | "initialData"
   | "mentorshipRequest"

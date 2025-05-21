@@ -247,5 +247,7 @@ export type UserObj = {
   socials?: SocialObj[];
   
   testing?: boolean;
+
+  chats?: string[];
 };
 

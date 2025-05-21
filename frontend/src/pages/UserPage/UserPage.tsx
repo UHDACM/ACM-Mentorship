@@ -3,7 +3,6 @@ import { ReduxRootState } from "../../store";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 
@@ -15,6 +14,12 @@ import {
   Months,
   MentorshipRequestObj,
   MentorshipRequestResponseAction,
+  UserObj,
+  SocialObj,
+  Education,
+  Certification,
+  Experience,
+  Project,
 } from "@shared/types/general";
 import {
   ArrowBigDown,
@@ -68,7 +73,7 @@ function UserPageWithContext() {
   const id = params.get("id");
 
   // TODO: add changedValues state to upload only changed values.
-  const originalUser = useRef<ClientSocketUser | undefined>();
+  const originalUser = useRef<UserObj | undefined>();
   const { user, setUser, saving, setSaving, changed, setChanged } =
     useContext(UserPageContext);
   const { ready, user: self } = useSelector(
@@ -148,7 +153,7 @@ function UserPageWithContext() {
     );
   }
 
-  function setSocials(newSocials: ObjectAny[]) {
+  function setSocials(newSocials: SocialObj[]) {
     setUser({
       ...user,
       socials: newSocials,
@@ -167,7 +172,7 @@ function UserPageWithContext() {
     setChanged(true);
   }
 
-  function setEducation(newEducation: ObjectAny[]) {
+  function setEducation(newEducation: Education[]) {
     setUser({
       ...user,
       education: newEducation,
@@ -175,7 +180,7 @@ function UserPageWithContext() {
     setChanged(true);
   }
 
-  function setCertifications(newCertifications: ObjectAny[]) {
+  function setCertifications(newCertifications: Certification[]) {
     setUser({
       ...user,
       certifications: newCertifications,
@@ -183,7 +188,7 @@ function UserPageWithContext() {
     setChanged(true);
   }
 
-  function setExperience(newExperience: ObjectAny[]) {
+  function setExperience(newExperience: Experience[]) {
     setUser({
       ...user,
       experience: newExperience,
@@ -191,7 +196,7 @@ function UserPageWithContext() {
     setChanged(true);
   }
 
-  function setProjects(newProjects: ObjectAny[]) {
+  function setProjects(newProjects: Project[]) {
     setUser({
       ...user,
       projects: newProjects,

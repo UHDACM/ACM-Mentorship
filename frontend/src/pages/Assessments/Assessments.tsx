@@ -2,10 +2,9 @@ import { useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
-import { ObjectAny, AssessmentPreviewObj } from "@shared/types/general";
+import { ObjectAny, AssessmentPreviewObj, UserObj } from "@shared/types/general";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { unixToDateString } from "../../scripts/tools";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
@@ -14,7 +13,7 @@ export default function Assessments() {
   const navigate = useNavigate();
   const { ready } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const [params, _] = useSearchParams();
-  const [user, setUser] = useState<ClientSocketUser | undefined | false>();
+  const [user, setUser] = useState<UserObj | undefined | false>();
 
   const id = params.get("id");
 

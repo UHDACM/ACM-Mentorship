@@ -1,7 +1,7 @@
 // written in JS because typing is such an issue with redux
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
-import { ClientSocketState, ClientSocketUser } from "./ClientSocket";
-import { AssessmentQuestion } from "@shared/types/general";
+import { ClientSocketState } from "./ClientSocket";
+import { AssessmentQuestion, UserObj } from "@shared/types/general";
 
 type ClientSocketMentorshipRequest = {
   mentorID: string;
@@ -18,7 +18,7 @@ interface ClientSocketRootState {
    */
   ready?: boolean;
   state?: ClientSocketState;
-  user?: ClientSocketUser;
+  user?: UserObj;
   assessments?: string[];
   mentorshipRequests?: ClientSocketMentorshipRequestMap;
   availableAssessmentQuestions?: AssessmentQuestion[];
@@ -44,7 +44,7 @@ const ClientSocketSlice = createSlice({
     },
     setClientUser(
       s: Draft<ClientSocketRootState>,
-      action: PayloadAction<ClientSocketUser>
+      action: PayloadAction<UserObj>
     ) {
       s.user = { ...action.payload };
     },

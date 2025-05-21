@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { GoalObj, TaskObj, FunctionAny } from "@shared/types/general";
+import { GoalObj, TaskObj, FunctionAny, UserObj } from "@shared/types/general";
 
 
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
@@ -13,7 +13,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  ClientSocketUser,
   MyClientSocket,
 } from "../../features/ClientSocket/ClientSocket";
 import { useDispatch, useSelector } from "react-redux";
@@ -102,7 +101,7 @@ export function GoalPage() {
           );
           return;
         }
-        MyClientSocket!.GetUser(userID, (v: boolean | ClientSocketUser) => {
+        MyClientSocket!.GetUser(userID, (v: boolean | UserObj) => {
           setGoalOwner(v);
         });
       });
