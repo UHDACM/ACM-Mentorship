@@ -177,3 +177,75 @@ export type SendMessageAction = 'send' | 'create';
 export const SendMessageActions = ['send', 'create'];
 
 export type ObjectAny = { [key: string]: any };
+
+
+
+export type Experience = {
+  company: string;
+  position: string;
+  description: string;
+  range: MonthYearDateRange;
+};
+
+export type MonthYearDateRange = { start: [number, number]; end?: [number, number] };
+
+
+export type Certification = {
+  name: string;
+  issuingOrg: string;
+};
+
+
+export type Project = {
+  name: string;
+  position: string;
+  description: string;
+  range: MonthYearDateRange;
+};
+
+export type SocialObj = {
+  type: SocialType;
+  url: string;
+};
+
+export type Education = {
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  range: MonthYearDateRange;
+};
+
+// TODO: continue merging user types from frontend and backend
+export type UserObj = {
+  fName?: string;
+  mName?: string;
+  lName?: string;
+
+  username?: string;
+  usernameLower?: string;
+
+  OAuthSubID?: string;
+  email?: string;
+
+  id?: string;
+  isMentee?: boolean;
+  isMentor?: boolean;
+  acceptingMentees?: boolean;
+  displayPictureURL?: string;
+  bio?: string;
+  assessments?: AssessmentPreviewMap;
+  menteeIDs?: string[];
+  mentorID?: string;
+  mentorshipRequests?: string[];
+  softSkills?: string[];
+  goals?: GoalPreviewMap;
+
+  education?: Education[];
+  experience?: Experience[];
+  certifications?: Certification[];
+  projects?: Project[];
+  socials?: SocialObj[];
+  
+  testing?: boolean;
+};
+

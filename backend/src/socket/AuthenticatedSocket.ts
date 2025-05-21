@@ -7,11 +7,8 @@ import {
   DBObj,
   DBSetWithID,
 } from "../db";
-import { AssessmentPreviewMap, GoalPreviewMap, ObjectAny } from "@shared/types/general";
+import { AssessmentPreviewMap, Certification, Experience, GoalPreviewMap, ObjectAny, Project, UserObj } from "@shared/types/general";
 import {
-  Certification,
-  Education,
-  Experience,
   isSendMessageAction,
   isSubmitGoalAction,
   isValidAnsweredAssessmentQuestions,
@@ -30,7 +27,6 @@ import {
   isValidSocial,
   isValidUsername,
   MAX_BIO_LENGTH,
-  Project,
 } from "../scripts/validation";
 import { SyncUserProfile } from "./entities/users";
 import { RemoveMentorshipRequest, RemoveMentorshipRequestFromUser, RemoveOutgoingMentorshipRequestsFromUser } from "./entities/mentorshipRequests";
@@ -52,33 +48,33 @@ type AuthenticatedSocketState =
   | "authed_user"
   | "connect_error";
 
-type UserObj = {
-  fName?: string;
-  mName?: string;
-  lName?: string;
-  id?: string;
-  OAuthSubID?: string;
-  email?: string;
-  isMentee?: boolean;
-  assessments?: AssessmentPreviewMap;
-  username?: string;
-  usernameLower?: string;
-  menteeIDs?: string[];
-  mentorID?: string;
-  displayPictureURL?: string;
-  socials?: string[];
-  experience?: Experience[];
-  certifications?: Certification[];
-  education?: Education[];
-  projects?: Project[];
-  isMentor?: boolean;
-  softSkills?: string[];
-  acceptingMentees?: boolean;
-  bio?: string;
-  testing?: boolean;
-  mentorshipRequests?: string[];
-  goals?: GoalPreviewMap;
-};
+// type UserObj = {
+//   fName?: string;
+//   mName?: string;
+//   lName?: string;
+//   id?: string;
+//   OAuthSubID?: string;
+//   email?: string;
+//   isMentee?: boolean;
+//   assessments?: AssessmentPreviewMap;
+//   username?: string;
+//   usernameLower?: string;
+//   menteeIDs?: string[];
+//   mentorID?: string;
+//   displayPictureURL?: string;
+//   socials?: string[];
+//   experience?: Experience[];
+//   certifications?: Certification[];
+//   education?: Education[];
+//   projects?: Project[];
+//   isMentor?: boolean;
+//   softSkills?: string[];
+//   acceptingMentees?: boolean;
+//   bio?: string;
+//   testing?: boolean;
+//   mentorshipRequests?: string[];
+//   goals?: GoalPreviewMap;
+// };
 export const AllAcceptingMentorIDs: Set<string> = new Set();
 export const AllSockets: Map<string, Array<AuthenticatedSocket>> = new Map();
 
@@ -199,7 +195,6 @@ export default class AuthenticatedSocket {
   }
 
   private async _enter_authed_user_state(userID: string) {
-    console.log("HEYYY!!! AUTHED DAMN IT!!!");
     this._cleanupSocketEvents();
     this.user = await GetUserData(userID);
     console.log("self__1", this.user);

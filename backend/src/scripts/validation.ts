@@ -11,7 +11,12 @@ import {
   SendMessageAction,
   SendMessageActions,
   ObjectAny,
-  SocialTypes
+  SocialTypes,
+  Experience,
+  MonthYearDateRange,
+  Certification,
+  Project,
+  Education
 } from "@shared/types/general";
 
 export const MAX_NAME_LENGTH = 36;
@@ -173,12 +178,7 @@ export function isValidSocial(social: ObjectAny): social is Social {
  * }
  */
 
-export type Experience = {
-  company: string;
-  position: string;
-  description: string;
-  range: MonthYearDateRange;
-};
+
 export function isValidExperience(
   experience: ObjectAny
 ): experience is Experience {
@@ -216,12 +216,6 @@ export function isValidExperience(
   return true;
 }
 
-export type Project = {
-  name: string;
-  position: string;
-  description: string;
-  range: MonthYearDateRange;
-};
 export function isValidProject(project: ObjectAny): project is Project {
   if (typeof project != "object") {
     throw new Error("Project format was unexpected");
@@ -253,12 +247,6 @@ export function isValidProject(project: ObjectAny): project is Project {
   return true;
 }
 
-export type Education = {
-  school: string;
-  degree: string;
-  fieldOfStudy: string;
-  range: MonthYearDateRange;
-};
 export function isValidEducation(education: ObjectAny): education is Education {
   if (typeof education != "object") {
     throw new Error("Experience format was unexpected");
@@ -294,7 +282,6 @@ export function isValidMonthInteger(monthInteger: number) {
   return monthInteger > 0 && monthInteger < 13;
 }
 
-type MonthYearDateRange = { start: [number, number]; end?: [number, number] };
 export const isValidMonthYearRange_YearToo = -100000;
 const isValidMonthYearRange_YearTooOldError = `Oh imortal one, please reach out to HR, we've been meaning to speak with you`;
 export function isValidMonthYearRange(
@@ -337,10 +324,6 @@ export function isValidMonthYearRange(
   return true;
 }
 
-export type Certification = {
-  name: string;
-  issuingOrg: string;
-};
 export function isValidCertification(
   certification: ObjectAny
 ): certification is Certification {
