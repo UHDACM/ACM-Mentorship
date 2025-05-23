@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateClientSocketConnection } from "../features/ClientSocket/ClientSocket";
+import { CreateClientSocketConnection } from "../features/ClientSocket/ClientSocketHandler";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ReduxRootState } from "../store";
 import Chat from "../features/Chat/Chat";

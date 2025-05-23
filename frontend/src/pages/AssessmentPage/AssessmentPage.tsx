@@ -1,16 +1,18 @@
 import { Fragment, useEffect, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Assessment, AssessmentQuestion, ObjectAny } from "@shared/types/general";
+import {
+  Assessment,
+  AssessmentQuestion,
+  ObjectAny,
+  UserObj,
+} from "@shared/types/general";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
 import { ArrowBigDown, ArrowBigUp, Trash } from "lucide-react";
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import { setAlert } from "../../features/Alert/AlertSlice";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
-import { isAssessment } from "../../scripts/validation";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import MinimalisticTextArea from "../../components/MinimalisticTextArea/MinimalisticTextArea";
 import { SaveButtonFixed } from "../../components/SaveButtonFixed/SaveButtonFixed";
@@ -19,6 +21,7 @@ import {
   AssessmentPageContext,
   AssessmentPageProvider,
 } from "./AssessmentPageContext";
+import { setClientUser } from "../../features/ClientSocket/ClientSocketSlice";
 // import useWarnNavigation from "../../hooks/UseWarnNavigation/useWarnNavigation";
 
 export default function AssessmentPageWithContext() {
@@ -59,10 +62,11 @@ export function AssessmentPage() {
   const firstTime = params.get("firstTime");
 
   const isNew = type == "new";
-  const isFirstTime = firstTime == "true"
-  const enoughQuestions = assessment.length >= FirstTimeRecommendedQuestionCount
+  const isFirstTime = firstTime == "true";
+  const enoughQuestions =
+    assessment.length >= FirstTimeRecommendedQuestionCount;
   let questionsNeeded = 0;
-  if (FirstTimeRecommendedQuestionCount > assessment.length){
+  if (FirstTimeRecommendedQuestionCount > assessment.length) {
     questionsNeeded = FirstTimeRecommendedQuestionCount - assessment.length;
   }
 
@@ -78,46 +82,38 @@ export function AssessmentPage() {
         return;
       }
 
-      MyClientSocket?.GetAssessment(assessmentID, (v: boolean | object) => {
-        if (typeof v == "boolean") {
-          dispatch(
-            setAlert({
-              title: "Assessment Error",
-              body: "This assessment is invalid, or does not exist.",
-            })
-          );
-          return;
-        }
-
-        if (!isAssessment(v)) {
-          // if a assessment is not published and the user does not own the assessment
-          // then the { published: false } will be returned
-          const vAny: ObjectAny = v;
-          if (typeof vAny.published == "boolean" && !vAny.published) {
-            setAssessmentObj({ published: false });
+      MyClientSocket?.GetAssessment(assessmentID).then(
+        (v: boolean | Assessment) => {
+          if (typeof v == "boolean") {
+            dispatch(
+              setAlert({
+                title: "Assessment Error",
+                body: "This assessment is invalid, or does not exist.",
+              })
+            );
             return;
           }
-          return;
-        }
-        setAssessmentObj(v);
-        const { questions, date, published, userID } = v;
 
-        // needed to make tsc happy.
-        if (!questions || !date || typeof published != "boolean" || !userID) {
-          return;
+          setAssessmentObj(v);
+          const { questions, date, published, userID } = v;
+
+          // needed to make tsc happy.
+          if (!questions || !date || typeof published != "boolean" || !userID) {
+            return;
+          }
+          originalAssessment.current = questions;
+          setAssessment(questions);
+          GetAssessmentOwner(userID);
         }
-        originalAssessment.current = questions;
-        setAssessment(questions);
-        GetAssessmentOwner(userID);
-      });
+      );
     }
 
     function GetAssessmentOwner(userID: string) {
       if (!userID) {
         return;
       }
-      MyClientSocket?.GetUser(userID, (v: boolean | object) => {
-        if (typeof v == "boolean") {
+      MyClientSocket?.GetUser(userID).then((v: false | UserObj) => {
+        if (v == false) {
           dispatch(
             setAlert({
               title: "Assessment User Error",
@@ -159,24 +155,26 @@ export function AssessmentPage() {
       return;
     }
 
-    MyClientSocket.GetAssessment(newestAssessmentID, (v: Assessment) => {
-      if (!v) {
-        return;
-      }
+    MyClientSocket.GetAssessment(newestAssessmentID).then(
+      (v: Assessment | false) => {
+        if (!v) {
+          return;
+        }
 
-      const questions = v.questions;
-      if (!questions) {
-        return;
+        const questions = v.questions;
+        if (!questions) {
+          return;
+        }
+        setAssessment(questions);
+        originalAssessment.current = questions;
+        dispatch(
+          setAlert({
+            title: "We got your latest answers",
+            body: "See how you've improved since your latest assessment",
+          })
+        );
       }
-      setAssessment(questions);
-      originalAssessment.current = questions;
-      dispatch(
-        setAlert({
-          title: "We got your latest answers",
-          body: "See how you've improved since your latest assessment",
-        })
-      );
-    });
+    );
   }, [isNew, firstTime]);
 
   // if user is viewing one of their older assessments, this will warn them.
@@ -436,41 +434,39 @@ export function AssessmentPage() {
                 assessmentCopy.push(cur);
               }
 
-              MyClientSocket.submitAssessment(
-                {
-                  questions: assessmentCopy,
-                  action: action,
-                  id: assessmentObj.id,
-                },
-                (v: boolean | string) => {
-                  dispatch(closeDialog());
-                  cb && cb();
-                  setSaving(false);
-                  if (typeof v == "boolean") {
-                    if (v) {
-                      dispatch(
-                        setAlert({
-                          title: "Success",
-                          body: `Successfully saved assessment`,
-                        })
-                      );
-                      setChanged(false);
-                      originalAssessment.current = assessmentCopy;
-                    }
-                    return;
+              MyClientSocket.SubmitAssessment({
+                questions: assessmentCopy,
+                action: action,
+                id: assessmentObj.id,
+              }).then((v: boolean | string) => {
+                dispatch(closeDialog());
+                cb && cb();
+                setSaving(false);
+                if (typeof v == "boolean") {
+                  if (v) {
+                    dispatch(
+                      setAlert({
+                        title: "Success",
+                        body: `Successfully saved assessment`,
+                      })
+                    );
+                    setChanged(false);
+                    originalAssessment.current = assessmentCopy;
                   }
-                  navigate(`/app/assessment?id=${v}`, { replace: true });
-                  dispatch(
-                    setAlert({
-                      title: "Success",
-                      body: `Successfully created assessment`,
-                    })
-                  );
-                  setSaving(false);
-                  setChanged(false);
-                  originalAssessment.current = assessmentCopy;
+                  return;
                 }
-              );
+                navigate(`/app/assessment?id=${v}`, { replace: true });
+                dispatch(
+                  setAlert({
+                    title: "Success",
+                    body: `Successfully created assessment`,
+                  })
+                );
+                dispatch(setClientUser(MyClientSocket!.user));
+                setSaving(false);
+                setChanged(false);
+                originalAssessment.current = assessmentCopy;
+              });
             },
           },
         ],
@@ -555,8 +551,15 @@ export function AssessmentPage() {
         </span>
       )}
       {isFirstTime && !enoughQuestions && (
-        <span style={{ marginBottom: ".3rem", color:"yellow", paddingLeft:".4rem" }}>
-          You need {questionsNeeded} more question{questionsNeeded !== 1 ? "s" : ""}
+        <span
+          style={{
+            marginBottom: ".3rem",
+            color: "yellow",
+            paddingLeft: ".4rem",
+          }}
+        >
+          You need {questionsNeeded} more question
+          {questionsNeeded !== 1 ? "s" : ""}
         </span>
       )}
       <AssessmentSection
@@ -584,9 +587,10 @@ export function AssessmentPage() {
           borderTop: "1px solid #fff4",
         }}
       />
-      {isNew &&(
-        <MinimalisticButton onClick={() => handleOnSaveClick()}
-        disabled={!enoughQuestions}
+      {isNew && (
+        <MinimalisticButton
+          onClick={() => handleOnSaveClick()}
+          disabled={!enoughQuestions}
         >
           Create Assessment
         </MinimalisticButton>
@@ -658,7 +662,7 @@ function AssessmentSection({ disabled }: { disabled: boolean }) {
   }
 
   return (
-    <div style={{ gap: "0.2rem", marginTop:"1rem" }}>
+    <div style={{ gap: "0.2rem", marginTop: "1rem" }}>
       {assessment.map((q, index) => {
         const { question, answer: answerRaw, warning } = q;
         const answer = answerRaw || "";

@@ -2,9 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 
 import {
   ObjectAny,
@@ -13,7 +11,6 @@ import {
   SocialTypes,
   Months,
   MentorshipRequestObj,
-  MentorshipRequestResponseAction,
   UserObj,
   SocialObj,
   Education,
@@ -52,12 +49,14 @@ import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticIn
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { setAlert } from "../../features/Alert/AlertSlice";
 import { useChangeUsernameWithDialog } from "../../hooks/UseChangeUsername";
-import { isMentorshipRequestResponseAction } from "../../scripts/validation";
 import { SaveButtonFixed } from "../../components/SaveButtonFixed/SaveButtonFixed";
 import MinimalisticTextArea from "../../components/MinimalisticTextArea/MinimalisticTextArea";
 import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
 import { UserPageContext, UserPageContextProvider } from "./UserPageContext";
 import { placeholderPreviewPicture } from "../../features/Chat/Chat";
+import { MentorshipRequestResponseAction } from "@shared/types/socket";
+import { isMentorshipRequestResponseAction } from "@shared/validation/socket";
+import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequests";
 
 export default function UserPage() {
   return (
@@ -89,8 +88,8 @@ function UserPageWithContext() {
       setSaving(false);
       setChanged(false);
       setUser(undefined);
-      MyClientSocket?.GetUser(id, (d: unknown) => {
-        if (!d || typeof d != "object") {
+      MyClientSocket?.GetUser(id).then((d: UserObj | false) => {
+        if (!d) {
           return;
         }
         setUser(d);
@@ -124,23 +123,23 @@ function UserPageWithContext() {
             onClick: () => {
               setSaving(true);
               dispatch(closeDialog());
-              MyClientSocket?.updateProfile(
-                { ...user, username: undefined },
-                (v: boolean) => {
-                  setSaving(false);
-                  if (!v) {
-                    return;
-                  }
-                  setChanged(false);
-                  dispatch(
-                    setAlert({
-                      title: "Saved",
-                      body: "Successfully saved changes",
-                    })
-                  );
-                  originalUser.current = user;
+              MyClientSocket?.UpdateProfile({
+                ...user,
+                username: undefined,
+              }).then((v: boolean) => {
+                setSaving(false);
+                if (!v) {
+                  return;
                 }
-              );
+                setChanged(false);
+                dispatch(
+                  setAlert({
+                    title: "Saved",
+                    body: "Successfully saved changes",
+                  })
+                );
+                originalUser.current = user;
+              });
             },
           },
         ],
@@ -304,12 +303,12 @@ function UserStuff() {
     (store: ReduxRootState) => store.ClientSocket
   );
 
-  if (!user) {
+  if (!user || !self) {
     return;
   }
   const allowedToViewAssessments =
     user.id == self?.id ||
-    user.mentorID == self?.id ||
+    user.mentorIDs?.includes(self.id!) ||
     (existingIncomingMentorshipRequest != "loading" &&
       existingIncomingMentorshipRequest);
   const { fName } = user;
@@ -678,7 +677,7 @@ function RequestMentorButton() {
     (store: ReduxRootState) => store.ClientSocket
   );
   const [existingMentorshipRequestObj, setExistingMentorshipRequestObj] =
-    useState<MentorshipRequestObj | "loading">("loading");
+    useState<MentorshipRequestObj | "loading" | undefined>("loading");
 
   useEffect(() => {
     if (
@@ -691,16 +690,17 @@ function RequestMentorButton() {
     ) {
       return;
     }
+
     MyClientSocket.GetMentorshipRequestBetweenMentorMentee(
       user?.id,
-      self.id,
-      (v) => {
-        if (typeof v == "boolean") {
-          return;
-        }
-        setExistingMentorshipRequestObj(v);
+      self.id
+    ).then((v) => {
+      if (typeof v == "boolean") {
+        setExistingMentorshipRequestObj(undefined);
+        return;
       }
-    );
+      setExistingMentorshipRequestObj(v);
+    });
   }, [self, user]);
 
   if (!user || !self || self.id == user.id) {
@@ -712,12 +712,13 @@ function RequestMentorButton() {
   }
 
   if (existingMentorshipRequestObj == "loading") {
+    console.log('still loading');
     return;
   }
 
   // TODO: Refactor structure of request mentor and mentee section
   function handleRemoveMentor() {
-    if (!UserIsOurMentor) {
+    if (!UserIsOurMentor || !user || !user.id) {
       return;
     }
 
@@ -735,7 +736,7 @@ function RequestMentorButton() {
                 cb && cb();
                 return;
               }
-              MyClientSocket.RemoveMentor((_: boolean) => {
+              MyClientSocket.RemoveMentor(user.id!).then((_: boolean) => {
                 cb && cb();
                 dispatch(closeDialog());
               });
@@ -773,12 +774,11 @@ function RequestMentorButton() {
               }
               MyClientSocket.DoMentorshipRequestAction(
                 existingMentorshipRequestObj.id,
-                "cancel",
-                (_: boolean) => {
-                  cb && cb();
-                  dispatch(closeDialog());
-                }
-              );
+                "cancel"
+              ).then((_: boolean) => {
+                cb && cb();
+                dispatch(closeDialog());
+              });
             },
           },
         ],
@@ -803,19 +803,21 @@ function RequestMentorButton() {
                 return;
               }
               dispatch(closeDialog());
-              MyClientSocket.SendMentorshipRequest(user.id, (v: boolean) => {
-                enableCallback && enableCallback();
-                if (v) {
-                  setTimeout(() => {
-                    dispatch(
-                      setAlert({
-                        title: "Request Sent!",
-                        body: `Your request has been set to ${user?.fName}`,
-                      })
-                    );
-                  }, 250);
+              MyClientSocket.SendMentorshipRequest(user.id).then(
+                (v: boolean) => {
+                  enableCallback && enableCallback();
+                  if (v) {
+                    setTimeout(() => {
+                      dispatch(
+                        setAlert({
+                          title: "Request Sent!",
+                          body: `Your request has been set to ${user?.fName}`,
+                        })
+                      );
+                    }, 250);
+                  }
                 }
-              });
+              );
             },
           },
         ],
@@ -823,17 +825,17 @@ function RequestMentorButton() {
     );
   }
 
-  const UserIsOurMentor = self.mentorID == user.id;
+  const UserIsOurMentor = self.mentorIDs?.includes(user.id!);
   let buttonElement: JSX.Element | undefined;
 
-  if (self.mentorID && self.mentorID != user.id) {
+  if (self.mentorIDs && self.mentorIDs.length >= MAX_NUMBER_OF_MENTORS_PER_MENTEE) {
     buttonElement = (
       <MinimalisticButton
         style={RequestMentorButtonStyle}
         disabled={true}
         // onClick={handleChatClick}
       >
-        You have a mentor
+        You have the max mentors
       </MinimalisticButton>
     );
   } else if (UserIsOurMentor) {
@@ -879,6 +881,8 @@ function RequestMentorButton() {
     );
   }
 
+  console.log('rendering');
+
   return buttonElement;
 }
 
@@ -908,14 +912,13 @@ function MenteeButton() {
     setExistingIncomingMentorshipRequest("loading");
     MyClientSocket.GetMentorshipRequestBetweenMentorMentee(
       self.id,
-      user?.id,
-      (v) => {
-        if (typeof v == "boolean") {
-          return;
-        }
-        setExistingIncomingMentorshipRequest(v);
+      user?.id
+    ).then((v) => {
+      if (typeof v == "boolean") {
+        return;
       }
-    );
+      setExistingIncomingMentorshipRequest(v);
+    });
   }, [self, user]);
 
   if (!user || !self || self.id == user.id) {
@@ -945,7 +948,7 @@ function MenteeButton() {
                 return;
               }
               // TODO: add target menteeID
-              MyClientSocket.RemoveMentee(user.id, (_: boolean) => {
+              MyClientSocket.RemoveMentee(user.id).then((_: boolean) => {
                 cb && cb();
                 dispatch(closeDialog());
               });
@@ -1015,7 +1018,7 @@ function MenteeButton() {
     );
   }
 
-  const UserIsOurMentee = self.id == user.mentorID;
+  const UserIsOurMentee = user.mentorIDs?.includes(self.id!);
   let buttonElement: JSX.Element | undefined;
 
   if (existingIncomingMentorshipRequest) {

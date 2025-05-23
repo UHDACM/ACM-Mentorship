@@ -3,9 +3,9 @@ import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
   MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+} from "../../features/ClientSocket/ClientSocketHandler";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ObjectAny, GoalPreviewObj, UserObj } from "@shared/types/general";
+import { GoalPreviewObj, UserObj } from "@shared/types/general";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { X } from "lucide-react";
 import useDeleteGoalWithDialog from "../../hooks/UseDeleteGoalWithDialog/useDeleteGoalWithDialog";
@@ -24,7 +24,7 @@ export default function GoalsPage() {
       return;
     }
 
-    MyClientSocket.GetUser(id, (v: boolean | ObjectAny) => {
+    MyClientSocket.GetUser(id).then((v: boolean | UserObj) => {
       if (typeof v == "boolean") {
         setUser(false);
         return;

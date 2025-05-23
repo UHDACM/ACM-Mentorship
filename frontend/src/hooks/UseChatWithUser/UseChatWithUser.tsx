@@ -1,9 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveChat, setChatOpen } from "../../features/Chat/ChatSlice";
 import { ReduxRootState } from "../../store";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
 import { ObjectAny, UserObj } from "@shared/types/general";
 
@@ -20,15 +18,12 @@ export default function useChatWithUser() {
         return;
       }
       user = await new Promise((res) => {
-        MyClientSocket?.GetUser(
-          targetUserID,
-          (v: UserObj | boolean) => {
-            if (!v || typeof v == "boolean") {
-              return;
-            }
-            res(v);
+        MyClientSocket?.GetUser(targetUserID).then((v: UserObj | boolean) => {
+          if (!v || typeof v == "boolean") {
+            return;
           }
-        );
+          res(v);
+        });
       });
     } catch (err) {
       return;
@@ -67,7 +62,7 @@ export default function useChatWithUser() {
           {
             text: "Send",
             useDisableTill: true,
-            onClick: (params, cb) => {
+            onClick: async (params, cb) => {
               if (!MyClientSocket || !user || !user.id) {
                 cb && cb();
                 return;
@@ -77,26 +72,27 @@ export default function useChatWithUser() {
                 cb && cb();
                 return;
               }
-              MyClientSocket.CreateChat(
-                user.id,
-                message,
-                (v: boolean | string) => {
-                  if (typeof v == "boolean") {
-                    cb && cb();
-                    return;
-                  }
-                  cb && cb();
-                  dispatch(closeDialog());
-                  dispatch(setActiveChat(v));
-                }
-              );
+              try {
+                const newChatID = await MyClientSocket.CreateChat(user.id, message);
+                cb && cb();
+                dispatch(closeDialog());
+                dispatch(setActiveChat(newChatID));
+              } catch (error) {
+                console.error("Error creating chat:", error);
+                cb && cb();
+                return;
+              }
             },
           },
         ],
-        buttonContainerStyle: { width: "100%", display: 'flex', justifyContent: 'end' },
+        buttonContainerStyle: {
+          width: "100%",
+          display: "flex",
+          justifyContent: "end",
+        },
       })
     );
   }
 
-  return chatWithUser
+  return chatWithUser;
 }

@@ -1,3 +1,4 @@
+import { MentorshipRequestAction, MentorshipRequestActions } from "@shared/types/socket";
 import { DBGet } from "../db";
 import {
   GoalObj,
@@ -6,18 +7,14 @@ import {
   SubmitGoalActions,
   AssessmentAction,
   AssessmentActions,
-  MentorshipRequestAction,
-  MentorshipRequestActions,
   SendMessageAction,
   SendMessageActions,
   ObjectAny,
-  SocialTypes,
-  Experience,
-  MonthYearDateRange,
   Certification,
   Project,
   Education
 } from "@shared/types/general";
+import { ALLOWED_USERNAME_CHARS, MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH, USERNAME_RESERVED_TESTING_PREFIX } from "@shared/data/validation";
 
 export const MAX_NAME_LENGTH = 36;
 /**
@@ -96,18 +93,18 @@ export function isValidNames(
   isValidLastName(lName);
 }
 
-export const MIN_USERNAME_LENGTH = 2,
-  MAX_USERNAME_LENGTH = 32;
-const ALLOWED_USERNAME_CHARS = /^[a-zA-Z0-9_.-]+$/;
+
 
 /**
  * Checks if username is valid. Cannot be too long, or too short, contain spaces inbetween, contains only a-Z, 0-9, underscores, periods, and dashes.
  *
+ * Note: _testing is a reserved word and cannot be used at the start of a username, unless in testing mode.
+ * 
  * **If any checks are failed, an `error` is thrown.**
  * @param usernameRaw
  * @returns
  */
-export async function isValidUsername(usernameRaw: string) {
+export async function isValidUsername(usernameRaw: string, testing = false) {
   if (typeof usernameRaw != "string") {
     throw new Error("Username type is not valid");
   }
@@ -130,6 +127,10 @@ export async function isValidUsername(usernameRaw: string) {
     throw new Error("Username cannot contain spaces.");
   }
 
+  if (!testing && username.startsWith(USERNAME_RESERVED_TESTING_PREFIX)) {
+    throw new Error(`Username cannot start with reserved word '${USERNAME_RESERVED_TESTING_PREFIX}'`);
+  }
+
   try {
     const res = await DBGet("user", [["usernameLower", "==", username]]);
     if (res.length > 0) {
@@ -146,202 +147,6 @@ export async function isValidUsername(usernameRaw: string) {
   return true;
 }
 
-export type Social = {
-  type: string;
-  url: string;
-};
-export function isValidSocial(social: ObjectAny): social is Social {
-  if (typeof social != "object") {
-    throw new Error("A social was not formatted correctly.");
-  }
-  const { type, url } = social;
-  if (!type || !url) {
-    throw new Error("Information was missing from a social.");
-  }
-
-  if (!SocialTypes.includes(type)) {
-    throw new Error(`Social type ${type} is not valid.`);
-  }
-
-  if (typeof url != "string") {
-    throw new Error(`URL is not valid.`);
-  }
-  return true;
-}
-
-/**
- * {
- *   company: string,
- *   position: string,
- *   description: string | undefined
- *   range: [[month, year], [month, year] | undefined]
- * }
- */
-
-
-export function isValidExperience(
-  experience: ObjectAny
-): experience is Experience {
-  if (typeof experience != "object") {
-    throw new Error("Experience format was unexpected");
-  }
-  const { company, position, description, range } = experience;
-  if (!company || typeof company != "string" || company.trim().length < 1) {
-    throw new Error("Company name is missing from experience.");
-  }
-
-  const validExperienceErrorHeader = `Experience at ${company} | `;
-  if (!position || typeof position != "string" || position.trim().length < 1) {
-    throw new Error(validExperienceErrorHeader + " Position was not provided");
-  } else if (
-    (description && typeof description != "string") ||
-    description.trim().length < 1
-  ) {
-    throw new Error(
-      validExperienceErrorHeader +
-        " Description was provided, but format was unexpected"
-    );
-  } else if (!range || !isValidMonthYearRange(range)) {
-    throw new Error(validExperienceErrorHeader + " Range is not valid");
-  }
-
-  try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(validExperienceErrorHeader + " Range is not valid");
-    }
-  } catch (err) {
-    throw new Error(validExperienceErrorHeader + err.message);
-  }
-
-  return true;
-}
-
-export function isValidProject(project: ObjectAny): project is Project {
-  if (typeof project != "object") {
-    throw new Error("Project format was unexpected");
-  }
-  const { name, position, description, range } = project;
-  if (!name || typeof name != "string" || name.trim().length < 1) {
-    throw new Error("Project name is missing from experience.");
-  }
-  const validProjectErrorHeader = `Project name: ${name} | `;
-  if (!position || typeof position != "string" || position.trim().length < 1) {
-    throw new Error(validProjectErrorHeader + " Position was not provided");
-  } else if (
-    (description && typeof description != "string") ||
-    description.trim().length < 1
-  ) {
-    throw new Error(
-      validProjectErrorHeader +
-        " Description was provided, but format was unexpected"
-    );
-  }
-
-  try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(validProjectErrorHeader + " Range is not valid");
-    }
-  } catch (err) {
-    throw new Error(validProjectErrorHeader + err.message);
-  }
-  return true;
-}
-
-export function isValidEducation(education: ObjectAny): education is Education {
-  if (typeof education != "object") {
-    throw new Error("Experience format was unexpected");
-  }
-  const { school, degree, fieldOfStudy, range } = education;
-  if (!school || typeof school != "string" || school.trim().length < 1) {
-    throw new Error("Education school is missing from experience.");
-  }
-  const educationErrorHeader = `Error processing education "${school}":`;
-  if (!degree || typeof degree != "string" || degree.trim().length < 1) {
-    throw new Error(educationErrorHeader + " Position was not provided");
-  } else if (
-    !fieldOfStudy ||
-    typeof fieldOfStudy != "string" ||
-    fieldOfStudy.trim().length < 1
-  ) {
-    throw new Error(
-      educationErrorHeader +
-        " Description was provided, but format was unexpected"
-    );
-  }
-  try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(educationErrorHeader + " Range is not valid");
-    }
-  } catch (err) {
-    throw new Error(educationErrorHeader + err.message);
-  }
-  return true;
-}
-
-export function isValidMonthInteger(monthInteger: number) {
-  return monthInteger > 0 && monthInteger < 13;
-}
-
-export const isValidMonthYearRange_YearToo = -100000;
-const isValidMonthYearRange_YearTooOldError = `Oh imortal one, please reach out to HR, we've been meaning to speak with you`;
-export function isValidMonthYearRange(
-  range: ObjectAny
-): range is MonthYearDateRange {
-  if (
-    !range ||
-    typeof range !== "object" ||
-    !range.start ||
-    !Array.isArray(range.start) ||
-    range.start.length !== 2
-  ) {
-    throw new Error("Invalid range format");
-  }
-  const { start, end } = range;
-
-  // Validate the start date
-  if (!isValidMonthInteger(start[0])) {
-    throw new Error("Invalid start month");
-  }
-
-  if (start[1] < isValidMonthYearRange_YearToo) {
-    throw new Error(isValidMonthYearRange_YearTooOldError);
-  }
-
-  // Validate the end date if provided
-  if (end) {
-    if (!Array.isArray(end) || end.length !== 2) {
-      throw new Error("End date format does not make sense.");
-    }
-
-    if (!isValidMonthInteger(end[0])) {
-      throw new Error("Invalid end month");
-    }
-
-    if (end[1] < isValidMonthYearRange_YearToo) {
-      throw new Error(isValidMonthYearRange_YearTooOldError);
-    }
-  }
-  return true;
-}
-
-export function isValidCertification(
-  certification: ObjectAny
-): certification is Certification {
-  if (typeof certification != "object") {
-    throw new Error("Certification format was unexpected");
-  }
-  const { name, issuingOrg } = certification;
-  if (!name || typeof name != "string" || name.trim().length < 1) {
-    throw new Error("Name format was unexpected");
-  } else if (
-    !issuingOrg ||
-    typeof issuingOrg != "string" ||
-    issuingOrg.trim().length < 1
-  ) {
-    throw new Error('"Issuing Organization format was unexpected');
-  }
-  return true;
-}
 
 const AssessmentInputTypes = ["text", "number", "boolean"];
 export type AssessmentInputType = "text" | "number" | "boolean";
@@ -408,7 +213,7 @@ export function isValidAssessmentAction(s: string): s is AssessmentAction {
 export function isValidMentorshipRequestAction(
   s: string
 ): s is MentorshipRequestAction {
-  return MentorshipRequestActions.includes(s);
+  return MentorshipRequestActions.includes(s as MentorshipRequestAction);
 }
 
 export const MAX_BIO_LENGTH = 200;
@@ -462,7 +267,7 @@ export function isSubmitGoalAction(s: unknown): s is SubmitGoalAction {
   if (!s || typeof s != "string") {
     return false;
   }
-  return SubmitGoalActions.includes(s);
+  return SubmitGoalActions.includes(s as SubmitGoalAction);
 }
 
 export const MIN_TASK_NAME_LENGTH = 3;

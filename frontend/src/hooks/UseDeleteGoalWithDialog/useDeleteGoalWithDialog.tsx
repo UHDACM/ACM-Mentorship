@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
 import { ReduxRootState } from "../../store";
-import { MyClientSocket } from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { setAlert } from "../../features/Alert/AlertSlice";
 
 export default function useDeleteGoalWithDialog() {
@@ -30,7 +30,7 @@ export default function useDeleteGoalWithDialog() {
               cb && cb();
               return;
             }
-            MyClientSocket.SubmitGoal({ id, action: 'delete' }, (v: boolean|string) => {
+            MyClientSocket.SubmitGoal({ id, action: 'delete' }).then((v: boolean|string) => {
               callback && callback(v);
               cb && cb();
               if (!v) {

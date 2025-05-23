@@ -36,8 +36,10 @@ initializeApp(firebaseConfig);
 const db = getFirestore();
 
 // list of all collection names
-export type collectionName = "user" | "assessment" | "mentorshipRequest" | 'assessmentQuestion' | 'goal' | 'metrics' | 'chat' | 'message';
-export const collectionsNames = ["user", "assessment", "mentorshipRequest", 'assessmentQuestion', 'goal', 'metrics', 'chat', 'message'];
+export const collectionNames = ["user", "assessment", "mentorshipRequest", 'assessmentQuestion', 'goal', 'metrics', 'chat', 'message'] as const;
+export type collectionName = (typeof collectionNames)[number];
+
+export const DocumentTestKey = 'testing';
 
 type comparisonOperator =
   | "<"
@@ -66,6 +68,9 @@ export async function DBGetWithID(
   collectionName: collectionName,
   id: string
 ): Promise<DBObj | undefined> {
+  if (!id) {
+    throw new Error('DBGetWithID called with empty id');
+  }
   try {
     // try fetching from cache first.
     const cacheRes = CacheGet(collectionName, id);

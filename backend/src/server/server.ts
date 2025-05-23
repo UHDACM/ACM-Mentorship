@@ -2,6 +2,7 @@ import express from "express";
 import { Express } from "express";
 import dotenv from "dotenv";
 import { auth } from "express-oauth2-jwt-bearer";
+import { DeleteTestData } from "src/scripts/tools";
 dotenv.config();
 
 let ExpressServer: Express;
@@ -34,14 +35,24 @@ export function CreateExpressServer() {
     tokenSigningAlg: process.env.AUTH0_TOKEN_SIGNING_ALG,
   });
 
-  console.log('Auth middleware config:', {
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: process.env.AUTH0_ISSUER_BASE_URL,
-  algorithm: process.env.AUTH0_TOKEN_SIGNING_ALG
-});
-
   app.get("/", (_, res) => {
     res.send({ all: "good" });
+  });
+
+  // only for testing purposes
+  app.get('/deleteTestData', async (_, res) => {
+    // only for testing purposes
+    if (process.env.TESTING != 'true') {
+      res.status(403).send('not allowed');
+      return;
+    }
+    try {
+      await DeleteTestData();
+    } catch (e) {
+      res.status(500).send('error deleting test data: '+(e instanceof Error ? e.message : 'unknown error'));
+      return;
+    }
+    res.send('deleted test data');
   });
 
   app.use(jwtCheck);

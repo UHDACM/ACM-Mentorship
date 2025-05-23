@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
+    "testAll": "vitest",
+    "test": "vitest AuthenticatedSocket.mentorshipRequest.test.ts",
+    "test2": "vitest server.test.ts",
     "dev": "ts-node -r tsconfig-paths/register ./src/index.ts",
     "build": "rm -rf ./dist && npm i && tsc -b && tsc-alias",
     "start": "node ./dist/backend/src",

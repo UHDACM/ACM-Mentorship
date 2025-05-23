@@ -3,8 +3,8 @@ import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import {
   MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
-import { ObjectAny, AssessmentPreviewObj, UserObj } from "@shared/types/general";
+} from "../../features/ClientSocket/ClientSocketHandler";
+import { AssessmentPreviewObj, UserObj } from "@shared/types/general";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { unixToDateString } from "../../scripts/tools";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
@@ -22,7 +22,7 @@ export default function Assessments() {
       return;
     }
 
-    MyClientSocket.GetUser(id, (v: boolean | ObjectAny) => {
+    MyClientSocket.GetUser(id).then((v: boolean | UserObj) => {
       if (typeof v == "boolean") {
         setUser(false);
         return;

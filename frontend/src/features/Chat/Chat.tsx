@@ -1,21 +1,25 @@
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect } from "react";
-import { addChat, addChatMessages, chatsAreLoaded, markChatRead } from "./ChatSlice";
-import { MyClientSocket } from "../ClientSocket/ClientSocket";
-import { ChatObj, MessageObj } from '@shared/types/general';
-
+import {
+  addChat,
+  chatsAreLoaded,
+  markChatRead,
+  setChatMessages,
+} from "./ChatSlice";
+import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
+import { ChatObj } from "@shared/types/general";
 
 export const placeholderPreviewPicture =
   "https://www.mtsolar.us/wp-content/uploads/2020/04/avatar-placeholder.png";
 /**
  * Component that ensures chats are kept up to date, and required messages are fetched.
- * 
+ *
  * Also makes sure chatLastTimeRead is kept up to date
- * @returns 
+ * @returns
  */
 export default function Chat() {
-  const { chats, loaded, activeChatID, messages } = useSelector(
+  const { chats, loaded, activeChatID } = useSelector(
     (store: ReduxRootState) => store.Chat
   );
   const dispatch = useDispatch();
@@ -46,8 +50,9 @@ export default function Chat() {
       return;
     }
 
-    MyClientSocket.GetChats(
-      Array.from(missingIDs),
+    // todo: implement pagination if user has a lot of chats
+    // todo: implement error handling
+    MyClientSocket.GetChats(Array.from(missingIDs)).then(
       (missingChatObjs: ChatObj[]) => {
         if (!missingChatObjs || !(missingChatObjs instanceof Array)) {
           return;
@@ -62,26 +67,21 @@ export default function Chat() {
     );
   }, [ready, user]);
 
-  // handles getting all chat messages
+  // handles getting all missing chat messages
   useEffect(() => {
     if (!activeChatID || !MyClientSocket || !activeChatObj || !self || !ready) {
       return;
     }
 
-    // find all messages we don't have yet
-    const missingMessages: string[] = [];
-    const { messages: chatMessages } = activeChatObj;
-    for (let messageID of chatMessages) {
-      if (!messages.has(messageID)) {
-        missingMessages.push(messageID);
-      }
-    }
-
-    if (missingMessages.length > 0) {
-      MyClientSocket.GetMessages(missingMessages, (messages: MessageObj[]) => {
-        dispatch(addChatMessages(messages));
-      });
-    }
+    // loads messages for the active chat into client socket, then into redux
+    MyClientSocket.LoadChatMessages(activeChatID).then((status: boolean) => {
+      if (!status) {
+        return;
+      } else if (!MyClientSocket?.messages) {
+        return;
+      } 
+      dispatch(setChatMessages(MyClientSocket?.messages));
+    });
     dispatch(markChatRead(activeChatID));
   }, [activeChatObj, activeChatID, self, ready]);
 

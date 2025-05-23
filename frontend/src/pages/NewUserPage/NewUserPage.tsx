@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
-import { MyClientSocket } from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
@@ -28,7 +28,7 @@ export default function NewUserPage() {
       ShowTutorial('getStarted');
     }
     e.preventDefault();
-    MyClientSocket?.createAccount({ fName, mName, lName, username }, (v: boolean) => {
+    MyClientSocket?.CreateAccount({ fName, mName, lName, username }).then((v: boolean) => {
       if (!v) {
         return;
       }

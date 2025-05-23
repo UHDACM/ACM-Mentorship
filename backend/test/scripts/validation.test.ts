@@ -1,12 +1,7 @@
 import { expect, describe, it } from "vitest";
 import {
   isValidAssessmentQuestion,
-  isValidEducation,
-  isValidExperience,
-  isValidMonthInteger,
-  isValidMonthYearRange,
   isValidNames,
-  isValidProject,
   isValidUsername,
   MAX_NAME_LENGTH,
   MAX_USERNAME_LENGTH,
@@ -14,18 +9,16 @@ import {
   AnsweredAssessmentQuestionObj,
   isValidAnsweredAssessmentQuestion,
   isValidAnsweredAssessmentQuestions,
-  isValidMonthYearRange_YearToo,
   isValidGoal,
   isSubmitGoalAction,
   isTaskObj,
 } from '../../src/scripts/validation'
 import {
   ObjectAny,
-  SocialTypes,
   SubmitGoalActions,
 } from "@shared/types/general";
+import { isValidEducation, isValidExperience, isValidMonthInteger, isValidMonthYearRange, isValidMonthYearRange_YearToo, isValidProject } from "@shared/validation/general";
 
-console.log(SocialTypes);
 
 describe("Tests validation script", () => {
   describe("isValidNames", () => {
@@ -56,8 +49,8 @@ describe("Tests validation script", () => {
 
   const usernameTooLong = "n".repeat(MAX_USERNAME_LENGTH + 1);
   const usernameTooShort = "n".repeat(MIN_USERNAME_LENGTH - 1);
-  const usernameMIN = "n".repeat(MIN_USERNAME_LENGTH);
-  const usernameMAX = "n".repeat(MAX_USERNAME_LENGTH);
+  // const usernameMIN = "n".repeat(MIN_USERNAME_LENGTH);
+  // const usernameMAX = "n".repeat(MAX_USERNAME_LENGTH);
   describe("isValidUsername", () => {
     it("should fail if too long or too short", async () => {
       await expect(isValidUsername(usernameTooLong)).rejects.toThrowError();
@@ -565,7 +558,6 @@ describe("Tests validation script", () => {
       ];
 
       invalidTasks.forEach((task) => {
-        console.log(task);
         expect(() => isTaskObj(task)).toThrowError();
       });
     });

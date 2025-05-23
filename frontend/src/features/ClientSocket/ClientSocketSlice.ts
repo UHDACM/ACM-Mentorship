@@ -1,15 +1,10 @@
 // written in JS because typing is such an issue with redux
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
-import { ClientSocketState } from "./ClientSocket";
-import { AssessmentQuestion, UserObj } from "@shared/types/general";
-
-type ClientSocketMentorshipRequest = {
-  mentorID: string;
-  menteeID: string;
-};
+import { AssessmentQuestion, MentorshipRequestObj, UserObj } from "@shared/types/general";
+import { ClientSocketState } from "@shared/types/socket";
 
 type ClientSocketMentorshipRequestMap = {
-  [key: string]: ClientSocketMentorshipRequest;
+  [key: string]: MentorshipRequestObj;
 };
 
 interface ClientSocketRootState {
@@ -19,15 +14,15 @@ interface ClientSocketRootState {
   ready?: boolean;
   state?: ClientSocketState;
   user?: UserObj;
-  assessments?: string[];
-  mentorshipRequests?: ClientSocketMentorshipRequestMap;
+  assessments?: string[]; // redundant, kept in user.assessments
+  mentorshipRequests?: ClientSocketMentorshipRequestMap; // unused
   availableAssessmentQuestions?: AssessmentQuestion[];
-}
+};
 
 const initialState: ClientSocketRootState = {};
 
 const ClientSocketSlice = createSlice({
-  name: "ServerConnection",
+  name: "ClientSocket",
   initialState: initialState,
   reducers: {
     setClientReady(
@@ -66,9 +61,9 @@ const ClientSocketSlice = createSlice({
     ) {
       s.availableAssessmentQuestions = action.payload;
     },
-    // closeDialog(state: Draft<DialogState>) {
-    //     state.active = false;
-    // }
+    resetClientSocketState(s: Draft<ClientSocketRootState>) {
+      s = { ...initialState };
+    }
   },
 });
 
@@ -79,6 +74,7 @@ export const {
   setMentorshipRequests,
   setAvailableAssessmentQuestions,
   setClientReady,
+  resetClientSocketState
 } = ClientSocketSlice.actions;
 
 export default ClientSocketSlice.reducer;

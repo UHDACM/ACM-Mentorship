@@ -1,0 +1,2 @@
+
+export const MAX_NUMBER_OF_MENTORS_PER_MENTEE = 5;

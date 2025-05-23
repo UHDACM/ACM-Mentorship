@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { GoalObj, TaskObj, FunctionAny, UserObj } from "@shared/types/general";
 
-
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import {
   ArrowBigDown,
@@ -12,9 +11,7 @@ import {
   Trash,
   X,
 } from "lucide-react";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { setAlert } from "../../features/Alert/AlertSlice";
@@ -29,14 +26,13 @@ import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorial
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { GoalPageContext, GoalPageProvider } from "./GoalPageContext";
 
-export default function GoalPageWithContext(){
-  return(
-  <GoalPageProvider>
-    <GoalPage/>
-  </GoalPageProvider>
-  )
+export default function GoalPageWithContext() {
+  return (
+    <GoalPageProvider>
+      <GoalPage />
+    </GoalPageProvider>
+  );
 }
-
 
 export function GoalPage() {
   const dispatch = useDispatch();
@@ -48,15 +44,15 @@ export function GoalPage() {
   const isNew = newParam == "true";
 
   const {
-    saving, 
-    setSaving, 
-    changed, 
-    setChanged, 
-    goal, 
-    setGoal, 
-    goalOwner, 
-    setGoalOwner
-  } = useContext(GoalPageContext)
+    saving,
+    setSaving,
+    changed,
+    setChanged,
+    goal,
+    setGoal,
+    goalOwner,
+    setGoalOwner,
+  } = useContext(GoalPageContext);
 
   const { user: self, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
@@ -85,7 +81,7 @@ export function GoalPage() {
       return;
     } else if (id) {
       // fetch for goal, then fetch for owner of goal.
-      MyClientSocket.GetGoal(id, (v: boolean | GoalObj) => {
+      MyClientSocket.GetGoal(id).then((v: false | GoalObj) => {
         setGoal(v);
         originalGoal.current = v;
         if (typeof v == "boolean") {
@@ -101,7 +97,7 @@ export function GoalPage() {
           );
           return;
         }
-        MyClientSocket!.GetUser(userID, (v: boolean | UserObj) => {
+        MyClientSocket!.GetUser(userID).then((v: boolean | UserObj) => {
           setGoalOwner(v);
         });
       });
@@ -172,36 +168,37 @@ export function GoalPage() {
               }
               setSaving(true);
               const action = isNew ? "create" : "edit";
-              MyClientSocket.SubmitGoal(
-                { action, id: id || undefined, goal },
-                (v: boolean | string) => {
-                  cb && cb();
-                  setSaving(false);
-                  if (typeof v == "boolean") {
-                    if (v) {
-                      dispatch(
-                        setAlert({
-                          title: "Success",
-                          body: `Successfully saved goal`,
-                        })
-                      );
-                      setChanged(false);
-                      originalGoal.current = goal;
-                    }
-                    return;
+              MyClientSocket.SubmitGoal({
+                action,
+                id: id || undefined,
+                goal,
+              }).then((v: boolean | string) => {
+                cb && cb();
+                setSaving(false);
+                if (typeof v == "boolean") {
+                  if (v) {
+                    dispatch(
+                      setAlert({
+                        title: "Success",
+                        body: `Successfully saved goal`,
+                      })
+                    );
+                    setChanged(false);
+                    originalGoal.current = goal;
                   }
-                  navigate(`/app/goal?id=${v}`, { replace: true });
-                  dispatch(
-                    setAlert({
-                      title: "Success",
-                      body: `Successfully created goal`,
-                    })
-                  );
-                  setSaving(false);
-                  setChanged(false);
-                  originalGoal.current = goal;
+                  return;
                 }
-              );
+                navigate(`/app/goal?id=${v}`, { replace: true });
+                dispatch(
+                  setAlert({
+                    title: "Success",
+                    body: `Successfully created goal`,
+                  })
+                );
+                setSaving(false);
+                setChanged(false);
+                originalGoal.current = goal;
+              });
             },
           },
         ],
@@ -264,7 +261,8 @@ export function GoalPage() {
           }}
           onClick={() => ShowTutorial("goals")}
         >
-          How do goals work? <FaRegQuestionCircle style={{marginLeft: '0.3rem'}}/>
+          How do goals work?{" "}
+          <FaRegQuestionCircle style={{ marginLeft: "0.3rem" }} />
         </MinimalisticButton>
 
         <p style={{ margin: 0, fontSize: "1.25rem" }}>Tasks</p>
@@ -288,15 +286,11 @@ export function GoalPage() {
   );
 }
 
-function TasksSection({
-  disabled,
-}: {
-  disabled: boolean;
-}) {
-  const {goal,setGoal,setChanged} = useContext(GoalPageContext)
+function TasksSection({ disabled }: { disabled: boolean }) {
+  const { goal, setGoal, setChanged } = useContext(GoalPageContext);
   const dispatch = useDispatch();
   // type guard for tasks
-  if (typeof goal === "boolean" || !goal){
+  if (typeof goal === "boolean" || !goal) {
     return null;
   }
 
@@ -313,12 +307,11 @@ function TasksSection({
       name: "New Task",
       description: "Task description",
     };
-    
+
     newTasks.push(newTask);
     setTasks(newTasks);
   }
 
-  
   function handleEditTask(tIndex: number, newTask: TaskObj) {
     if (!tasks) {
       return;
@@ -389,7 +382,13 @@ function TasksSection({
         return (
           <div key={`task_${tIndex}`} style={{ margin: 5 }}>
             <div style={{ display: "flex" }}>
-              <div style={{ display: "flex", flexDirection: "column", marginRight: '0.5rem' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  marginRight: "0.5rem",
+                }}
+              >
                 {tIndex != 0 && (
                   <div
                     onClick={() => handleMoveTask(tIndex, true)}
@@ -439,7 +438,7 @@ function TasksSection({
           Add Task +
         </MinimalisticButton>
       )}
-      <div style={{height:'10vh'}}/>
+      <div style={{ height: "10vh" }} />
     </div>
   );
 }
