@@ -54,10 +54,10 @@ export default function Transition({
     throw new Error("Cannot combine delay with delayBefore and delayAfter");
   }
   const [trueToggle, setTrueToggle] = useState(initialToggle);
-  const trueToggleTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const trueToggleTimeoutRef = useRef<number>(undefined);
   
   const [tV, setTV] = useState(initialToggle?1:0); // short for Transition Value
-  const tVIntervalRef = useRef<NodeJS.Timeout | undefined>(); // stores interval to cancel later if toggle is changed mid transition
+  const tVIntervalRef = useRef<number>(); // stores interval to cancel later if toggle is changed mid transition
   const numFrames = Math.max((transitionSpeedMS/1000) * fps, 2);
   const transitionUpdateDelayMS = transitionSpeedMS / numFrames;
 

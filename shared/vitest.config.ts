@@ -13,5 +13,8 @@ export default defineConfig({
     'bail': 1,
     'environment': 'node',
     'setupFiles': './vitestSetup.ts',
+    typecheck: {
+      tsconfig: './tsconfig.json',
+    }
   },
 });
