@@ -23,5 +23,6 @@
   "include": ["./src", "./test"],
   
   "exclude": ["../shared/vitest.config.ts", "../shared/**/*.test.ts", "../shared/**/vitestSetup.ts"], // exclude shared's vitest config to avoid build issues
+
   "compileOnSave": true,
 }
