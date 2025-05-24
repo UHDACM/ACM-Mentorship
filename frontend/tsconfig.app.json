@@ -32,5 +32,7 @@
     // of vite types in vite.config.ts
     "types": ["vite/client"]
   },
-  "include": ["src", "../shared"]
+  
+  // shared is not imported here, as it is imported in individual files as needed
+  "include": ["src"]
 }

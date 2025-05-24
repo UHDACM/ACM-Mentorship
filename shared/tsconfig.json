@@ -6,7 +6,7 @@
       "sourceMap": true,
       "outDir": "dist",
       "baseUrl": ".",
-      "types": ["node", "vite/client"],
+      "types": ["vite/client"],
       "paths": {
         // used to reference shared types (outside of base directory)
         "@shared/*": ["../shared/*"]
@@ -19,7 +19,9 @@
   },
   // lets ts know where to look for files
   // note: files not included will not be compiled, nor will they be able to use aliases
-  "include": ["./src", "../shared", "./test"],
-  "exclude": ["../shared/vitest.config.ts"], // exclude shared's vitest config to avoid build issues
-  "compileOnSave": true,
+  "include": ["."],
+  
+  // exclude shared's vitest config to avoid build issues
+  "exclude": ["../shared/vitest.config.ts", "../shared/**/*.test.ts", "../shared/**/vitestSetup.ts"], 
+  "compileOnSave": true
 }
