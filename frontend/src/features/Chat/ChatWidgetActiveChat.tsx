@@ -4,7 +4,7 @@ import { ReduxRootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { setActiveChat } from "./ChatSlice";
-import { MyClientSocket } from "../ClientSocket/ClientSocket";
+import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { placeholderPreviewPicture } from "./Chat";
 import { OBSCURE_MODE } from "../../scripts/shared";
@@ -91,7 +91,7 @@ export default function ChatWidgetActiveChat({
     }
 
     setSending(true);
-    MyClientSocket.SendMessage(activeChatID, text.trim(), (v: boolean) => {
+    MyClientSocket.SendMessage(activeChatID, text.trim()).then((v: boolean) => {
       setSending(false);
       if (!v) {
         return;
@@ -168,13 +168,13 @@ export default function ChatWidgetActiveChat({
         }}
         ref={chatSectionRef}
       >
-        {activeChatObj.messages.map((messageID, messageIndex) => {
+        {activeChatObj.messages.filter((messageID) => messages.get(messageID) != false).map((messageID, messageIndex) => {
           const messageObj = messages.get(messageID);
           const prevMessageID = activeChatObj.messages[messageIndex - 1];
           const prevMessageObj = prevMessageID
             ? messages.get(prevMessageID)
             : undefined;
-          if (!messageObj) {
+          if (!messageObj || prevMessageObj === false) {
             return null;
           }
           return (

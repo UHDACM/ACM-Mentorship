@@ -19,5 +19,6 @@
   // lets ts know where to look for files
   // note: files not included will not be compiled, nor will they be able to use aliases
   "include": ["./src", "../shared", "./test"],
+  "exclude": ["../shared/vitest.config.ts"], // exclude shared's vitest config to avoid build issues
   "compileOnSave": true,
 }

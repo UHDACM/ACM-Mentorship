@@ -5,6 +5,7 @@ import http from 'http';
 import dotenv from 'dotenv';
 import AuthenticatedSocket from './AuthenticatedSocket';
 import { CreateExpressServer } from '../server/server';
+import { SocketServerErrorImproperlyFormattedToken, SocketServerErrorNoToken } from '@shared/data/socketServer';
 dotenv.config();
 
 let socketServerOnline = false;
@@ -113,10 +114,10 @@ function _addInitialListenersToSocketIOServer() {
     const tokenWithBearer = socket.handshake.auth.token;
     console.log('connecting token', tokenWithBearer);
     if (!tokenWithBearer) {
-      next(new Error('No token provided'));
+      next(new Error(SocketServerErrorNoToken));
     }
     
-    // if testing, allow use of "valid" token to pass.
+    // if testing, allow use of "testing" token to pass.
     if(process.env.TESTING == "true") {
       
       let tokenSplit: string[];
@@ -124,7 +125,7 @@ function _addInitialListenersToSocketIOServer() {
         tokenSplit = tokenWithBearer.split(' ');
         tokenSplit[0] && tokenSplit[1]; // checks to see if split contains at least two parts
       } catch {
-        next(new Error('Token was formatted incorrectly '+tokenWithBearer));
+        next(new Error(SocketServerErrorImproperlyFormattedToken));
         return;
       }
 

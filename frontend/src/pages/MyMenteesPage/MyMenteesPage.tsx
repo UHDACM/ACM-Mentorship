@@ -1,9 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
 import { useNavigate } from "react-router-dom";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
@@ -12,11 +10,8 @@ import { IoChatbubbleOutline } from "react-icons/io5";
 import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
 import { Check, HelpCircle } from "lucide-react";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
-import {
-  MentorshipRequestObj,
-  MentorshipRequestResponseAction,
-  UserObj,
-} from "@shared/types/general";
+import { MentorshipRequestObj, UserObj } from "@shared/types/general";
+import { MentorshipRequestResponseAction } from "@shared/types/socket";
 
 export default function MyMenteesPage() {
   const { user, ready } = useSelector(
@@ -123,8 +118,7 @@ function MentorshipRequestTile({
     if (!ready || !MyClientSocket || !user) {
       return;
     }
-    MyClientSocket.GetMentorshipRequest(
-      mentorshipRequestID,
+    MyClientSocket.GetMentorshipRequest(mentorshipRequestID).then(
       (v: MentorshipRequestObj | boolean) => {
         if (typeof v == "boolean") {
           return;
@@ -142,15 +136,12 @@ function MentorshipRequestTile({
           }
         }
         const otherUserID = user.id == mentorID ? menteeID : mentorID;
-        MyClientSocket!.GetUser(
-          otherUserID,
-          (v: boolean | UserObj) => {
-            if (typeof v == "boolean") {
-              return;
-            }
-            setOtherUserObj(v);
+        MyClientSocket!.GetUser(otherUserID).then((v: boolean | UserObj) => {
+          if (typeof v == "boolean") {
+            return;
           }
-        );
+          setOtherUserObj(v);
+        });
       }
     );
   }, [ready]);
@@ -173,11 +164,10 @@ function MentorshipRequestTile({
       }
       MyClientSocket.DoMentorshipRequestAction(
         mentorshipRequestID,
-        action,
-        () => {
-          callback();
-        }
-      );
+        action
+      ).then(() => {
+        callback();
+      });
     }
 
     dispatch(
@@ -402,13 +392,12 @@ function AcceptingMenteesIndicator() {
             text: `${acceptingMentees ? "Stop" : "Start"} accepting mentees`,
             useDisableTill: true,
             onClick: (_, cb) => {
-              MyClientSocket?.updateProfile(
-                { acceptingMentees: !acceptingMentees },
-                () => {
-                  cb && cb();
-                  dispatch(closeDialog());
-                }
-              );
+              MyClientSocket?.UpdateProfile({
+                acceptingMentees: !acceptingMentees,
+              }).then(() => {
+                cb && cb();
+                dispatch(closeDialog());
+              });
             },
           },
         ],
@@ -506,7 +495,7 @@ function BecomeMentorSection() {
   }
 
   function BecomeMentor(cb?: Function) {
-    MyClientSocket?.BecomeMentor(cb);
+    MyClientSocket?.BecomeMentor().then(() => cb && cb());
   }
 
   return (
@@ -638,7 +627,10 @@ function MenteeTile({ menteeID }: { menteeID: string }) {
     if (!ready || !MyClientSocket) {
       return;
     }
-    MyClientSocket.GetUser(menteeID, (v: UserObj) => {
+    MyClientSocket.GetUser(menteeID).then((v: false | UserObj) => {
+      if (v === false) {
+        return;
+      }
       setMenteeObj(v);
     });
   }, [ready]);

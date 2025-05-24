@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { Fragment } from "react";
-import { MyClientSocket } from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
 import { GoalCard } from "../GoalsPage/GoalsPage";
 import UseRecommendTodos from "../../hooks/UseRecommendTodos/UseRecommendTodos";

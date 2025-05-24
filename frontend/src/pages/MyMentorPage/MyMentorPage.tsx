@@ -1,9 +1,7 @@
 import { useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
-import {
-  MyClientSocket,
-} from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { useNavigate } from "react-router-dom";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
@@ -34,7 +32,7 @@ export default function MymentorPage() {
 
 function MyMentorPageDashboard() {
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const hasMentor = user?.mentorID ? true : false;
+  const hasMentor = user?.mentorIDs && user.mentorIDs.length > 0 ? true : false;
   const isMentee = user?.isMentee || false;
   const { recommendTodoCard } = UseRecommendTodos();
   const ShowTutorial = useTutorialWithDialog();
@@ -50,7 +48,14 @@ function MyMentorPageDashboard() {
                 {hasMentor && <CurrentMentorInfo />}
                 {!hasMentor &&
                   (isMentee ? (
-                    <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "start",
+                      }}
+                    >
                       <span
                         style={{
                           marginLeft: "1rem",
@@ -58,7 +63,7 @@ function MyMentorPageDashboard() {
                           borderBottom: "1px #fff6 solid",
                           cursor: "pointer",
                         }}
-                        onClick={() => ShowTutorial('getAMentor')}
+                        onClick={() => ShowTutorial("getAMentor")}
                       >
                         How does this work?
                       </span>
@@ -149,30 +154,32 @@ function CurrentMentorInfo() {
   const { user, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
   );
-  const [mentorObj, setMentorObj] = useState<UserObj | undefined>(
-    undefined
-  );
+  const [mentorObjs, setMentorObjs] = useState<UserObj[]>([]);
 
   if (!user || !MyClientSocket || !ready) {
     return <p>Loading...</p>;
   }
 
-  const { mentorID } = user;
+  const { mentorIDs } = user;
 
   useEffect(() => {
     function getMentor() {
-      if (!mentorID || !ready) {
+      if (!mentorIDs || !mentorIDs.length || !ready) {
         return;
       }
-      MyClientSocket?.GetUser(mentorID, (dat: Object) => {
-        setMentorObj(dat);
-      });
+      Promise.all(mentorIDs.map((id) => MyClientSocket?.GetUser(id))).then(
+        (mentors) => {
+          setMentorObjs(mentors.filter((m) => m !== false && m !== undefined));
+        }
+      );
     }
     getMentor();
-  }, [mentorID, ready]);
+  }, [mentorIDs, ready]);
 
-  if (!mentorObj) {
-    return <p style={{ margin: 0, fontSize: "1.25rem" }}>You have no mentor</p>;
+  if (!mentorObjs || mentorObjs.length === 0) {
+    return (
+      <p style={{ margin: 0, fontSize: "1.25rem" }}>You have no mentors</p>
+    );
   }
 
   return (
@@ -180,7 +187,9 @@ function CurrentMentorInfo() {
       className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
       style={{ margin: "0.1rem" }}
     >
-      <MentorTile mentor={mentorObj} />
+      {mentorObjs.map((mentorObj) => (
+        <MentorTile mentor={mentorObj} key={mentorObj.id} />
+      ))}
     </div>
   );
 }
@@ -276,13 +285,11 @@ function MentorTile({ mentor }: { mentor: UserObj }) {
 }
 
 function MentorSearchTool() {
-  const [mentors, setMentors] = useState<UserObj[] | undefined>(
-    undefined
-  );
+  const [mentors, setMentors] = useState<UserObj[] | undefined>(undefined);
 
   useEffect(() => {
     if (!mentors) {
-      MyClientSocket?.GetAllMentors((m: unknown) => {
+      MyClientSocket?.GetAllMentors().then((m: false | UserObj[]) => {
         if (typeof m == "boolean") {
           return;
         } else if (!(m instanceof Array)) {

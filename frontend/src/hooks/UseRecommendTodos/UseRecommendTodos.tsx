@@ -52,7 +52,7 @@ export default function UseRecommendTodos() {
       recommendedTodos.push(["FinishProfile", undefined]);
     }
 
-    if (!user?.mentorID) {
+    if (!user?.mentorIDs || user?.mentorIDs.length == 0) {
       recommendedTodos.push(["FindMentor", undefined]);
     }
 
@@ -60,12 +60,12 @@ export default function UseRecommendTodos() {
       recommendedTodos.push(['CreateFirstGoal', undefined]);
     }
 
-    if (user && user.mentorID) {
+    if (user && user.mentorIDs && user.mentorIDs.length > 0) {
       // locate chat with mentorID
       let targetChatObj: ChatObj|undefined;
       for (let chatObj of chats.values()) {
         const chatUsers = Object.keys(chatObj.users);
-        if (chatUsers.includes(user?.id||'_') && chatUsers.includes(user?.mentorID||'_')) {
+        if (chatUsers.includes(user?.id||'_') && user.mentorIDs.some(mentorID => chatUsers.includes(mentorID))) {
           targetChatObj = chatObj;
           break;
         }
@@ -135,7 +135,7 @@ export default function UseRecommendTodos() {
             subTitle="Ask them some questions, see if you can meet, whatever you want to do!"
             buttonText="Chat With Mentor"
             backgroundImageUrl="https://th.bing.com/th/id/R.d6f43944c2d1479537c7fb363d49cf6e?rik=cGLD3x%2bNuapRBg&riu=http%3a%2f%2fwww.pixelstalk.net%2fwp-content%2fuploads%2f2016%2f06%2fHD-Abstract-Backgrounds.jpg&ehk=UDPzXal8%2fsJLCiC5SLZcOQIciHko6lyZzShvDSEaFYM%3d&risl=&pid=ImgRaw&r=0"
-            onClickButton={() => (user && user.mentorID) ? chatWithUser(user?.mentorID) : undefined}
+            onClickButton={() => (user && user.mentorIDs && user.mentorIDs.length > 0) ? chatWithUser(user?.mentorIDs[0]) : undefined}
           />
         );
       default:

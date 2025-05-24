@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
 import { unixToDateString } from "../../scripts/tools";
 import { ReduxRootState } from "../../store";
-import { MyClientSocket } from "../../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { setAlert } from "../../features/Alert/AlertSlice";
 
 export default function useDeleteAssessmentWithDialog() {
@@ -31,7 +31,7 @@ export default function useDeleteAssessmentWithDialog() {
               cb && cb();
               return;
             }
-            MyClientSocket.submitAssessment({ id, action: 'delete' }, (v: boolean) => {
+            MyClientSocket.SubmitAssessment({ id, action: 'delete' }).then((v: boolean|string) => {
               callback && callback(v);
               cb && cb();
               if (!v) {

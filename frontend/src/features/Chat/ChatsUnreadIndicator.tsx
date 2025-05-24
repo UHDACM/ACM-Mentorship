@@ -13,7 +13,7 @@ export default function ChatsUnreadIndicator({ style }: { style?: React.CSSPrope
         return;
       }
 
-      if (chatObj.lastMessage.timestamp > (chatLastTimeRead.get(chatID) || 0)) {
+      if (chatObj.lastMessage!.timestamp > (chatLastTimeRead.get(chatID) || 0)) {
         setHasUnread(true);
         return;
       }

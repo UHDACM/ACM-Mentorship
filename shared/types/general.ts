@@ -1,5 +1,8 @@
 export type FunctionAny = (...args: any[]) => any;
 
+// this function is to replace FunctionAny, which is deprecated
+export type FunctionUnknown = (...args: any[]) => any;
+
 export type SocialType =
   | "instagram"
   | "twitter"
@@ -25,77 +28,76 @@ export const SocialTypes: SocialType[] = [
 ];
 
 export type AssessmentQuestion = {
-  question?: string,
-  inputType?: string,
-  answer?: string,
-  [key: string]: any
+  question?: string;
+  inputType?: string;
+  answer?: string;
+  [key: string]: any;
 };
 export type Assessment = {
-  questions?: AssessmentQuestion[],
-  published?: boolean,
-  userID?: string,
-  date?: number,
-  id?: string
+  questions?: AssessmentQuestion[];
+  published?: boolean;
+  userID?: string;
+  date?: number;
+  id?: string;
 };
 
-export type AssessmentQuestionInputType = 'text' | 'number' | 'boolean';
-export const AssessmentQuestionInputTypes = ['text', 'number', 'boolean'];
+export const AssessmentQuestionInputTypes = ["text", "number", "boolean"];
+export type AssessmentQuestionInputType =
+  (typeof AssessmentQuestionInputTypes)[number];
 
 export type Month =
-  | 'January'
-  | 'February'
-  | 'March'
-  | 'April'
-  | 'May'
-  | 'June'
-  | 'July'
-  | 'August'
-  | 'September'
-  | 'October'
-  | 'November'
-  | 'December';
+  | "January"
+  | "February"
+  | "March"
+  | "April"
+  | "May"
+  | "June"
+  | "July"
+  | "August"
+  | "September"
+  | "October"
+  | "November"
+  | "December";
 export const Months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export type MentorshipRequestObj = {
-  menteeID?: string,
-  mentorID?: string
-  id?: string,
-  status?: MentorshipRequestStatus
+  menteeID: string;
+  mentorID: string;
+  id?: string;
+  status?: MentorshipRequestStatus;
+  testing?: boolean;
 };
-export type MentorshipRequestStatus = 'accepted' | 'declined' | 'cancelled';
-export const MentorshipRequestStatuses = ['accepted', 'declined', 'cancelled'];
-export type MentorshipRequestResponseAction = 'accept' | 'decline' | 'cancel';
-export const MentorshipRequestResponseActions = ['accept', 'decline', 'cancel'];
-
+export const MentorshipRequestStatuses = ["accepted", "declined", "cancelled"] as const;
+export type MentorshipRequestStatus = (typeof MentorshipRequestStatuses)[number];
 
 export type AssessmentPreviewMap = {
-  [key: string]: AssessmentPreviewObj
-}
+  [key: string]: AssessmentPreviewObj;
+};
 
 export type AssessmentPreviewObj = {
   /**  ID of assessment */
-  date: number
+  date: number;
 };
 
 export type GoalPreviewMap = {
-  [key: string]: GoalPreviewObj
+  [key: string]: GoalPreviewObj;
 };
 
 export type GoalPreviewObj = {
-  name: string
+  name: string;
 };
 
 export type GoalObj = {
@@ -107,41 +109,38 @@ export type GoalObj = {
 };
 
 export type TaskObj = {
-  name?: string,
-  description?: string,
-  completitionDate?: number
+  name?: string;
+  description?: string;
+  completitionDate?: number;
 };
 
-export type SubmitGoalAction = 'create' | 'edit' | 'delete';
-export const SubmitGoalActions = ['create', 'edit', 'delete'];
-
-
-
+export type SubmitGoalAction = (typeof SubmitGoalActions)[number];
+export const SubmitGoalActions = ["create", "edit", "delete"] as const;
 
 export type ChatObj = {
-  users: ChatObjUserPreviewMap,
-  messages: string[],
-  lastMessage: MessageObj,
-  id: string
+  users: ChatObjUserPreviewMap;
+  messages: string[];
+  lastMessage?: MessageObj;
+  id: string;
 };
 
 type ChatObjUserPreviewMap = {
   [userID: string]: {
-    username: string,
-    fName: string,
-    mName?: string,
-    lName: string,
-    displayPictureURL?: string
-  }
+    username: string;
+    fName: string;
+    mName?: string;
+    lName: string;
+    displayPictureURL?: string;
+  };
 };
 
 export type MessageObj = {
-  contents: string,
-  timestamp: number,
-  sender: string,
-  chatID: number,
-  id: string
-}
+  contents: string;
+  timestamp: number;
+  sender: string;
+  chatID: string;
+  id?: string;
+};
 
 export type AssessmentAction =
   | "create"
@@ -157,28 +156,10 @@ export const AssessmentActions = [
   "delete",
 ];
 
-export type MentorshipRequestAction =
-  | "send"
-  | "accept"
-  | "decline"
-  | "cancel"
-  | "removeMentor"
-  | "removeMentee";
-export const MentorshipRequestActions = [
-  "send",
-  "accept",
-  "decline",
-  "cancel",
-  "removeMentor",
-  "removeMentee",
-];
-
-export type SendMessageAction = 'send' | 'create';
-export const SendMessageActions = ['send', 'create'];
+export type SendMessageAction = "send" | "create";
+export const SendMessageActions = ["send", "create"];
 
 export type ObjectAny = { [key: string]: any };
-
-
 
 export type Experience = {
   company: string;
@@ -187,14 +168,15 @@ export type Experience = {
   range: MonthYearDateRange;
 };
 
-export type MonthYearDateRange = { start: [number, number]; end?: [number, number] };
-
+export type MonthYearDateRange = {
+  start: [number, number];
+  end?: [number, number];
+};
 
 export type Certification = {
   name: string;
   issuingOrg: string;
 };
-
 
 export type Project = {
   name: string;
@@ -235,7 +217,7 @@ export type UserObj = {
   bio?: string;
   assessments?: AssessmentPreviewMap;
   menteeIDs?: string[];
-  mentorID?: string;
+  mentorIDs?: string[];
   mentorshipRequests?: string[];
   softSkills?: string[];
   goals?: GoalPreviewMap;
@@ -245,9 +227,8 @@ export type UserObj = {
   certifications?: Certification[];
   projects?: Project[];
   socials?: SocialObj[];
-  
+
   testing?: boolean;
 
   chats?: string[];
 };
-

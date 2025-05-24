@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { closeDialog, setDialog } from "../features/Dialog/DialogSlice";
 import { ReduxRootState } from "../store";
 import { ObjectAny } from "@shared/types/general";
-import { MyClientSocket } from "../features/ClientSocket/ClientSocket";
+import { MyClientSocket } from "../features/ClientSocket/ClientSocketHandler";
 import { setAlert } from "../features/Alert/AlertSlice";
 
 type useChangeUsernameWithDialogCallback = (v?: boolean, username?: string) => any
@@ -51,7 +51,7 @@ export function useChangeUsernameWithDialog() {
           optionalCallback && optionalCallback(false);
           return;
         }
-        MyClientSocket?.updateProfile({ username }, (v: boolean) => {
+        MyClientSocket?.UpdateProfile({ username }).then((v: boolean) => {
           optionalCallback && optionalCallback(v, username);
           enableCallback && enableCallback();
           v &&
