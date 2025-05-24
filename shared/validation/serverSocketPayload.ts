@@ -10,7 +10,6 @@ import {
   ServerSocketPayloadMessage,
 } from "@shared/types/serverSocketPayload";
 import { isValidUserObj } from "./user";
-import { AssessmentQuestion, AssessmentQuestionInputTypes } from "@shared/types/general";
 
 
 export function isValidServerSocketPayloadDataBase(input: unknown): input is ServerSocketPayloadDataBase {

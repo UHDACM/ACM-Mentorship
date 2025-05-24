@@ -6,6 +6,7 @@
       "sourceMap": true,
       "outDir": "dist",
       "baseUrl": ".",
+      "types": ["node", "vite/client"],
       "paths": {
         // used to reference shared types (outside of base directory)
         "@shared/*": ["../shared/*"]

@@ -6,7 +6,6 @@ import { placeholderPreviewPicture } from "./Chat";
 import { OBSCURE_MODE } from "../../scripts/shared";
 import { GetRandomAvatarURL } from "../../scripts/tools";
 
-
 function sortChatPreviews(chatArr: ChatObj[]) {
   function swapIndexes(i: number, j: number) {
     const temp = chatArr[i];
@@ -17,8 +16,8 @@ function sortChatPreviews(chatArr: ChatObj[]) {
     let largestIndex = start;
     for (let index = start + 1; index < chatArr.length; index++) {
       if (
-        chatArr[index].lastMessage.timestamp >
-        chatArr[largestIndex].lastMessage.timestamp
+        chatArr[index].lastMessage!.timestamp >
+        chatArr[largestIndex].lastMessage!.timestamp
       ) {
         largestIndex = index;
       }
@@ -28,12 +27,26 @@ function sortChatPreviews(chatArr: ChatObj[]) {
     }
   }
 }
-export default function ChatWidgetChats({ fontScale=1 }: { fontScale?: number }) {
-  const { chats, chatLastTimeRead } = useSelector((store: ReduxRootState) => store.Chat);
+export default function ChatWidgetChats({
+  fontScale = 1,
+}: {
+  fontScale?: number;
+}) {
+  const { chats, chatLastTimeRead } = useSelector(
+    (store: ReduxRootState) => store.Chat
+  );
   const chatArr = Array.from(chats.values());
   sortChatPreviews(chatArr);
   return (
-    <div style={{ width: "100%", height: '100%', background: "#222", overflowY: 'scroll', scrollbarWidth: 'thin' }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "#222",
+        overflowY: "scroll",
+        scrollbarWidth: "thin",
+      }}
+    >
       {chatArr.map((chatObj) => {
         return (
           <ChatWidgetChatPreview
@@ -49,12 +62,11 @@ export default function ChatWidgetChats({ fontScale=1 }: { fontScale?: number })
   );
 }
 
-
 function ChatWidgetChatPreview({
   chatID,
   chatObj,
   fontScale = 1,
-  lastTimeRead
+  lastTimeRead,
 }: {
   chatID: string;
   chatObj: ChatObj;
@@ -85,7 +97,8 @@ function ChatWidgetChatPreview({
         style={{
           padding: 10,
           boxSizing: "border-box",
-          backgroundColor: lastMessage.timestamp > (lastTimeRead || 0) ? "#494949" : "#333",
+          backgroundColor:
+            lastMessage!.timestamp > (lastTimeRead || 0) ? "#494949" : "#333",
           display: "flex",
           flexDirection: "row",
           cursor: "pointer",
@@ -102,7 +115,10 @@ function ChatWidgetChatPreview({
               borderRadius: "50%",
             }}
             src={
-              (OBSCURE_MODE ? GetRandomAvatarURL() : (users[otherUserID].displayPictureURL)) || placeholderPreviewPicture
+              (OBSCURE_MODE
+                ? GetRandomAvatarURL()
+                : users[otherUserID].displayPictureURL) ||
+              placeholderPreviewPicture
             }
           />
         </div>
@@ -113,19 +129,24 @@ function ChatWidgetChatPreview({
               fontWeight: "600",
             }}
           >
-            {OBSCURE_MODE ? 'obscured' : `${users[otherUserID].fName} ${users[otherUserID].mName} ${users[otherUserID].lName}`}
+            {OBSCURE_MODE
+              ? "obscured"
+              : `${users[otherUserID].fName} ${users[otherUserID].mName} ${users[otherUserID].lName}`}
           </span>
           <span
             style={{
               fontSize: 1 * fontScale + "rem",
               fontWeight: "400",
-              opacity: 0.8
+              opacity: 0.8,
             }}
           >
-            {lastMessage.sender === self.id
+            {lastMessage!.sender === self.id
               ? "You"
-              : `${OBSCURE_MODE ? 'obscured' : users[otherUserID].fName}`}
-            : {lastMessage.contents.length > 50 ? lastMessage.contents.substring(0, 50)+'...' : lastMessage.contents}
+              : `${OBSCURE_MODE ? "obscured" : users[otherUserID].fName}`}
+            :{" "}
+            {lastMessage!.contents.length > 50
+              ? lastMessage!.contents.substring(0, 50) + "..."
+              : lastMessage!.contents}
           </span>
         </div>
       </div>

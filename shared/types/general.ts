@@ -1,5 +1,3 @@
-import { MentorshipRequestAction } from "./socket";
-
 export type FunctionAny = (...args: any[]) => any;
 
 // this function is to replace FunctionAny, which is deprecated

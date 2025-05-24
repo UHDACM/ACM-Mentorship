@@ -626,7 +626,7 @@ export class ClientSocket {
             throw new Error("");
           }
         } catch {
-          res(undefined);
+          res(false);
           return;
         }
 
@@ -766,6 +766,9 @@ export class ClientSocket {
       const messageObjs = await this._GetMessages(fetchMessageIDs);
       let updated = false;
       for (const messageObj of messageObjs) {
+        if (!messageObj.id) {
+          continue;
+        }
         this.messages.set(messageObj.id, messageObj);
         updated = true;
       }
@@ -830,6 +833,9 @@ export class ClientSocket {
   }
 
   public async requestUpdateSelf() {
+    if (!this.user.id) {
+      return;
+    }
     const res = await this.GetUser(this.user.id);
     if (!res) {
       throw new Error("Error while fetching your user data");

@@ -61,8 +61,8 @@ const ClientSocketSlice = createSlice({
     ) {
       s.availableAssessmentQuestions = action.payload;
     },
-    resetClientSocketState(s: Draft<ClientSocketRootState>) {
-      s = { ...initialState };
+    resetClientSocketState() {
+      return initialState;
     }
   },
 });

@@ -4,8 +4,6 @@ import {
   isValidNames,
   isValidUsername,
   MAX_NAME_LENGTH,
-  MAX_USERNAME_LENGTH,
-  MIN_USERNAME_LENGTH,
   AnsweredAssessmentQuestionObj,
   isValidAnsweredAssessmentQuestion,
   isValidAnsweredAssessmentQuestions,
@@ -18,6 +16,7 @@ import {
   SubmitGoalActions,
 } from "@shared/types/general";
 import { isValidEducation, isValidExperience, isValidMonthInteger, isValidMonthYearRange, isValidMonthYearRange_YearToo, isValidProject } from "@shared/validation/general";
+import { MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH } from "@shared/data/validation";
 
 
 describe("Tests validation script", () => {

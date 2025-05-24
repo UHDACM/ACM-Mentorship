@@ -76,7 +76,7 @@ describe('mentorshipRequest "send" action', () => {
 
   it("sending: fails when sending request to self", async () => {
     const response = await SocketArray[0].SendMentorshipRequest(
-      SocketArray[0].user.id
+      SocketArray[0].user.id!
     );
     expect(response).toBe(false);
   });
@@ -86,7 +86,7 @@ describe('mentorshipRequest "send" action', () => {
   it("sending: fails when sending request to user who is not accepting mentees", async () => {
     expect(SocketArray[1].user.acceptingMentees).toBeFalsy();
     const response = await SocketArray[0].SendMentorshipRequest(
-      SocketArray[1].user.id
+      SocketArray[1].user.id!
     );
     expect(response).toBe(false);
   });
@@ -102,7 +102,7 @@ describe('mentorshipRequest "send" action', () => {
     expect(SocketArray[1].user.acceptingMentees).toBe(true);
 
     const response = await SocketArray[0].SendMentorshipRequest(
-      SocketArray[1].user.id
+      SocketArray[1].user.id!
     );
     expect(response).toBe(true);
 
@@ -145,6 +145,10 @@ describe('mentorshipRequest "cancel" action', () => {
     // SocketArray[0] sent a request to SocketArray[1] (mentor) in the previous test
     // therefore, SocketArray[1] (mentor) and SocketArray[2] (unrelated user) should not be able to cancel it
     const requestID = SocketArray[0].user.mentorshipRequests?.[0]; // most recent request sent by socket1
+
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket2Response = await SocketArray[1].DoMentorshipRequestAction(
       requestID,
       "cancel"
@@ -160,6 +164,10 @@ describe('mentorshipRequest "cancel" action', () => {
 
   it("succeeds when correct user cancels existing request", async () => {
     const requestID = SocketArray[0].user.mentorshipRequests?.[0]; // most recent request sent by socket1
+    
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket1Response = await SocketArray[0].DoMentorshipRequestAction(
       requestID,
       "cancel"
@@ -171,8 +179,8 @@ describe('mentorshipRequest "cancel" action', () => {
 
     // verify that the request is removed from socket1's and socket2's mentorshipRequests array
     if (
-      SocketArray[0].user.mentorshipRequests.includes(requestID) ||
-      SocketArray[1].user.mentorshipRequests.includes(requestID)
+      SocketArray[0].user.mentorshipRequests!.includes(requestID) ||
+      SocketArray[1].user.mentorshipRequests!.includes(requestID)
     ) {
       throw new Error(
         "mentorshipRequests should be undefined or not include the cancelled requestID"
@@ -186,7 +194,7 @@ describe('mentorshipRequest "decline" action', () => {
   // socket1 sends a request to socket2
   it("sending: succeeds when sending request from socket1 to socket2", async () => {
     const response = await SocketArray[0].SendMentorshipRequest(
-      SocketArray[1].user.id
+      SocketArray[1].user.id!
     );
     expect(response).toBe(true);
 
@@ -225,6 +233,10 @@ describe('mentorshipRequest "decline" action', () => {
     // SocketArray[0] sent a request to SocketArray[1] (mentor) in the previous test
     // therefore, only SocketArray[1] (mentor) should be able to decline it
     const requestID = SocketArray[0].user.mentorshipRequests?.[0]; // most recent request sent by socket1
+
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket1Response = await SocketArray[0].DoMentorshipRequestAction(
       requestID,
       "decline"
@@ -240,6 +252,10 @@ describe('mentorshipRequest "decline" action', () => {
 
   it("succeeds when receiving user declines existing request", async () => {
     const requestID = SocketArray[1].user.mentorshipRequests?.[0]; // most recent request sent by socket2
+
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket2Response = await SocketArray[1].DoMentorshipRequestAction(
       requestID,
       "decline"
@@ -251,8 +267,8 @@ describe('mentorshipRequest "decline" action', () => {
 
     // verify that the request is removed from socket1's and socket2's mentorshipRequests array
     if (
-      SocketArray[0].user.mentorshipRequests.includes(requestID) ||
-      SocketArray[1].user.mentorshipRequests.includes(requestID)
+      SocketArray[0].user.mentorshipRequests!.includes(requestID) ||
+      SocketArray[1].user.mentorshipRequests!.includes(requestID)
     ) {
       throw new Error(
         "SocketArray[0].user.mentorshipRequests or SocketArray[1].user.mentorshipRequests should be undefined or not include the declined requestID"
@@ -266,7 +282,7 @@ describe('mentorshipRequest "accept" action', () => {
   // socket1 sends a request to socket2
   it("sending: succeeds when sending request from socket1 to socket2", async () => {
     const response = await SocketArray[0].SendMentorshipRequest(
-      SocketArray[1].user.id
+      SocketArray[1].user.id!
     );
     expect(response).toBe(true);
 
@@ -305,6 +321,10 @@ describe('mentorshipRequest "accept" action', () => {
     // SocketArray[0] sent a request to SocketArray[1] (mentor) in the previous test
     // therefore, only SocketArray[1] (mentor) should be able to accept it
     const requestID = SocketArray[0].user.mentorshipRequests?.[0]; // most recent request sent by socket1
+
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket1Response = await SocketArray[0].DoMentorshipRequestAction(
       requestID,
       "accept"
@@ -320,6 +340,9 @@ describe('mentorshipRequest "accept" action', () => {
 
   it("succeeds when receiving user accepts existing request", async () => {
     const requestID = SocketArray[1].user.mentorshipRequests?.[0]; // most recent request sent by socket2
+    if (!requestID) {
+      throw new Error("requestID is undefined");
+    }
     const Socket2Response = await SocketArray[1].DoMentorshipRequestAction(
       requestID,
       "accept"
@@ -331,8 +354,8 @@ describe('mentorshipRequest "accept" action', () => {
 
     // verify that the request is removed from socket1's and socket2's mentorshipRequests array
     if (
-      SocketArray[0].user.mentorshipRequests.includes(requestID) ||
-      SocketArray[1].user.mentorshipRequests.includes(requestID)
+      SocketArray[0].user.mentorshipRequests!.includes(requestID || '') ||
+      SocketArray[1].user.mentorshipRequests!.includes(requestID || '')
     ) {
       throw new Error(
         "SocketArray[0].user.mentorshipRequests or SocketArray[1].user.mentorshipRequests should be undefined or not include the accepted requestID"
@@ -375,7 +398,7 @@ describe("multi-mentor support", () => {
     const Promises: Promise<boolean>[] = [];
     for (let i = 2; i < SocketArray.length; i++) {
       Promises.push(
-        SocketArray[0].SendMentorshipRequest(SocketArray[i].user.id)
+        SocketArray[0].SendMentorshipRequest(SocketArray[i].user.id || '')
       );
     }
 
@@ -390,8 +413,8 @@ describe("multi-mentor support", () => {
     // ensure that all requests are in the respective users' and socket2's mentorshipRequests array
     for (let i = 2; i < SocketArray.length; i++) {
       if (
-        !SocketArray[0].user.mentorshipRequests.includes(
-          SocketArray[i].user.mentorshipRequests?.[0]
+        !SocketArray[0].user.mentorshipRequests!.includes(
+          SocketArray[i].user.mentorshipRequests?.[0] || ''
         )
       ) {
         throw new Error(
@@ -413,7 +436,7 @@ describe("multi-mentor support", () => {
       if (mentorCount < MAX_NUMBER_OF_MENTORS_PER_MENTEE) {
         PromisesExpectedToSucceed.push(
           SocketArray[i].DoMentorshipRequestAction(
-            SocketArray[i].user.mentorshipRequests?.[0],
+            SocketArray[i].user.mentorshipRequests?.[0] || '',
             "accept"
           )
         );
@@ -421,7 +444,7 @@ describe("multi-mentor support", () => {
       } else {
         PromisesExpectedToFail.push(
           SocketArray[i].DoMentorshipRequestAction(
-            SocketArray[i].user.mentorshipRequests?.[0],
+            SocketArray[i].user.mentorshipRequests?.[0] || '',
             "accept"
           )
         );
@@ -444,25 +467,25 @@ describe("multi-mentor support", () => {
     // ensure that all accepted users are now mentors of socket1
     for (let i = 1; i < SocketArray.length; i++) {
       if (i < MAX_NUMBER_OF_MENTORS_PER_MENTEE + 1) {
-        if (!SocketArray[0].user.mentorIDs.includes(SocketArray[i].user.id)) {
+        if (!SocketArray[0].user.mentorIDs!.includes(SocketArray[i].user.id!)) {
           throw new Error(
             "Socket" + (i + 1) + "'s mentorIDs should include Socket2's id"
           );
         }
-        if (!SocketArray[i].user.menteeIDs.includes(SocketArray[0].user.id)) {
+        if (!SocketArray[i].user.menteeIDs!.includes(SocketArray[0].user.id!)) {
           throw new Error(
             `Socket${i + 1}'s menteeIDs should include Socket1's id`
           );
         }
       } else {
-        if (SocketArray[0].user.mentorIDs.includes(SocketArray[i].user.id)) {
+        if (SocketArray[0].user.mentorIDs!.includes(SocketArray[i].user.id!)) {
           throw new Error(
             "Socket" + (i + 1) + "'s mentorIDs should not include Socket1's id"
           );
         }
         if (
           SocketArray[i].user.menteeIDs &&
-          SocketArray[i].user.menteeIDs.includes(SocketArray[0].user.id)
+          SocketArray[i].user.menteeIDs!.includes(SocketArray[0].user.id!)
         ) {
           throw new Error(
             `Socket${i + 1}'s menteeIDs should not include Socket1's id`
@@ -472,17 +495,15 @@ describe("multi-mentor support", () => {
     }
 
     // ensure all mentorship requests are removed from all users' mentorshipRequests array
-    for (let i = 0; i < SocketArray.length; i++) {
+    for (const socket of SocketArray) {
       if (
-        SocketArray[i].user.mentorshipRequests &&
-        SocketArray[i].user.mentorshipRequests.length > 0
+      socket.user.mentorshipRequests &&
+      socket.user.mentorshipRequests.length > 0
       ) {
-        throw new Error(
-          "Socket" +
-            (i + 1) +
-            "'s mentorshipRequests should be undefined or empty " +
-            JSON.stringify(SocketArray[i].user.mentorshipRequests)
-        );
+      throw new Error(
+        "Socket's mentorshipRequests should be undefined or empty " +
+        JSON.stringify(socket.user.mentorshipRequests)
+      );
       }
     }
   });

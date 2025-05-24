@@ -380,8 +380,6 @@ export function isValidGoal(s: unknown): s is GoalObj {
     throw new Error("Name is too short");
   }
 
-  s["name"] = name.trim();
-
   if (!tasks || !(tasks instanceof Array)) {
     throw new Error("Format of tasks array is invalid");
   }
@@ -390,10 +388,10 @@ export function isValidGoal(s: unknown): s is GoalObj {
     try {
       isTaskObj(item);
     } catch (err) {
-      throw new Error(`For task: ${name}: ${err.message}.`);
+      throw new Error(`For task: ${name}: ${(err as Error).message}.`);
     }
-    item.name = item.name.trim();
-    item.description = item.description.trim();
+    item.name = item.name?.trim() || '';
+    item.description = item.description?.trim() || '';
   }
   return true;
 }
