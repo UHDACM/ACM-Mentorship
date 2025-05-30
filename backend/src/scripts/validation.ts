@@ -312,20 +312,3 @@ export function isSendMessageAction(s: unknown): s is SendMessageAction {
   }
   return SendMessageActions.includes(s);
 }
-
-/**
- * Checks s is valid message.
- *
- * Throws descriptive error if invalid. Returns true otherwise.
- * @param s
- * @returns
- */
-export function isValidMessageContent(s: unknown): s is string {
-  if (!s || typeof s != "string") {
-    throw new Error("No message content was provided");
-  }
-  if (s.trim().length == 0) {
-    throw new Error("Message content is too short");
-  }
-  return true;
-}

@@ -52,6 +52,8 @@ export default function Chat() {
 
     // todo: implement pagination if user has a lot of chats
     // todo: implement error handling
+
+    console.log('Fetching missing chat IDs:', Array.from(missingIDs));
     MyClientSocket.GetChats(Array.from(missingIDs)).then(
       (missingChatObjs: ChatObj[]) => {
         if (!missingChatObjs || !(missingChatObjs instanceof Array)) {
@@ -72,7 +74,6 @@ export default function Chat() {
     if (!activeChatID || !MyClientSocket || !activeChatObj || !self || !ready) {
       return;
     }
-
     // loads messages for the active chat into client socket, then into redux
     MyClientSocket.LoadChatMessages(activeChatID).then((status: boolean) => {
       if (!status) {

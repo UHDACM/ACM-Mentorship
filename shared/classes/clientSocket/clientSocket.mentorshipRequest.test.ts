@@ -4,6 +4,7 @@ import { sleep } from "@shared/scripts/generalTools";
 import { USERNAME_RESERVED_TESTING_PREFIX } from "@shared/data/validation";
 import { ClientSocketState } from "@shared/types/socket";
 import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequests";
+import { GenerateSocketArray } from "@shared/scripts/testingTools";
 
 /**
  * This file tests mentorship request related functionality of the ClientSocket class.
@@ -16,16 +17,16 @@ const SocketArray: ClientSocket[] = [];
 
 // max number of mentors + 1 extra for the mentee (used to test max mentors limit) + 1 extra mentor to test max mentors limit
 const SocketCount = MAX_NUMBER_OF_MENTORS_PER_MENTEE + 1 + 1;
-const SocketAddress = "ws://localhost:8080";
+const SocketAddress = `ws://localhost:${process.env.SERVER_PORT}`;
 beforeAll(async () => {
   // creates SocketCount sockets and connects them to the server
 
-  for (let i = 0; i < SocketCount; i++) {
-    const newSocket: ClientSocket = new ClientSocket(SocketAddress, {
-      auth: { token: `testing clientSocket.mentorshipRequest.${i + 1}` },
-    });
-    SocketArray.push(newSocket);
-  }
+  const sockets = GenerateSocketArray(
+    SocketCount,
+    SocketAddress,
+    "clientSocket.mentorshipRequest.test"
+  );
+  SocketArray.push(...sockets);
 
   const ExpectSocketToBeInState = (
     socket: ClientSocket,
@@ -45,7 +46,7 @@ beforeAll(async () => {
   await Promise.all(
     SocketArray.map((socket, i) =>
       socket.CreateAccount({
-        username: `${USERNAME_RESERVED_TESTING_PREFIX}_user${i + 1}`,
+        username: `${USERNAME_RESERVED_TESTING_PREFIX}_mentorshipRequest_${i + 1}`,
         fName: `User${i + 1}`,
         lName: `Test${i + 1}`,
       })
@@ -513,11 +514,10 @@ describe("multi-mentor support", () => {
 // such as: FindMentorshipRequestBetweenUsers
 
 afterAll(async () => {
-  SocketArray[0].disconnect();
-  // console.log("socket1data", SocketArray[0]);
-  SocketArray[1].disconnect();
-  // console.log("socket2data", SocketArray[1]);
-  SocketArray[2].disconnect();
-  // console.log("socket3data", SocketArray[2]);
+  for (const socket of SocketArray) {
+    if (socket.state != "disconnected") {
+      socket.disconnect();
+    }
+  }
   await sleep(1000); // give some time to disconnect before ending the process
 });

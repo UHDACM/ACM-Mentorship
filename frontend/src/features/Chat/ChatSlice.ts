@@ -39,7 +39,9 @@ const ChatSlice = createSlice({
       state.chats.set(chatID, chat);
     },
     setChats(state: Draft<ChatState>, action: PayloadAction<typeof initialState.chats>) {
-      state.chats = action.payload;
+      for (let [chatID, chatObj] of action.payload) {
+        state.chats.set(chatID, chatObj);
+      }
     },
 
     /** to be called only on load once */
@@ -58,7 +60,9 @@ const ChatSlice = createSlice({
       }
     },
     setChatMessages(state: Draft<ChatState>, action: PayloadAction<typeof initialState.messages>) {
-      state.messages = action.payload;
+      for (let [messageID, messageObj] of action.payload) {
+        state.messages.set(messageID, messageObj);
+      }
     },
     markChatRead(state: Draft<ChatState>, action: PayloadAction<string>) {
       state.chatLastTimeRead.set(action.payload, Date.now());

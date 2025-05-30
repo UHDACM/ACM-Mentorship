@@ -1,5 +1,6 @@
 import { ClientSocketPayloadSendMessageBase, ClientSocketPayloadSendMessageCreate, ClientSocketPayloadSendMessageSend } from "../types/clientSocketPayload";
 import { SendMessageActions } from "../types/general";
+import { isValidMessageContent } from "./general";
 
 // Validation function for ClientSocketPayloadSendMessageBase
 export function isValidClientSocketPayloadSendMessageBase(
@@ -26,7 +27,12 @@ export function isValidClientSocketPayloadSendMessageCreate(
 ): payload is ClientSocketPayloadSendMessageCreate {
   if (!isValidClientSocketPayloadSendMessageBase(payload)) return false;
 
-  const { targetUserIDs } = payload as ClientSocketPayloadSendMessageCreate;
+  const { action, targetUserIDs } = payload as ClientSocketPayloadSendMessageCreate;
+
+
+  if (action !== "create") {
+    return false;
+  }
 
   if (!Array.isArray(targetUserIDs) || targetUserIDs.length === 0) {
     return false;
@@ -45,9 +51,19 @@ export function isValidClientSocketPayloadSendMessageSend(
 ): payload is ClientSocketPayloadSendMessageSend {
   if (!isValidClientSocketPayloadSendMessageBase(payload)) return false;
 
-  const { chatID } = payload as ClientSocketPayloadSendMessageSend;
+  const { action, chatID, contents } = payload as ClientSocketPayloadSendMessageSend;
+
+  if (action !== "send") {
+    return false;
+  }
 
   if (!chatID || typeof chatID !== "string" || chatID.trim().length < 1) {
+    return false;
+  }
+
+  try {
+    isValidMessageContent(contents);
+  } catch {
     return false;
   }
 
