@@ -29,6 +29,7 @@ import {
   isValidChatObj,
   isValidGoal,
   isValidMentorshipRequestObj,
+  isValidMessageContent,
   isValidMessageObj,
 } from "@shared/validation/general";
 import {
@@ -250,7 +251,7 @@ export class ClientSocket {
   /**
    * Create a new user account
    *
-   * Throws errors if the account cannot be created
+   * Rejects the promise if the account cannot be created
    *
    * @param params The user account parameters (as `ClientCreateUserPayload`)
    * @param callback The callback function to call with the result
@@ -530,14 +531,21 @@ export class ClientSocket {
     targetUserID: string,
     messageContent: string
   ): Promise<string> {
+    return new Promise((res, rej) => {
     if (!targetUserID || !messageContent) {
-      throw new Error(
+      rej(
         "Cannot create chat without a target user or message content"
       );
-    } else if (messageContent.length == 0) {
-      throw new Error(
-        "We need a little bit more text before we can send this message."
-      );
+    } 
+    
+    try {
+      if (!isValidMessageContent(messageContent)) {
+        // it will throw an error if invalid in the function
+        throw new Error("Message content is invalid");
+      }
+    } catch (err) {
+      rej((err as Error).message);
+      return;
     }
 
     const sendMessageAction: ServerSocketEvent = "sendMessage";
@@ -547,13 +555,13 @@ export class ClientSocket {
       targetUserIDs: [targetUserID],
     };
 
-    return new Promise((res) => {
       this.socket.emit(
         sendMessageAction,
         sendMessagePayload,
         (v: false | string) => {
           if (v == false) {
-            throw new Error('Could not create chat');
+            rej('Could not create chat');
+            return;
           }
           res(v);
         }
@@ -721,10 +729,14 @@ export class ClientSocket {
         // only valid messages make it into the message obj
         const validMessages: MessageObj[] = [];
         for (const messageObj of v) {
-          if (!isValidMessageObj(v)) {
+          try {
+            if (!isValidMessageObj(v)) {
+              continue;
+            }
+            validMessages.push(messageObj);
+          } catch {
             continue;
           }
-          validMessages.push(messageObj);
         }
         res(v);
       });
@@ -747,6 +759,8 @@ export class ClientSocket {
     }
 
     const chatObj = this.chats.get(chatID);
+
+    console.log('chatMap', this.chats);
     if (!chatObj) {
       throw new Error(
         "You do not have access to this chat, or chat does not exist."
@@ -800,6 +814,7 @@ export class ClientSocket {
               // none should ever fail this check, as backend checks data before sending.
               continue;
             }
+            this._setChatID(chatObj.id, chatObj);
             validChats.push(chatObj);
           } catch {
             continue;

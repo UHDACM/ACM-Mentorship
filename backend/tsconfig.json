@@ -22,7 +22,5 @@
   // shared is not imported here, as it is imported in individual files as needed
   "include": ["./src", "./test"],
   
-  "exclude": ["../shared/vitest.config.ts", "../shared/**/*.test.ts", "../shared/**/vitestSetup.ts"], // exclude shared's vitest config to avoid build issues
-
   "compileOnSave": true,
 }

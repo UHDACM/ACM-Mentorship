@@ -1,4 +1,4 @@
-import { isValidAssessmentQuestion, isValidMentorshipRequestObj, isValidMessageObj } from "./general";
+import { isValidAssessmentQuestion, isValidChatObj, isValidMentorshipRequestObj } from "./general";
 import {
   ServerSocketPayloadDataMentorshipRequest,
   ServerSocketPayloadDataUpdateSelf,
@@ -53,11 +53,15 @@ export function isValidServerSocketPayloadDataChat(
 ): input is ServerSocketPayloadDataChat {
   if (typeof input !== "object" || input === null) return false;
 
-  const { type, data } = input as Record<string, unknown>;
+  const { type, data } = input as ServerSocketPayloadDataChat;
 
   if (type !== "chat") return false;
-  if (!isValidMessageObj(data)) return false;
-
+  try {
+    // will throw an error if invalid
+    if (!isValidChatObj(data)) return false;
+  } catch (err) {
+    return false;
+  }
   return true;
 }
 
