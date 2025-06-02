@@ -2,7 +2,7 @@ import express from "express";
 import { Express } from "express";
 import dotenv from "dotenv";
 import { auth } from "express-oauth2-jwt-bearer";
-import { DeleteTestData } from "src/scripts/tools";
+import { DeleteTestData } from "../../src/scripts/tools";
 dotenv.config();
 
 let ExpressServer: Express;

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { TestPushSubscription } from "./userPushSubscriptions";
-import { sleep } from "src/scripts/tools";
 
 it("dummy test for userPushSubscriptions", async () => {
   expect(1 + 1).toBe(2);

@@ -1,5 +1,5 @@
 import { UserSettings } from "@shared/types/userSettings";
-import { DBGetWithID, DBSetWithID } from "src/db";
+import { DBGetWithID, DBSetWithID } from "../../../src/db";
 import { isUserSettings } from "@shared/validation/userSettings";
 
 export async function GetUserSettings(userID: string): Promise<UserSettings | undefined> {

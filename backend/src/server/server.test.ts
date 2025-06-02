@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { CreateExpressServer, getExpressServer } from "./server";
 import { Express } from "express";
-import { CheckNoTestData } from "src/scripts/tools";
+import { CheckNoTestData } from "../../src/scripts/tools";
 
 describe("CreateExpressServer", () => {
   let server: Express;

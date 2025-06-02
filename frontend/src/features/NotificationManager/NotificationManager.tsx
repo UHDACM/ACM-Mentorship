@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationsAllowed } from "./NotificationManagerSlice";
-import { ReduxRootState } from "src/store";
+import { ReduxRootState } from "../../../src/store";
 import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
 import { sleep, urlBase64ToUint8Array } from "@shared/scripts/generalTools";
 import { isPushSubscription } from "@shared/validation/userPushSubscriptions";

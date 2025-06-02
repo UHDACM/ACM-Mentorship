@@ -2,7 +2,7 @@ import { DocumentTestKey } from "@shared/data/db";
 import { NotificationOptions } from "@shared/types/notification";
 import { isNotificationOptions } from "@shared/validation/notification";
 import { isUserPushSubscriptions } from "@shared/validation/userPushSubscriptions";
-import { DBGetWithID, DBSetWithID } from "src/db";
+import { DBGetWithID, DBSetWithID } from "../../../src/db";
 import webpush from "web-push";
 import { isUserInSocketMap } from "../AuthenticatedSocket";
 import { isUserSettings } from "@shared/validation/userSettings";

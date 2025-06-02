@@ -3,13 +3,13 @@ import {
   userPushSubscriptionTestMessage,
   userPushSubscriptionTTL,
 } from "@shared/data/userPushSubscriptions";
-import { DBGetWithID, DBSetWithID } from "src/db";
+import { DBGetWithID, DBSetWithID } from "../../../src/db";
 import { isUserPushSubscriptions } from "@shared/validation/userPushSubscriptions";
 import {
   PushSubscription,
   UserPushSubscriptions,
 } from "@shared/types/userPushSubscriptions";
-import { sleep } from "src/scripts/tools";
+import { sleep } from "../../../src/scripts/tools";
 
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT,

@@ -2,7 +2,7 @@ import MinimalisticButton from "../../components/MinimalisticButton/Minimalistic
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxRootState } from "src/store";
+import { ReduxRootState } from "../../../src/store";
 import InputToggle from "../../components/Inputs/InputToggle/InputToggle";
 import { UserSettings } from "@shared/types/userSettings";
 import { useChangesPreventNavigation } from "../../context/ChangesPreventNavigation/ChangesPreventNavigation";

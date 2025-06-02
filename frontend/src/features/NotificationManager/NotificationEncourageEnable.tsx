@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxRootState } from "src/store";
+import { ReduxRootState } from "../../../src/store";
 import { addDialog, addDialogImmediate, closeDialog } from "../Dialog/DialogSlice";
 import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
 import { DefaultUserSettings } from "@shared/data/userSettings";
