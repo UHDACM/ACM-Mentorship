@@ -4,7 +4,7 @@ import {
   DBDeleteWithID,
   DBGetWithID,
   DBSetWithID,
-} from "src/db";
+} from "../../../src/db";
 import AuthenticatedSocket, { SendClientsDataWithUserID } from "../AuthenticatedSocket";
 import { isValidChatObj, isValidMessageContent } from "@shared/validation/general";
 import { NotificationActions, NotificationTagPrefixes } from "@shared/data/notification";
