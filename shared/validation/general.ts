@@ -18,6 +18,7 @@ import {
   GoalObj,
   TaskObj,
   Assessment,
+  DBObj,
 } from "../types/general";
 
 export function isValidSocial(social: unknown): social is SocialObj {
@@ -224,7 +225,9 @@ export function isValidAssessmentPreviewMap(
       val === null ||
       typeof val.date !== "number"
     ) {
-      throw new Error(`Invalid assessment preview object: ${JSON.stringify(val)}`);
+      throw new Error(
+        `Invalid assessment preview object: ${JSON.stringify(val)}`
+      );
     }
   }
 
@@ -255,13 +258,14 @@ export function isValidMentorshipRequestObj(
   if (typeof obj !== "object" || obj === null) {
     throw new Error("MentorshipRequestObj must be an object.");
   }
-  const { menteeID, mentorID, id, status, testing } = obj as MentorshipRequestObj;
+  const { menteeID, mentorID, id, status, testing } =
+    obj as MentorshipRequestObj;
 
   // required
-  if (!menteeID || (typeof menteeID !== "string" || menteeID.trim().length < 1)) {
+  if (!menteeID || typeof menteeID !== "string" || menteeID.trim().length < 1) {
     throw new Error("menteeID must be a non-empty string if provided.");
   }
-  if (!mentorID || (typeof mentorID !== "string" || mentorID.trim().length < 1)) {
+  if (!mentorID || typeof mentorID !== "string" || mentorID.trim().length < 1) {
     throw new Error("mentorID must be a non-empty string if provided.");
   }
 
@@ -278,7 +282,6 @@ export function isValidMentorshipRequestObj(
 
   return true;
 }
-
 
 export function isValidMessageObj(obj: unknown): obj is MessageObj {
   if (typeof obj !== "object" || obj === null) {
@@ -330,7 +333,6 @@ export function isValidChatObj(obj: unknown): obj is ChatObj {
   return true;
 }
 
-
 export function isValidAssessmentQuestion(q: object): q is AssessmentQuestion {
   if (!q || typeof q != "object") {
     return false;
@@ -351,7 +353,6 @@ export function isSubmitGoalAction(s: unknown): s is SubmitGoalAction {
   }
   return SubmitGoalActions.includes(s as SubmitGoalAction);
 }
-
 
 /**
  * Checks if a goal is valid.
@@ -390,12 +391,11 @@ export function isValidGoal(s: unknown): s is GoalObj {
     } catch (err) {
       throw new Error(`For task: ${name}: ${(err as Error).message}.`);
     }
-    item.name = item.name?.trim() || '';
-    item.description = item.description?.trim() || '';
+    item.name = item.name?.trim() || "";
+    item.description = item.description?.trim() || "";
   }
   return true;
 }
-
 
 export const MIN_TASK_NAME_LENGTH = 3;
 export const MIN_DESCRIPTION_NAME_LENGTH = 3;
@@ -485,7 +485,6 @@ export function isAssessment(s: object): s is Assessment {
   return true;
 }
 
-
 /**
  * Checks s is valid message.
  *
@@ -499,6 +498,27 @@ export function isValidMessageContent(s: unknown): s is string {
   }
   if (s.trim().length == 0) {
     throw new Error("Message content is too short");
+  }
+  return true;
+}
+
+export function isDBObj(s: unknown): s is DBObj {
+  if (!s || typeof s != "object") {
+    return false;
+  }
+
+  if (Array.isArray(s)) {
+    return false;
+  }
+
+  const { id } = s as DBObj;
+  if (id !== undefined) {
+    if (typeof id != "string") {
+      return false;
+    }
+    if (id.length < 1) {
+      return false;
+    }
   }
   return true;
 }

@@ -19,6 +19,7 @@ import {
 import { LRUCache } from "lru-cache"; // for caching
 
 import dotenv from "dotenv";
+import { DBObj } from "@shared/types/general";
 dotenv.config();
 
 // pulls info from .env
@@ -36,10 +37,8 @@ initializeApp(firebaseConfig);
 const db = getFirestore();
 
 // list of all collection names
-export const collectionNames = ["user", "assessment", "mentorshipRequest", 'assessmentQuestion', 'goal', 'metrics', 'chat', 'message'] as const;
+export const collectionNames = ["user", "assessment", "mentorshipRequest", 'assessmentQuestion', 'goal', 'metrics', 'chat', 'message', 'userPushSubscriptions', 'userSettings'] as const;
 export type collectionName = (typeof collectionNames)[number];
-
-export const DocumentTestKey = 'testing';
 
 type comparisonOperator =
   | "<"
@@ -57,7 +56,6 @@ type queryTuple = [
 type queryStyle = "or" | "and";
 type orderDirection = "asc" | "desc";
 type orderTuple = [string, orderDirection];
-export type DBObj = { id: string; [key: string]: any };
 
 
 type NonHitCacheState = 'Nonexistent';

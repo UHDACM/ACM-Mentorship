@@ -1,17 +1,17 @@
-import { FunctionAny } from "@shared/types/general";
-
 export function SaveButtonFixed({
   show = false,
   saving,
   onSave,
   onReset,
   disabled = true,
+  text = 'You have unsaved changes.'
 }: {
   show?: boolean;
-  onSave?: FunctionAny;
-  onReset?: FunctionAny;
+  onSave?: Function;
+  onReset?: Function;
   saving?: boolean;
   disabled?: boolean;
+  text?: string;
 }) {
   if (!show || disabled) {
     return;
@@ -48,22 +48,24 @@ export function SaveButtonFixed({
             fontSize: "1rem",
             opacity: saving ? 0.5 : 1,
           }}
-          onClick={onSave}
+          onClick={() => onSave && onSave()}
         >
           {!saving ? "Save" : "Saving..."}
         </button>
-        <button
-          onClick={onReset}
-          style={{
-            backgroundColor: "#df1616",
-            color: "#ddd",
-            fontSize: "1rem",
-            marginLeft: '0.4rem',
-            opacity: saving ? 0.5 : 1,
-          }}
-        >Reset</button>
+        {
+          onReset && <button
+            onClick={() => onReset()}
+            style={{
+              backgroundColor: "#df1616",
+              color: "#ddd",
+              fontSize: "1rem",
+              marginLeft: '0.4rem',
+              opacity: saving ? 0.5 : 1,
+            }}
+          >Reset</button>
+        }
         <span style={{ marginLeft: "0.5rem", fontSize: "1rem" }}>
-          You have unsaved changes.
+          {text}
         </span>
       </div>
     </div>

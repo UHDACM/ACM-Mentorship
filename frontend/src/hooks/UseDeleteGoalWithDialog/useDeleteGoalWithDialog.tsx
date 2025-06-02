@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import { ReduxRootState } from "../../store";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { setAlert } from "../../features/Alert/AlertSlice";
@@ -14,7 +14,7 @@ export default function useDeleteGoalWithDialog() {
       return;
     }
     const previewAssessmentObj = user.goals[id];
-    dispatch(setDialog({
+    dispatch(addDialog({
       title: 'Delete Goal \"'+previewAssessmentObj.name+'\"',
       subtitle: 'You cannot undo this.',
       buttons: [

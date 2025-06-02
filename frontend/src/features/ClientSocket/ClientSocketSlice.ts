@@ -2,6 +2,7 @@
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
 import { AssessmentQuestion, MentorshipRequestObj, UserObj } from "@shared/types/general";
 import { ClientSocketState } from "@shared/types/socket";
+import { UserSettings } from "@shared/types/userSettings";
 
 type ClientSocketMentorshipRequestMap = {
   [key: string]: MentorshipRequestObj;
@@ -17,6 +18,10 @@ interface ClientSocketRootState {
   assessments?: string[]; // redundant, kept in user.assessments
   mentorshipRequests?: ClientSocketMentorshipRequestMap; // unused
   availableAssessmentQuestions?: AssessmentQuestion[];
+  userSettings?: UserSettings;
+
+  // id of user before a logout/login occurs (mainly used in notification handling)
+  previousUserID?: string | undefined;
 };
 
 const initialState: ClientSocketRootState = {};
@@ -61,6 +66,18 @@ const ClientSocketSlice = createSlice({
     ) {
       s.availableAssessmentQuestions = action.payload;
     },
+    setUserSettings(
+      s: Draft<ClientSocketRootState>,
+      action: PayloadAction<UserSettings>
+    ) {
+      s.userSettings = action.payload;
+    },
+    setPreviousUserID(
+      s: Draft<ClientSocketRootState>,
+      action: PayloadAction<string>
+    ) {
+      s.previousUserID = action.payload;
+    },
     resetClientSocketState() {
       return initialState;
     }
@@ -73,8 +90,10 @@ export const {
   setClientAssessments,
   setMentorshipRequests,
   setAvailableAssessmentQuestions,
+  setUserSettings,
   setClientReady,
-  resetClientSocketState
+  resetClientSocketState,
+  setPreviousUserID
 } = ClientSocketSlice.actions;
 
 export default ClientSocketSlice.reducer;

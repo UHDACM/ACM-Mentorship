@@ -40,10 +40,9 @@ export function isValidServerSocketPayloadDataUpdateSelf(
 ): input is ServerSocketPayloadDataUpdateSelf {
   if (typeof input !== "object" || input === null) return false;
 
-  const { type, data } = input as Record<string, unknown>;
+  const { type } = input as Record<string, unknown>;
 
   if (type !== "updateSelf") return false;
-  if (data !== undefined) return false;
 
   return true;
 }

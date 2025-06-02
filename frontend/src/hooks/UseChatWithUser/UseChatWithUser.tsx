@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setActiveChat, setChatOpen } from "../../features/Chat/ChatSlice";
 import { ReduxRootState } from "../../store";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import { ObjectAny, UserObj } from "@shared/types/general";
 
 export default function useChatWithUser() {
@@ -47,7 +47,7 @@ export default function useChatWithUser() {
 
     // no chat exists, prompt user to start the convo.
     dispatch(
-      setDialog({
+      addDialog({
         title: "Start the Convo!",
         subtitle: "Make a solid first impression",
         inputs: [

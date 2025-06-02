@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import { unixToDateString } from "../../scripts/tools";
 import { ReduxRootState } from "../../store";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
@@ -15,7 +15,7 @@ export default function useDeleteAssessmentWithDialog() {
       return;
     }
     const previewAssessmentObj = user.assessments[id];
-    dispatch(setDialog({
+    dispatch(addDialog({
       title: 'Delete Assessment '+unixToDateString(previewAssessmentObj.date),
       subtitle: 'You cannot undo this.',
       buttons: [

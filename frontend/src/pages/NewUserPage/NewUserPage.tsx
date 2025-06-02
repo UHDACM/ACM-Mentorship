@@ -2,17 +2,17 @@ import { FormEvent, useState } from "react";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { useSelector } from "react-redux";
-import { useAuth0 } from "@auth0/auth0-react";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { ReduxRootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
+import useAuth from "../../hooks/UseAuth/useAuth";
 
 export default function NewUserPage() {
   const ShowTutorial = useTutorialWithDialog();
   const navigate = useNavigate();
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const { logout } = useAuth0();
+  const { logout } = useAuth();
   const [fName, setFName] = useState("");
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
@@ -24,16 +24,18 @@ export default function NewUserPage() {
 
   function handleSubmit(e: FormEvent) {
     if (user) {
-      navigate('/app/home');
-      ShowTutorial('getStarted');
+      navigate("/app/home");
+      ShowTutorial("getStarted");
     }
     e.preventDefault();
-    MyClientSocket?.CreateAccount({ fName, mName, lName, username }).then((v: boolean) => {
-      if (!v) {
-        return;
+    MyClientSocket?.CreateAccount({ fName, mName, lName, username }).then(
+      (v: boolean) => {
+        if (!v) {
+          return;
+        }
+        ShowTutorial("getStarted");
       }
-      ShowTutorial('getStarted');
-    });
+    );
   }
 
   return (
@@ -76,8 +78,12 @@ export default function NewUserPage() {
           <input
             value={fName}
             onChange={(e) => setFName(e.target.value)}
-            style={{ padding: 10, borderRadius: 5, 
-              backgroundColor: '#333', color: 'white' }}
+            style={{
+              padding: 10,
+              borderRadius: 5,
+              backgroundColor: "#333",
+              color: "white",
+            }}
           />
         </div>
 
@@ -88,8 +94,12 @@ export default function NewUserPage() {
           <input
             value={mName}
             onChange={(e) => setMName(e.target.value)}
-            style={{ padding: 10, 
-              backgroundColor: '#333',borderRadius: 5, color: 'white' }}
+            style={{
+              padding: 10,
+              backgroundColor: "#333",
+              borderRadius: 5,
+              color: "white",
+            }}
           />
         </div>
 
@@ -100,8 +110,12 @@ export default function NewUserPage() {
           <input
             value={lName}
             onChange={(e) => setLName(e.target.value)}
-            style={{ padding: 10, 
-              backgroundColor: '#333',borderRadius: 5, color: 'white' }}
+            style={{
+              padding: 10,
+              backgroundColor: "#333",
+              borderRadius: 5,
+              color: "white",
+            }}
           />
         </div>
 
@@ -112,21 +126,27 @@ export default function NewUserPage() {
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ padding: 10, 
-              backgroundColor: '#333',borderRadius: 5, color: 'white' }}
+            style={{
+              padding: 10,
+              backgroundColor: "#333",
+              borderRadius: 5,
+              color: "white",
+            }}
           />
         </div>
-        <div style={{ width: "100%", display: 'flex', justifyContent: "end" }}>
+        <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
           <MinimalisticButton style={{ marginTop: 10, fontSize: "1rem" }}>
             Submit
           </MinimalisticButton>
         </div>
       </form>
       <span
-        onClick={() =>
-          logout({ logoutParams: { returnTo: window.location.origin } })
-        }
-        style={{marginTop: '1rem', borderBottom: '1px solid #fff6', cursor: 'pointer'}}
+        onClick={() => logout()}
+        style={{
+          marginTop: "1rem",
+          borderBottom: "1px solid #fff6",
+          cursor: "pointer",
+        }}
       >
         Logout
       </span>

@@ -8,7 +8,7 @@ import {
 } from "@shared/types/general";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import { ArrowBigDown, ArrowBigUp, Trash } from "lucide-react";
 import MinimalisticInput from "../../components/MinimalisticInput/MinimalisticInput";
 import { setAlert } from "../../features/Alert/AlertSlice";
@@ -22,7 +22,6 @@ import {
   AssessmentPageProvider,
 } from "./AssessmentPageContext";
 import { setClientUser } from "../../features/ClientSocket/ClientSocketSlice";
-// import useWarnNavigation from "../../hooks/UseWarnNavigation/useWarnNavigation";
 
 export default function AssessmentPageWithContext() {
   return (
@@ -203,7 +202,7 @@ export function AssessmentPage() {
 
     if (newestAssessmentDate > currentAssessmentDate) {
       dispatch(
-        setDialog({
+        addDialog({
           title: "You have newer self-assessments",
           subtitle: `You're viewing a past assessment. While you can edit it, consider updating your current assessment, or creating a new one to reflect your present progress.`,
           buttons: [
@@ -232,8 +231,6 @@ export function AssessmentPage() {
       );
     }
   }, []);
-
-  // useWarnNavigation({ enabled: changed });
 
   if (!user) {
     return <p>Waiting...</p>;
@@ -321,7 +318,7 @@ export function AssessmentPage() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: "Add Question",
         subtitle: "Add a question provided by us, or create your own",
         inputs: [
@@ -392,7 +389,7 @@ export function AssessmentPage() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: `${isNew ? "Create" : "Save"} Assessment`,
         subtitle: isNew
           ? "This will create an assessment. You sure you want to do this?"

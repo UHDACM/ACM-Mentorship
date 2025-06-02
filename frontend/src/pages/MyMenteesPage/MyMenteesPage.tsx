@@ -2,16 +2,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import { useEffect, useState } from "react";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import { useNavigate } from "react-router-dom";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
-import { Check, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import { MentorshipRequestObj, UserObj } from "@shared/types/general";
 import { MentorshipRequestResponseAction } from "@shared/types/socket";
+import InputToggle from "../../components/Inputs/InputToggle/InputToggle";
 
 export default function MyMenteesPage() {
   const { user, ready } = useSelector(
@@ -171,7 +172,7 @@ function MentorshipRequestTile({
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: `Mentor ${otherUserObj.fName}?`,
         subtitle: `Do you wish to mentor ${otherUserObj.fName}?`,
         containerStyle: { minWidth: "20rem" },
@@ -375,7 +376,7 @@ function AcceptingMenteesIndicator() {
 
   function handleToggleAcceptingMentees() {
     dispatch(
-      setDialog({
+      addDialog({
         title: `${
           acceptingMentees ? "Stop accepting" : "Start accepting"
         } mentees?`,
@@ -406,33 +407,12 @@ function AcceptingMenteesIndicator() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "0.5rem",
-        paddingLeft: "0.5rem",
-      }}
-    >
-      <div
+    <InputToggle
+        value={acceptingMentees || false}
         onClick={handleToggleAcceptingMentees}
-        style={{
-          backgroundColor: "#292929",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: "0.5rem",
-          width: "2rem",
-          height: "2rem",
-          border: "1px solid #fff2",
-          cursor: "pointer",
-        }}
       >
-        {acceptingMentees && <Check color={"#2d2"} />}
-      </div>
       <span style={{ fontSize: "1.1rem" }}>Accepting Mentees</span>
-    </div>
+    </InputToggle>
   );
 }
 
@@ -467,7 +447,7 @@ function BecomeMentorSection() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title,
         subtitle: message,
         buttons: [

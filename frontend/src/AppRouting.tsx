@@ -21,85 +21,96 @@ import MentorGuidelinesPage from "./pages/GuidelinesPage/MentorGuidelinesPage";
 import MenteeGuidelinesPage from "./pages/GuidelinesPage/MenteeGuidelinesPage";
 import HelpPage from "./pages/HelpPage/HelpPage";
 import { checkViteEnvironmentVariables } from "./scripts/envCheck";
+import UserSettingsPage from "./pages/UserSettingsPage/UserSettingsPage";
+import { ChangesPreventNavigationProvider } from "./context/ChangesPreventNavigation/ChangesPreventNavigation";
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <LandingPage/>
+    path: "/",
+    element: <LandingPage />,
   },
   {
-    path: '/playground',
-    element: <Playground/>
+    path: "/playground",
+    element: <Playground />,
   },
   {
-    path: '/app',
-    element: <App/>,
+    path: "/app",
+    element: <App />,
     children: [
       {
-        path: 'home',
-        element: <HomePage/>
+        path: "home",
+        element: <HomePage />,
       },
       {
-        path: 'user',
-        element: <UserPage/>
+        path: "user",
+        element: <UserPage />,
       },
       {
-        path: 'new-user',
-        element: <NewUserPage/>
+        path: "new-user",
+        element: <NewUserPage />,
       },
       {
-        path: 'assessment',
-        element: <AssessmentPage/>
+        path: "assessment",
+        element: <AssessmentPage />,
       },
       {
-        path: 'assessments',
-        element: <Assessments/>
+        path: "assessments",
+        element: <Assessments />,
       },
       {
-        path: 'goals',
-        element: <GoalsPage/>
+        path: "goals",
+        element: <GoalsPage />,
       },
       {
-        path: 'goal',
-        element: <GoalPage/>
+        path: "goal",
+        element: <GoalPage />,
       },
       {
-        path: 'my-mentor',
-        element: <MymentorPage/>
+        path: "my-mentor",
+        element: <MymentorPage />,
       },
       {
-        path: 'my-mentees',
-        element: <MyMenteesPage/>
+        path: "my-mentees",
+        element: <MyMenteesPage />,
       },
       {
-        path: 'mentor-guidelines',
-        element: <MentorGuidelinesPage/>
+        path: "mentor-guidelines",
+        element: <MentorGuidelinesPage />,
       },
       {
-        path: 'mentee-guidelines',
-        element: <MenteeGuidelinesPage/>
+        path: "mentee-guidelines",
+        element: <MenteeGuidelinesPage />,
       },
       {
-        path: 'help',
-        element: <HelpPage/>
+        path: "help",
+        element: <HelpPage />,
       },
       {
-        path: '*',
-        element: <P404Page/>
+        path: "settings",
+        element: (
+          <ChangesPreventNavigationProvider>
+            <UserSettingsPage />
+          </ChangesPreventNavigationProvider>
+        ),
       },
-    ]
+      {
+        path: "*",
+        element: <P404Page />,
+      },
+    ],
   },
 ]);
 
-
 export default function AppRouting() {
   checkViteEnvironmentVariables();
-  return <>
-    <Provider store={store}>
-      <Alert/>
-      <Dialog/>
-      <IntroOverlay/>
-      <RouterProvider router={router}/>
-    </Provider>
-  </>
+  return (
+    <>
+      <Provider store={store}>
+        <Alert />
+        <Dialog />
+        <IntroOverlay />
+        <RouterProvider router={router} />
+      </Provider>
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import { AssessmentQuestion, ChatObj, MentorshipRequestObj, UserObj } from "./general";
+import { UserSettings } from "./userSettings";
 
 // all possible payload data types that the server can send to the client
 export const ServerSocketDataPayloadTypes = [
@@ -33,8 +34,9 @@ export interface ServerSocketPayloadDataChat extends ServerSocketPayloadDataBase
 export interface ServerSocketPayloadDataInitialData extends ServerSocketPayloadDataBase {
   type: "initialData";
   data: {
-    user: UserObj;
-    availableAssessmentQuestions: AssessmentQuestion[];
+    user?: UserObj;
+    availableAssessmentQuestions?: AssessmentQuestion[];
+    userSettings?: UserSettings;
   }; // no data is sent, just the type
 };
 

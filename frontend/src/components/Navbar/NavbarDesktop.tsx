@@ -11,8 +11,8 @@ import { useRef, useState } from "react";
 import Transition from "../Transition/Transition";
 import HideOnMobile from "../RenderOnMobile/HideOnMobile";
 import styles from "./NavbarDesktop.module.css";
-import { useAuth0 } from "@auth0/auth0-react";
 import { HelpCircle } from "lucide-react";
+import useAuth from "../../hooks/UseAuth/useAuth";
 
 export default function NavbarDesktop() {
   const [hover, setHover] = useState(false);
@@ -114,7 +114,7 @@ export function NavbarProfile({
 }) {
   const navigate = useNavigate();
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const { logout } = useAuth0();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const openDelayRef = useRef<number>(undefined);
 
@@ -123,6 +123,11 @@ export function NavbarProfile({
       text: "Profile",
       style: defaultMenuButtonStyling,
       onClick: () => navigate(`/app/user?id=${user?.id}`),
+    },
+    {
+      text: "Settings",
+      style: defaultMenuButtonStyling,
+      onClick: () => navigate(`/app/settings`),
     },
     {
       text: "Assessments",
@@ -137,8 +142,7 @@ export function NavbarProfile({
     {
       text: "Logout",
       style: { ...defaultMenuButtonStyling, backgroundColor: "#933" },
-      onClick: () =>
-        logout({ logoutParams: { returnTo: window.location.origin } }),
+      onClick: () => logout(),
     },
   ];
 

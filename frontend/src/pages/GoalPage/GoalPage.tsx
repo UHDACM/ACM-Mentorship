@@ -17,7 +17,7 @@ import { ReduxRootState } from "../../store";
 import { setAlert } from "../../features/Alert/AlertSlice";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { SaveButtonFixed } from "../../components/SaveButtonFixed/SaveButtonFixed";
-import { closeDialog, setDialog } from "../../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../../features/Dialog/DialogSlice";
 import Calendar from "react-calendar";
 import { unixToDateString } from "../../scripts/tools";
 import MinimalisticTextArea from "../../components/MinimalisticTextArea/MinimalisticTextArea";
@@ -140,7 +140,7 @@ export function GoalPage() {
       return;
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: `${isNew ? "Create" : "Save"} Goal`,
         subtitle: isNew
           ? "This will create a goal. You sure you want to do this?"
@@ -352,7 +352,7 @@ function TasksSection({ disabled }: { disabled: boolean }) {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: 'Delete task "' + tasks[tIndex].name + '"',
         subtitle:
           "This will remove this task. After you save, this cannot be undone.",

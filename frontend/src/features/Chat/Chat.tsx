@@ -5,10 +5,13 @@ import {
   addChat,
   chatsAreLoaded,
   markChatRead,
+  setActiveChat,
   setChatMessages,
+  setChatOpen,
 } from "./ChatSlice";
 import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
 import { ChatObj } from "@shared/types/general";
+import { useSearchParams } from "react-router-dom";
 
 export const placeholderPreviewPicture =
   "https://www.mtsolar.us/wp-content/uploads/2020/04/avatar-placeholder.png";
@@ -19,6 +22,7 @@ export const placeholderPreviewPicture =
  * @returns
  */
 export default function Chat() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { chats, loaded, activeChatID } = useSelector(
     (store: ReduxRootState) => store.Chat
   );
@@ -85,6 +89,21 @@ export default function Chat() {
     });
     dispatch(markChatRead(activeChatID));
   }, [activeChatObj, activeChatID, self, ready]);
+
+
+  // handles opening chat from URL param
+  useEffect(() => {
+    const openChatID = searchParams.get("open_chat");
+    if (!openChatID) {
+      return;
+    }
+    setSearchParams((prev) => {
+      prev.delete("open_chat");
+      return prev;
+    });
+    dispatch(setActiveChat(openChatID));
+    dispatch(setChatOpen(true));
+  }, [searchParams]);
 
   return null;
 }

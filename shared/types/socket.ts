@@ -8,22 +8,20 @@ export const MentorshipRequestActions = [
 ] as const;
 export type MentorshipRequestAction = (typeof MentorshipRequestActions)[number];
 
-
 export const MentorshipRequestResponseActions = [
   "accept",
   "decline",
-  "cancel"
+  "cancel",
 ] as const satisfies readonly MentorshipRequestAction[];
 export type MentorshipRequestResponseAction =
   (typeof MentorshipRequestResponseActions)[number];
-  
 
 export const ClientSocketStates = [
   "connecting",
   "authed_nouser",
   "authed_user",
   "disconnected",
-  "connect_error"
+  "connect_error",
 ] as const;
 
 export type ClientSocketState = (typeof ClientSocketStates)[number];
@@ -42,11 +40,12 @@ export type ClientSocketEvent = (typeof ClientSocketEvents)[number];
 // all possible events that the server can receive from the client
 // TODO: add all possible events
 export const ServerSocketEvents = [
-  "data",
+  "data", // TODO: Not sure if used
   "mentorshipRequest",
-  "message",
+  "message", // TODO: Not sure if used
   "createUser",
   "updateProfile",
+  'updateUserSettings',
   "submitAssessment",
   "submitGoal",
   "getUser",
@@ -57,7 +56,8 @@ export const ServerSocketEvents = [
   "getMentorshipRequest",
   "getMessages",
   "getMentorshipRequestBetweenUsers",
-  "sendMessage"
+  "sendMessage",
+  "setNotificationSubscription",
 ] as const;
 export type ServerSocketEvent = (typeof ServerSocketEvents)[number];
 
@@ -90,10 +90,14 @@ export const ClientSocketInstanceVariables = [
   "state",
   "availableAssessmentQuestions",
   "chats",
-  "messages"
+  "messages",
+  "userSettings",
 ] as const;
-export type ClientSocketInstanceVariable = (typeof ClientSocketInstanceVariables)[number];
+export type ClientSocketInstanceVariable =
+  (typeof ClientSocketInstanceVariables)[number];
 
 export type ClientSocketPostInstanceVariableUpdateFunction = (
   variable: ClientSocketInstanceVariable
 ) => void;
+
+export type ClientSocketPostLogoutFunction = () => Promise<void>;

@@ -3,8 +3,12 @@ import { ClientSocket } from "./clientSocket";
 import { sleep } from "@shared/scripts/generalTools";
 import { USERNAME_RESERVED_TESTING_PREFIX } from "@shared/data/validation";
 import { ClientSocketState } from "@shared/types/socket";
-import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequests";
+import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequest";
 import { GenerateSocketArray } from "@shared/scripts/testingTools";
+
+if (process.env.SKIP_TEST_DATA_DELETION == 'true') {
+  throw new Error('SKIP_TEST_DATA_DELETION cannot be true for this test file as it relies on clean test data.');
+}
 
 /**
  * This file tests mentorship request related functionality of the ClientSocket class.
@@ -15,8 +19,8 @@ import { GenerateSocketArray } from "@shared/scripts/testingTools";
 
 const SocketArray: ClientSocket[] = [];
 
-// max number of mentors + 1 extra for the mentee (used to test max mentors limit) + 1 extra mentor to test max mentors limit
-const SocketCount = MAX_NUMBER_OF_MENTORS_PER_MENTEE + 1 + 1;
+// 1 + max number of mentors + 1 extra mentor to test max mentors limit
+const SocketCount = 1 + MAX_NUMBER_OF_MENTORS_PER_MENTEE + 1;
 const SocketAddress = `ws://localhost:${process.env.SERVER_PORT}`;
 beforeAll(async () => {
   // creates SocketCount sockets and connects them to the server

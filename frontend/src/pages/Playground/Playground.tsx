@@ -1,23 +1,39 @@
 
-import MinimalisticInput from '../../components/MinimalisticInput/MinimalisticInput';
-import MinimalisticTextArea from '../../components/MinimalisticTextArea/MinimalisticTextArea';
-import { useState } from 'react';
 import MinimalisticButton from '../../components/MinimalisticButton/MinimalisticButton';
-import useWarnNavigation from '../../hooks/UseWarnNavigation/useWarnNavigation';
+import { useDispatch } from 'react-redux';
+import { addDialog, addDialogImmediate, closeDialog } from '../../features/Dialog/DialogSlice';
 
 export default function Playground() {
-  const [enabled, setOn] = useState(true);
-  useWarnNavigation({ enabled })
+  const dispatch = useDispatch();
+
+  function AddFiveDialogsPlusPriority() {
+    for (let i = 0; i < 5; i++) {
+      dispatch(addDialog(
+        {
+          title: `Dialog ${i + 1}`,
+          buttons: [
+            {
+              text: 'ADD PRIORITY',
+              onClick: () => {
+                dispatch(addDialogImmediate({
+                  title: 'Priority Dialog',
+                  showDelay: 1000,
+                }));
+                dispatch(closeDialog());
+              }
+            }
+          ]
+        }
+      ));
+    }
+  }
 
   return (
     <>
       <div
       className={'pageBase'}
       >
-        <MinimalisticInput placeholder='Work' disabled={!true}/>
-        <MinimalisticTextArea/>
-        
-        <MinimalisticButton onClick={() => setOn(!enabled)}>Warn: {enabled ? 'True' : 'False'}</MinimalisticButton>
+        <MinimalisticButton onClick={AddFiveDialogsPlusPriority}>Add 5 Dialogs</MinimalisticButton>
       </div>
     </>
   );

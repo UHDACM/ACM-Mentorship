@@ -98,7 +98,7 @@ function ChatWidgetChatPreview({
           padding: 10,
           boxSizing: "border-box",
           backgroundColor:
-            lastMessage!.timestamp > (lastTimeRead || 0) ? "#494949" : "#333",
+            (lastMessage?.timestamp || 0) > (lastTimeRead || 0) ? "#494949" : "#333",
           display: "flex",
           flexDirection: "row",
           cursor: "pointer",
@@ -140,13 +140,13 @@ function ChatWidgetChatPreview({
               opacity: 0.8,
             }}
           >
-            {lastMessage!.sender === self.id
+            {lastMessage?.sender === self.id
               ? "You"
               : `${OBSCURE_MODE ? "obscured" : users[otherUserID].fName}`}
             :{" "}
-            {lastMessage!.contents.length > 50
-              ? lastMessage!.contents.substring(0, 50) + "..."
-              : lastMessage!.contents}
+            {lastMessage?.contents.length || 0 > 50
+              ? lastMessage?.contents.substring(0, 50) + "..."
+              : lastMessage?.contents}
           </span>
         </div>
       </div>

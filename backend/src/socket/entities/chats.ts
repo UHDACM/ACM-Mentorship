@@ -1,14 +1,15 @@
-import { ChatObj, MessageObj } from "@shared/types/general";
+import { ChatObj, DBObj, MessageObj } from "@shared/types/general";
 import {
   DBCreate,
   DBDeleteWithID,
   DBGetWithID,
-  DBObj,
   DBSetWithID,
-  DocumentTestKey,
 } from "src/db";
 import AuthenticatedSocket, { SendClientsDataWithUserID } from "../AuthenticatedSocket";
 import { isValidChatObj, isValidMessageContent } from "@shared/validation/general";
+import { NotificationActions, NotificationTagPrefixes } from "@shared/data/notification";
+import { TrySendPushNotificationToUsers } from "./notification";
+import { DocumentTestKey } from "@shared/data/db";
 
 export async function CreateChat(
   targetUserIDs: string[],
@@ -29,10 +30,6 @@ export async function CreateChat(
   } else if (!firstMessageContents) {
     throw new Error("Cannot create chat, no message was provided");
   }
-  console.log(
-    "[ie45] noParamIssues",
-    JSON.stringify({ targetUserIDs, requestingUserID }, null, 2)
-  );
 
   // ensure requesting user exists
   const requestingUserObj = await DBGetWithID("user", requestingUserID);
@@ -101,7 +98,6 @@ export async function CreateChat(
       }
     }
   }
-  console.log("[ie45] gabagoo");
 
   // ensure no chats with current members exist
   const userCount = targetUserIDSet.size;
@@ -139,7 +135,6 @@ export async function CreateChat(
     chatDoesNotExist = true;
   }
 
-  console.log("[ie45] heemiejeems");
   // chat does not exist. Go ahead and create
   const users = {};
   for (let [userID, userObj] of targetUserIDSet) {
@@ -152,7 +147,6 @@ export async function CreateChat(
       displayPictureURL: userObj.displayPictureURL || "",
     };
   }
-  console.log("[ie45] parabsa");
   let createdChatID: string;
   const chatObj: Partial<ChatObj> = {
     users,
@@ -319,7 +313,26 @@ export async function SendChatMessage(
     lastMessage: messageObj,
   };
   const { users } = newChatObj as ChatObj;
-  console.log("sentChatMessage");
   // send updated chat to all involved users
   SendClientsDataWithUserID(Object.keys(users), "chat", newChatObj);
+
+  // send notification to all users except sender
+  const notiTargets = Object.keys(users).filter(
+    (userID) => userID !== requestingUserID
+  );
+  const senderName =
+    (userObj.fName ? userObj.fName + " " : "") + (userObj.lName || "");
+  const notiMessage =
+    senderName +
+    ": " +
+    (contents.length > 50 ? contents.slice(0, 47) + "..." : contents);
+
+  await TrySendPushNotificationToUsers(notiTargets, "New Chat Message", {
+    body: notiMessage,
+    tag: `${NotificationTagPrefixes.CHAT}_${chatID}`,
+    data: {
+      action: `${NotificationActions.OPEN_CHAT}`,
+      actionArgs: [chatID],
+    }
+  });
 }

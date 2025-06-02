@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { closeDialog, setDialog } from "../features/Dialog/DialogSlice";
+import { closeDialog, addDialog } from "../features/Dialog/DialogSlice";
 import { ReduxRootState } from "../store";
 import { ObjectAny } from "@shared/types/general";
 import { MyClientSocket } from "../features/ClientSocket/ClientSocketHandler";
@@ -12,7 +12,7 @@ export function useChangeUsernameWithDialog() {
 
   function handleUpdateUsername(callback?: useChangeUsernameWithDialogCallback) {
       dispatch(
-        setDialog({
+        addDialog({
           title: "Change Username",
           subtitle:
             "Change your username to whatever you want (assuming it's available)",

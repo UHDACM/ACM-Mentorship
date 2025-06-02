@@ -1,21 +1,21 @@
 import { useDispatch } from "react-redux";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
-import { setDialog } from "../../features/Dialog/DialogSlice";
-import { useAuth0 } from "@auth0/auth0-react";
+import { addDialog } from "../../features/Dialog/DialogSlice";
+import useAuth from "../../hooks/UseAuth/useAuth";
 
 export default function LandingPage() {
   const dispatch = useDispatch();
-  const { loginWithRedirect } = useAuth0();
+  const { loginWithRedirect } = useAuth();
 
   function handleLearnMore() {
-    dispatch(setDialog({
+    dispatch(addDialog({
       title: 'Nothing',
       subtitle: 'Nothing else available yet'
     }));
   }
 
   function handleLogin() {
-    loginWithRedirect({'authorizationParams': { scope: 'openid profile email' }});
+    loginWithRedirect();
   }
 
   return (

@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "concurrently \"npx tailwindcss -i ./src/tailwind.css -o ./src/tailwind_out.css --watch\" \"wait-on ./src/tailwind_out.css && vite\"",
     "compileTailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/tailwind_out.css",
+    "build-sw": "npx tsc public/service-worker/ServiceWorker.ts --target ES2022 --module nodenext --moduleResolution nodenext --lib ES2022,WebWorker --outDir public --removeComments true && echo 'Service Worker built' && echo '== YOU MUST Comment out the export {} in your ServiceWorker.ts file. =='",
     "build": "tsc -b && npm run compileTailwind && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5173"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
@@ -24,7 +25,7 @@
     "react-autowidth-input": "^1.0.10",
     "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.4.0",
+    "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.4",
     "react-textarea-autosize": "^8.5.9",

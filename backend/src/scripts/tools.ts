@@ -1,4 +1,5 @@
-import { collectionNames, DBDelete, DBGet, DocumentTestKey } from "src/db";
+import { DocumentTestKey } from "@shared/data/db";
+import { collectionNames, DBDelete, DBGet } from "src/db";
 
 /**
  * Returns a promise that resolves after `ms` milliseconds.
@@ -11,12 +12,12 @@ export function sleep(ms: number) {
 
 // deletes all test data in the database before any tests are run
 export async function DeleteTestData() {
-    // implement deletion of test data here
-    await Promise.all(
-        collectionNames.map(async (collectionName) => {
-            await DBDelete(collectionName, [[DocumentTestKey, '==', true]])
-        })
-    );
+  // finds them by getting documents with DocumentTestKey, which is only set on test data
+  await Promise.all(
+      collectionNames.map(async (collectionName) => {
+          await DBDelete(collectionName, [[DocumentTestKey, '!=', '']])
+      })
+  );
 }
 
 // deletes all test data in the database before any tests are run

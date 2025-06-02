@@ -13,6 +13,10 @@ import { isValidMessageContent } from "@shared/validation/general";
  *
  */
 
+if (process.env.SKIP_TEST_DATA_DELETION == 'true') {
+  throw new Error('SKIP_TEST_DATA_DELETION cannot be true for this test file as it relies on clean test data.');
+}
+
 const SocketArray: ClientSocket[] = [];
 
 // max number of mentors + 1 extra for the mentee (used to test max mentors limit) + 1 extra mentor to test max mentors limit

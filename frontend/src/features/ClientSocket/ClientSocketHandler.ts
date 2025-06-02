@@ -5,10 +5,14 @@ import {
   setClientReady,
   setClientState,
   setClientUser,
+  setUserSettings,
 } from "./ClientSocketSlice";
 
 import { setChatMessages, setChats } from "../Chat/ChatSlice";
-import { ClientSocketEvent, ClientSocketInstanceVariable } from "@shared/types/socket";
+import {
+  ClientSocketEvent,
+  ClientSocketInstanceVariable,
+} from "@shared/types/socket";
 import { ClientSocket } from "@shared/classes/clientSocket/clientSocket";
 import { isClientSocketState } from "@shared/validation/socket";
 import {
@@ -18,7 +22,10 @@ import {
   isValidServerSocketPayloadDataMentorshipRequest,
   isValidServerSocketPayloadDataUpdateSelf,
 } from "@shared/validation/serverSocketPayload";
-import { setDialog } from "../Dialog/DialogSlice";
+import { addDialog, closeDialog } from "../Dialog/DialogSlice";
+import { UnsubscribeFromNotifications } from "../NotificationManager/NotificationManager";
+import { LocalStorageKeys } from "@shared/data/localStorage";
+import { NavigateFunction } from "react-router-dom";
 
 // This file is used to create and manage the client socket connection.
 // it makes use of the ClientSocket class (in /shared)
@@ -33,7 +40,13 @@ let CreatingConnection = false;
  */
 export function CreateClientSocketConnection(
   userToken: string,
-  dispatch: Dispatch,
+  {
+    dispatch,
+    navigate,
+  }: {
+    dispatch: Dispatch;
+    navigate: NavigateFunction;
+  },
   reconnect?: boolean
 ) {
   if ((MyClientSocket || CreatingConnection) && !reconnect) {
@@ -51,12 +64,27 @@ export function CreateClientSocketConnection(
         token: `Bearer ${userToken}`,
       },
     },
-    (event, payload) => ClientSocketEventHandler(dispatch, event, payload),
-    (variable) => ClientSocketInstanceVariableUpdateHandler(dispatch, variable)
+    (event, payload) =>
+      ClientSocketEventHandler({ dispatch, navigate }, event, payload),
+    (variable) =>
+      ClientSocketInstanceVariableUpdateHandler(
+        { dispatch, navigate },
+        variable
+      ),
+    () => ClientSocketLogoutHandler()
   );
 }
 
-function ClientSocketInstanceVariableUpdateHandler(dispatch: Dispatch, variable: ClientSocketInstanceVariable) {
+function ClientSocketInstanceVariableUpdateHandler(
+  {
+    dispatch,
+  }: // navigate,
+  {
+    dispatch: Dispatch;
+    navigate: NavigateFunction;
+  },
+  variable: ClientSocketInstanceVariable
+) {
   if (!MyClientSocket) {
     return;
   }
@@ -66,11 +94,17 @@ function ClientSocketInstanceVariableUpdateHandler(dispatch: Dispatch, variable:
   } else if (variable == "state") {
     dispatch(setClientState(MyClientSocket.state));
   } else if (variable == "availableAssessmentQuestions") {
-    dispatch(setAvailableAssessmentQuestions(MyClientSocket.availableAssessmentQuestions));
+    dispatch(
+      setAvailableAssessmentQuestions(
+        MyClientSocket.availableAssessmentQuestions
+      )
+    );
   } else if (variable == "chats") {
     dispatch(setChats(MyClientSocket.chats));
   } else if (variable == "messages") {
     dispatch(setChatMessages(MyClientSocket.messages));
+  } else if (variable == "userSettings") {
+    dispatch(setUserSettings(MyClientSocket.userSettings));
   } else {
     console.error("Unknown variable update from ClientSocket:", variable);
   }
@@ -78,17 +112,17 @@ function ClientSocketInstanceVariableUpdateHandler(dispatch: Dispatch, variable:
 
 /**
  * This function handles processing of events received from ClientSocket.
- * 
+ *
  * e.g.: when a message event is received, it dispatches a dialog to show the message.
  * Note: updating the store with data received from the server is handled by `ClientSocketInstanceVariableUpdateHandler`
- * 
+ *
  * @param dispatch Redux dispatch function
- * @param event 
- * @param payload 
- * @returns 
+ * @param event
+ * @param payload
+ * @returns
  */
 function ClientSocketEventHandler(
-  dispatch: Dispatch,
+  { dispatch, navigate }: { dispatch: Dispatch; navigate: NavigateFunction },
   event: ClientSocketEvent,
   payload?: unknown
 ) {
@@ -110,6 +144,70 @@ function ClientSocketEventHandler(
     }
   } else if (event == "data") {
     if (isValidServerSocketPayloadDataMentorshipRequest(payload)) {
+      console.log("Received crap", payload.data.status);
+      if (payload.data.status == "cancelled" || !payload.data.status) {
+        // payload meant for mentor
+        if (payload.data.mentorID != MyClientSocket.user.id) {
+          return;
+        }
+
+        MyClientSocket.GetUser(payload.data.menteeID).then((menteeObj) => {
+          let menteeName = "A user";
+          if (menteeObj && menteeObj.fName) {
+            menteeName = menteeObj.fName;
+          }
+
+          let title = "";
+          if (payload.data.status == "cancelled") {
+            title = `${menteeName} has cancelled their mentorship request.`;
+          } else {
+            title = `${menteeName} sent you a mentorship request.`;
+          }
+
+          dispatch(
+            addDialog({
+              title: title,
+              buttons: [
+                {
+                  text: "View Requests",
+                  onClick: payload.data.status == 'cancelled' ? undefined : () => {
+                    navigate("/app/my-mentees?tab=1");
+                    dispatch(closeDialog());
+                  },
+                },
+              ],
+            })
+          );
+        });
+        return;
+      } else {
+        // payload meant for mentee
+        if (payload.data.menteeID != MyClientSocket.user.id) {
+          return;
+        }
+        // get mentorship request mentee's name
+        MyClientSocket.GetUser(payload.data.mentorID).then((mentorObj) => {
+          let mentorName = "A user";
+          if (mentorObj && mentorObj.fName) {
+            mentorName = mentorObj.fName;
+          }
+          dispatch(
+            addDialog({
+              title: `${mentorName} ${payload.data.status} your mentorship request.`,
+              subtitle: "Check your mentorship requests for more details.",
+              buttons: [
+                {
+                  text: "Go to My Mentor",
+                  onClick: () => {
+                    navigate("/app/my-mentor");
+                    dispatch(closeDialog());
+                  },
+                },
+              ],
+            })
+          );
+        });
+      }
     } else if (isServerSocketPayloadDataInitialData(payload)) {
     } else if (isValidServerSocketPayloadDataChat(payload)) {
     } else if (isValidServerSocketPayloadDataUpdateSelf(payload)) {
@@ -118,12 +216,20 @@ function ClientSocketEventHandler(
       return;
     }
   } else if (event == "message") {
+    console.log("Received message payload:", payload);
     if (!isServerSocketPayloadMessage(payload)) {
       return;
     }
     const { title, body } = payload;
-    dispatch(setDialog({ title, subtitle: body }));
+    dispatch(addDialog({ title, subtitle: body }));
   }
+}
+
+async function ClientSocketLogoutHandler() {
+  console.log("ClientSocket: Logging out, unsubscribing from notifications");
+  await UnsubscribeFromNotifications();
+  const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
+  localStorage.setItem(localStoragePreviousUserIDKey, "");
 }
 
 // class ClientSocket {

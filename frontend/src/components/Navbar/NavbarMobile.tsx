@@ -9,14 +9,14 @@ import { setChatOpen } from "../../features/Chat/ChatSlice";
 import ShowOnMobile from "../RenderOnMobile/ShowOnMobile";
 import ChatsUnreadIndicator from "../../features/Chat/ChatsUnreadIndicator";
 import { ReduxRootState } from "../../store";
-import { useAuth0 } from "@auth0/auth0-react";
+import useAuth from "../../hooks/UseAuth/useAuth";
 
 const NavbarMobile: React.FC = () => {
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { logout } = useAuth0();
+  const { logout } = useAuth();
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -47,8 +47,7 @@ const NavbarMobile: React.FC = () => {
     { text: "Help", href: "/app/help" },
     {
       text: "Logout",
-      onClick: () =>
-        logout({ logoutParams: { returnTo: window.location.origin } }),
+      onClick: () => logout(),
     },
   ];
 

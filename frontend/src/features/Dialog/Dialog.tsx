@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxRootState } from "../../store";
 import * as DialogRadix from "@radix-ui/react-dialog";
-import { closeDialog, DialogButton, DialogInput } from "./DialogSlice";
+import { closeDialog, DialogButton, DialogInput, showNextDialog } from "./DialogSlice";
 import { useEffect, useState } from "react";
 import { ObjectAny } from "@shared/types/general";
 import { XIcon } from "lucide-react";
@@ -38,16 +38,33 @@ export default function Dialog() {
     buttons,
     buttonContainerStyle,
     inputs,
-    active,
     containerStyle,
     overlayStyle,
-    showComponent
+    showComponent,
+
+    active,
+    dialogQueue
   } = useSelector((store: ReduxRootState) => store.Dialog);
   const [inputVals, setInputVals] = useState<ObjectAny>({});
   const [disabledButtons, setDisabledButtons] = useState(
     Array.from({ length: buttons?.length || 0 }, () => false)
   );
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    if (active) return;
+
+    if (!dialogQueue || dialogQueue.length === 0) {
+      return;
+    }
+
+    const showDelay = dialogQueue[0].showDelay || 0;
+
+    setTimeout(() => {
+      dispatch(showNextDialog());
+    }, showDelay || 150);
+  }, [dialogQueue, active]);
 
   // used to set initial values
   useEffect(() => {

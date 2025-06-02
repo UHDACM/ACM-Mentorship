@@ -3,6 +3,7 @@ import DialogSlice from './features/Dialog/DialogSlice';
 import ClientSocketSlice from './features/ClientSocket/ClientSocketSlice';
 import AlertSlice from './features/Alert/AlertSlice';
 import ChatSlice from './features/Chat/ChatSlice';
+import NotificationManagerSlice from './features/NotificationManager/NotificationManagerSlice';
 import { enableMapSet } from 'immer';
 
 export const store = configureStore({
@@ -10,7 +11,8 @@ export const store = configureStore({
     Dialog: DialogSlice,
     ClientSocket: ClientSocketSlice,
     Alert: AlertSlice,
-    Chat: ChatSlice
+    Chat: ChatSlice,
+    NotificationManager: NotificationManagerSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({

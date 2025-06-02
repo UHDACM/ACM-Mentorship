@@ -11,6 +11,7 @@ import {
   ClientSocketEvent,
   ClientSocketEvents,
   ClientSocketPostInstanceVariableUpdateFunction,
+  ClientSocketPostLogoutFunction,
   ClientSocketPostProcessingFunction,
   ClientSocketState,
   MentorshipRequestResponseAction,
@@ -55,6 +56,8 @@ import {
   SocketServerErrorImproperlyFormattedToken,
   SocketServerErrorNoToken,
 } from "@shared/data/socketServer";
+import { UserSettings } from "@shared/types/userSettings";
+import { PushSubscription } from "@shared/types/userPushSubscriptions";
 
 const MAX_FAILED_CONNECTION_ATTEMPTS = 3;
 const OBSCURE_MODE = false;
@@ -67,9 +70,12 @@ export class ClientSocket {
    **/
 
   private socket: Socket;
-  private postProcess?: ClientSocketPostProcessingFunction;
-  private postProcessInstanceVariableUpdate: ClientSocketPostInstanceVariableUpdateFunction = () => {};
+  private postProcess?: ClientSocketPostProcessingFunction = () => {};
+  private postProcessInstanceVariableUpdate: ClientSocketPostInstanceVariableUpdateFunction =
+    () => {};
+  private postLogoutProcess: ClientSocketPostLogoutFunction = async () => {};
   user: UserObj = {};
+  userSettings: UserSettings = {};
   state: ClientSocketState = "connecting";
   availableAssessmentQuestions: AssessmentQuestion[] = [];
   chats: Map<string, ChatObj> = new Map();
@@ -88,12 +94,19 @@ export class ClientSocket {
     socketServerURL: string,
     opts?: ManagerOptions | SocketOptions,
     postProcess?: ClientSocketPostProcessingFunction,
-    postProcessInstanceVariableUpdate?: ClientSocketPostInstanceVariableUpdateFunction
+    postProcessInstanceVariableUpdate?: ClientSocketPostInstanceVariableUpdateFunction,
+    postLogoutProcess?: ClientSocketPostLogoutFunction
   ) {
     // assign post processing function if provided
-    this.postProcess = postProcess;
+    if (postProcess) {
+      this.postProcess = postProcess;
+    }
     if (postProcessInstanceVariableUpdate) {
-      this.postProcessInstanceVariableUpdate = postProcessInstanceVariableUpdate;
+      this.postProcessInstanceVariableUpdate =
+        postProcessInstanceVariableUpdate;
+    }
+    if (postLogoutProcess) {
+      this.postLogoutProcess = postLogoutProcess;
     }
 
     // connect to server
@@ -177,9 +190,10 @@ export class ClientSocket {
       // TODO: I should probably do something with this data.
       this.requestUpdateSelf();
     } else if (isServerSocketPayloadDataInitialData(payload)) {
-      const { user, availableAssessmentQuestions } = payload.data;
+      const { user, availableAssessmentQuestions, userSettings } = payload.data;
       this._setUser(user);
       this._setAvailableAssessmentQuestions(availableAssessmentQuestions);
+      this._setUserSettings(userSettings);
     } else if (isValidServerSocketPayloadDataChat(payload)) {
       const chatObj = payload.data;
       this._setChatID(chatObj.id, chatObj);
@@ -299,6 +313,16 @@ export class ClientSocket {
       this.socket.emit(UpdateProfileEvent, params, (v: boolean) => {
         // if successful, requests a self update
         v && this.requestUpdateSelf();
+        res(v);
+      });
+    });
+  }
+
+  public async UpdateUserSettings(settings: UserSettings): Promise<boolean> {
+    return await new Promise((res) => {
+      const updateUserSettingsEvent: ServerSocketEvent = "updateUserSettings";
+      this.socket.emit(updateUserSettingsEvent, settings, (v: boolean) => {
+        console.log('Updated settings:', v, settings);
         res(v);
       });
     });
@@ -497,7 +521,7 @@ export class ClientSocket {
             throw new Error();
           }
         } catch {
-          res(false)
+          res(false);
           return;
         }
         res(v);
@@ -532,35 +556,33 @@ export class ClientSocket {
     messageContent: string
   ): Promise<string> {
     return new Promise((res, rej) => {
-    if (!targetUserID || !messageContent) {
-      rej(
-        "Cannot create chat without a target user or message content"
-      );
-    } 
-    
-    try {
-      if (!isValidMessageContent(messageContent)) {
-        // it will throw an error if invalid in the function
-        throw new Error("Message content is invalid");
+      if (!targetUserID || !messageContent) {
+        rej("Cannot create chat without a target user or message content");
       }
-    } catch (err) {
-      rej((err as Error).message);
-      return;
-    }
 
-    const sendMessageAction: ServerSocketEvent = "sendMessage";
-    const sendMessagePayload: ClientSocketPayloadSendMessageCreate = {
-      action: "create",
-      contents: messageContent,
-      targetUserIDs: [targetUserID],
-    };
+      try {
+        if (!isValidMessageContent(messageContent)) {
+          // it will throw an error if invalid in the function
+          throw new Error("Message content is invalid");
+        }
+      } catch (err) {
+        rej((err as Error).message);
+        return;
+      }
+
+      const sendMessageAction: ServerSocketEvent = "sendMessage";
+      const sendMessagePayload: ClientSocketPayloadSendMessageCreate = {
+        action: "create",
+        contents: messageContent,
+        targetUserIDs: [targetUserID],
+      };
 
       this.socket.emit(
         sendMessageAction,
         sendMessagePayload,
         (v: false | string) => {
           if (v == false) {
-            rej('Could not create chat');
+            rej("Could not create chat");
             return;
           }
           res(v);
@@ -760,7 +782,6 @@ export class ClientSocket {
 
     const chatObj = this.chats.get(chatID);
 
-    console.log('chatMap', this.chats);
     if (!chatObj) {
       throw new Error(
         "You do not have access to this chat, or chat does not exist."
@@ -847,6 +868,27 @@ export class ClientSocket {
     });
   }
 
+  public SetNotificationSubscription(sub: PushSubscription) {
+    const setNotificationSubscriptionEvent: ServerSocketEvent =
+      "setNotificationSubscription";
+    return new Promise<boolean>((res) => {
+      console.log("Setting notification subscription:", sub);
+      let set = false;
+      setTimeout(() => {
+        if (set) {
+          return;
+        }
+        console.warn("Notification subscription request timed out.");
+        res(false);
+      }, 5000);
+      this.socket.emit(setNotificationSubscriptionEvent, sub, (v: boolean) => {
+        set = true;
+        console.log("Set notification subscription response:", v);
+        res(v);
+      });
+    });
+  }
+
   public async requestUpdateSelf() {
     if (!this.user.id) {
       return;
@@ -865,8 +907,12 @@ export class ClientSocket {
   }
 
   private _handleDisconnect() {
-    const disconnectState: ClientSocketState = "disconnected";
-    this._invokeHandler("state", disconnectState);
+    this.disconnect();
+  }
+
+  public async logout() {
+    this.disconnect();
+    await this.postLogoutProcess();
   }
 
   /**
@@ -880,8 +926,8 @@ export class ClientSocket {
     return this.socket;
   }
 
-  private _setUser(user: UserObj) {
-    this.user = user;
+  private _setUser(user?: UserObj) {
+    this.user = user || {};
     this.postProcessInstanceVariableUpdate("user");
   }
 
@@ -890,9 +936,14 @@ export class ClientSocket {
     this.postProcessInstanceVariableUpdate("state");
   }
 
-  private _setAvailableAssessmentQuestions(questions: AssessmentQuestion[]) {
-    this.availableAssessmentQuestions = questions;
+  private _setAvailableAssessmentQuestions(questions?: AssessmentQuestion[]) {
+    this.availableAssessmentQuestions = questions || [];
     this.postProcessInstanceVariableUpdate("availableAssessmentQuestions");
+  }
+
+  private _setUserSettings(userSettings?: UserSettings) {
+    this.userSettings = userSettings || {};
+    this.postProcessInstanceVariableUpdate("userSettings");
   }
 
   private _setChatID(chatID: string, chatObj: ChatObj) {

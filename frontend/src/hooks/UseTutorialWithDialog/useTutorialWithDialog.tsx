@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import YouTubeEmbed from "../../components/YouTubeEmbed/YouTubeEmbed";
-import { setDialog } from "../../features/Dialog/DialogSlice";
+import { addDialog } from "../../features/Dialog/DialogSlice";
 
 type availableTutorial = 'getStarted' | 'selfAssessments' | 'goals' | 'mentoring' | 'getAMentor';
 // export const availableTutorials = ['getStarted']
@@ -10,7 +10,7 @@ export default function useTutorialWithDialog() {
     switch (tutorial) {
       case 'getStarted':
         dispatch(
-          setDialog({
+          addDialog({
             title: "Getting Started",
             subtitle: "Learn how to make the most of this platform.",
             showComponent: (
@@ -21,7 +21,7 @@ export default function useTutorialWithDialog() {
         break;
       case 'selfAssessments':
         dispatch(
-          setDialog({
+          addDialog({
             title: "Assessments",
             subtitle: "Understand self-assessments and their importance.",
             showComponent: (
@@ -32,7 +32,7 @@ export default function useTutorialWithDialog() {
         break;
       case 'goals':
         dispatch(
-          setDialog({
+          addDialog({
             title: "Goals",
             subtitle: "Understand goals and their importance.",
             showComponent: (
@@ -43,7 +43,7 @@ export default function useTutorialWithDialog() {
         break;
       case 'getAMentor':
         dispatch(
-          setDialog({
+          addDialog({
             title: "Get A Mentor",
             subtitle: "Find out how to get a mentor.",
             showComponent: (
@@ -54,7 +54,7 @@ export default function useTutorialWithDialog() {
         break;
       case 'mentoring':
         dispatch(
-          setDialog({
+          addDialog({
             title: "Mentoring",
             subtitle: "Find out how to become a mentor, and what a mentor does.",
             showComponent: (

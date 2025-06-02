@@ -1,3 +1,4 @@
+// TODO: replace this with a more robust solution
 export function checkViteEnvironmentVariables(): void {
   const requiredVariables = [
     "VITE_AUTH0_DOMAIN",
@@ -6,12 +7,14 @@ export function checkViteEnvironmentVariables(): void {
     "VITE_AUTH0_REDIRECT_URI_BASE",
     "VITE_AUTH0_AUDIENCE",
     "VITE_AUTH0_SCOPE",
+
+    "VITE_VAPID_PUBLIC_KEY"
   ];
 
   const missingVariables: string[] = [];
 
   requiredVariables.forEach((variableName) => {
-    console.log(variableName, import.meta.env[variableName]);
+    // console.log(variableName, import.meta.env[variableName]);
     if (!import.meta.env[variableName]) {
       missingVariables.push(variableName);
     }

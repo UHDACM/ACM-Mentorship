@@ -111,8 +111,6 @@ export default function ChatWidgetActiveChat({
     userIDsInChat[0] !== self.id ? userIDsInChat[0] : userIDsInChat[1];
   const otherUserObj = users[otherUserID];
 
-  console.log('activebru', activeChatObj);
-
   return (
     <>
       <div

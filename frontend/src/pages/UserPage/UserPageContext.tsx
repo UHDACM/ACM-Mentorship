@@ -13,7 +13,7 @@ type UserPageContextType = {
     | "loading"
     | undefined;
   setExistingIncomingMentorshipRequest: (
-    v: MentorshipRequestObj | "loading"
+    v: MentorshipRequestObj | "loading" | undefined
   ) => void;
 };
 
@@ -40,7 +40,7 @@ export const UserPageContextProvider = ({
   const [
     existingIncomingMentorshipRequest,
     setExistingIncomingMentorshipRequest,
-  ] = useState<MentorshipRequestObj | "loading">("loading");
+  ] = useState<MentorshipRequestObj | "loading" | undefined>("loading");
   return (
     <UserPageContext.Provider
       value={{

@@ -30,6 +30,7 @@ export type DialogButton = {
 };
 
 export interface SetDialogObject {
+  showDelay?: number,
   containerStyle?: React.CSSProperties,
   overlayStyle?: React.CSSProperties,
   title?: string,
@@ -43,7 +44,8 @@ export interface SetDialogObject {
 };
 
 interface DialogState extends SetDialogObject {
-  active?: boolean
+  active?: boolean,
+  dialogQueue?: SetDialogObject[]
 };
 
 const initialState: DialogState = {};
@@ -52,14 +54,28 @@ const DialogSlice = createSlice({
   name: "ServerConnection",
   initialState: initialState,
   reducers: {
-    setDialog(_: Draft<DialogState>, action: PayloadAction<SetDialogObject>) {
-      return { ...action.payload, active: true } as DialogState;
+    addDialog(state: Draft<DialogState>, action: PayloadAction<SetDialogObject>) {
+      // pushes dialog to queue
+      state.dialogQueue = [...(state.dialogQueue || []), action.payload];
+    },
+    addDialogImmediate(state: Draft<DialogState>, action: PayloadAction<SetDialogObject>) {
+      // pushes dialog to front of queue
+      state.dialogQueue = [action.payload, ...(state.dialogQueue || [])];
     },
     closeDialog(state: Draft<DialogState>) {
         state.active = false;
+    },
+    showNextDialog(state: Draft<DialogState>) {
+      if (!state.dialogQueue || state.dialogQueue.length === 0) {
+        state.active = false;
+        return;
+      }
+
+      const nextDialog = state.dialogQueue[0];
+      return { dialogQueue: state.dialogQueue.slice(1), ...nextDialog, active: true };
     }
   },
 });
 
-export const { setDialog, closeDialog } = DialogSlice.actions;
+export const { addDialog, addDialogImmediate, closeDialog, showNextDialog } = DialogSlice.actions;
 export default DialogSlice.reducer;

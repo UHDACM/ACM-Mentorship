@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "testAll": "vitest",
-    "test": "vitest AuthenticatedSocket.mentorshipRequest.test.ts",
-    "test2": "vitest server.test.ts",
+    "test": "vitest userPushSubscriptions.test.ts",
     "dev": "ts-node -r tsconfig-paths/register ./src/index.ts",
     "build": "rm -rf ./dist && npm i && tsc -b && tsc-alias",
     "start": "node ./dist/backend/src",
@@ -28,9 +27,11 @@
     "socket.io-client": "^4.8.1",
     "typescript": "^5.7.3",
     "vite": "^7.1.10",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@types/web-push": "^3.6.4",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0"
   }

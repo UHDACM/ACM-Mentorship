@@ -31,7 +31,7 @@ import { IoChatbubbleOutline } from "react-icons/io5";
 import {
   closeDialog,
   DialogInput,
-  setDialog,
+  addDialog,
 } from "../../features/Dialog/DialogSlice";
 import {
   FaDiscord,
@@ -56,7 +56,7 @@ import { UserPageContext, UserPageContextProvider } from "./UserPageContext";
 import { placeholderPreviewPicture } from "../../features/Chat/Chat";
 import { MentorshipRequestResponseAction } from "@shared/types/socket";
 import { isMentorshipRequestResponseAction } from "@shared/validation/socket";
-import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequests";
+import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequest";
 
 export default function UserPage() {
   return (
@@ -113,7 +113,7 @@ function UserPageWithContext() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: "Update Profile",
         subtitle:
           "Saving overwrites current profile settings. Continue? (This cannot be undone)",
@@ -723,7 +723,7 @@ function RequestMentorButton() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: "Remove Mentor",
         subtitle:
           "This will remove this person as your mentor. Are you sure you want to do that?",
@@ -756,7 +756,7 @@ function RequestMentorButton() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: "Cancel Mentorship request",
         subtitle: "This will cancel your mentorship request",
         buttons: [
@@ -791,7 +791,7 @@ function RequestMentorButton() {
       return;
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: `Request Mentorship from ${user.fName}`,
         subtitle: `You sure you want to send a mentorship request to ${user.fName} ${user.lName}?`,
         buttons: [
@@ -914,17 +914,21 @@ function MenteeButton() {
       self.id,
       user?.id
     ).then((v) => {
+      console.log('fetched mentee request', v);
       if (typeof v == "boolean") {
+        setExistingIncomingMentorshipRequest(undefined);
         return;
       }
       setExistingIncomingMentorshipRequest(v);
     });
   }, [self, user]);
 
+  console.log('mentee button render check');
   if (!user || !self || self.id == user.id) {
     return;
   }
 
+  console.log('mentee button render check 2', existingIncomingMentorshipRequest);
   if (existingIncomingMentorshipRequest == "loading") {
     return;
   }
@@ -935,7 +939,7 @@ function MenteeButton() {
     }
 
     dispatch(
-      setDialog({
+      addDialog({
         title: "Remove Mentee",
         subtitle: `${user?.fName} will no longer be your mentee`,
         buttons: [
@@ -964,7 +968,7 @@ function MenteeButton() {
       return;
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: "Accept mentorship request",
         subtitle: `${user?.fName} ${user?.lName} is requesting your mentorship`,
         subTitleStyle: { minHeight: "3rem" },
@@ -1020,6 +1024,8 @@ function MenteeButton() {
 
   const UserIsOurMentee = user.mentorIDs?.includes(self.id!);
   let buttonElement: JSX.Element | undefined;
+
+  console.log('mentee button render');
 
   if (existingIncomingMentorshipRequest) {
     buttonElement = (
@@ -1482,7 +1488,7 @@ function SocialSection({
   const dispatch = useDispatch();
   function handleAddSocialClick() {
     dispatch(
-      setDialog({
+      addDialog({
         title: "Add Social",
         subtitle: "Choose an icon type and enter a url.",
         inputs: [
@@ -1525,7 +1531,7 @@ function SocialSection({
       return;
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: "Edit Social",
         inputs: [
           {
@@ -1820,7 +1826,7 @@ function ExperienceLikeSection({
       return;
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: `Change date range`,
         subtitle: `${title} ${subtitle}`,
         inputs: CreateDateRangeDialogInputs(
@@ -2095,7 +2101,7 @@ function SocialTile({
       });
     }
     dispatch(
-      setDialog({
+      addDialog({
         title: `Opening ${canRemove || canEdit ? "or Editing" : ""} Social`,
         subtitle: `You to go to: \"${url}\".`,
         containerStyle: { minWidth: 400 },

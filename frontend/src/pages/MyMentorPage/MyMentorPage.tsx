@@ -45,7 +45,7 @@ function MyMentorPageDashboard() {
             name: "Mentor",
             children: (
               <>
-                {hasMentor && <CurrentMentorInfo />}
+                {hasMentor && <CurrentMentorsInfo />}
                 {!hasMentor &&
                   (isMentee ? (
                     <div
@@ -150,7 +150,7 @@ function MyMentorPageHeader() {
   );
 }
 
-function CurrentMentorInfo() {
+function CurrentMentorsInfo() {
   const { user, ready } = useSelector(
     (store: ReduxRootState) => store.ClientSocket
   );
@@ -184,11 +184,20 @@ function CurrentMentorInfo() {
 
   return (
     <div
-      className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
-      style={{ margin: "0.1rem" }}
+      style={{
+        width: "100%",
+        display: "flex",
+        flexWrap: "wrap",
+        boxSizing: "border-box",
+      }}
     >
       {mentorObjs.map((mentorObj) => (
-        <MentorTile mentor={mentorObj} key={mentorObj.id} />
+        <div
+          className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
+          style={{ padding: "0.1rem", boxSizing: "border-box" }}
+        >
+          <MentorTile mentor={mentorObj} key={mentorObj.id} />
+        </div>
       ))}
     </div>
   );
@@ -305,30 +314,32 @@ function MentorSearchTool() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        borderRadius: 5,
+        padding: "0.2rem",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "start",
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+    >
       {mentors.length != 0 && (
         <span style={{ fontSize: "1.5rem" }}>View Our Mentors</span>
       )}
-      <div
-        style={{
-          borderRadius: 5,
-          padding: "0.2rem",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "start",
-          width: "100%",
-          boxSizing: "border-box",
-        }}
-      >
-        {mentors.length == 0 && (
-          <p style={{ margin: 0, fontSize: "1.25rem" }}>No mentors available</p>
-        )}
+      {mentors.length == 0 && (
+        <p style={{ margin: 0, marginLeft: "0.25rem", fontSize: "1.25rem" }}>
+          No mentors available
+        </p>
+      )}
+      <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
         {mentors.map((mentor) => {
           return (
             <div
               className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
+              style={{ padding: "0.25rem", boxSizing: "border-box" }}
               key={`user_${mentor.id}`}
-              style={{ padding: "0.25rem" }}
             >
               <MentorTile mentor={mentor} />
             </div>

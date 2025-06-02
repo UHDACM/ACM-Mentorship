@@ -1,6 +1,11 @@
 import { DBGetWithID, DBSetWithID } from "../../db";
-import { ObjectAny } from "@shared/types/general";
-import { AllAcceptingMentorIDs } from "../AuthenticatedSocket";
+import { ObjectAny, UserObj } from "@shared/types/general";
+import AuthenticatedSocket, {
+  AllAcceptingMentorIDs,
+  SendClientsDataWithUserID,
+} from "../AuthenticatedSocket";
+import { isValidUserObj } from "@shared/validation/user";
+import { TrySendPushNotificationToUsers } from "./notification";
 
 /**
  * TODO: NOT TESTED
@@ -68,7 +73,7 @@ export async function SyncUserProfile(
             displayPictureURL &&
               (chatUserPreviewObj.displayPictureURL = displayPictureURL);
             username && (chatUserPreviewObj.username = username);
-            chatUserPreviewObj.mName = mName || '';
+            chatUserPreviewObj.mName = mName || "";
             lName && (chatUserPreviewObj.lName = lName);
 
             DBSetWithID("chat", chatID, { users }, true).catch((err) =>
@@ -86,7 +91,6 @@ export async function SyncUserProfile(
   const isAcceptingMentorStatusChanged =
     typeof isMentor == "boolean" || typeof acceptingMentees == "boolean";
   if (isAcceptingMentorStatusChanged) {
-    
     const isAcceptingMentor = userObj.acceptingMentees && userObj.isMentor;
     if (isAcceptingMentor) {
       console.log("added to mentor list", userObj.username);
@@ -97,4 +101,174 @@ export async function SyncUserProfile(
       AllAcceptingMentorIDs.delete(userID);
     }
   }
+}
+
+/**
+ * This function returns the target userData with the information that is visible to the requestingUser.
+ *
+ * if no requestingUserID is provided, then the targetUser data is returned as it is.
+ *
+ * Otherwise, depending on relationship between requesting user and targetUser, some information will be removed before being returned.
+ * @param targetUserID
+ * @param requestingUserID
+ * @returns
+ */
+export async function GetUserData(
+  targetUserID: string,
+  requestingUserID?: string
+): Promise<UserObj> {
+  let userData: UserObj;
+  let selfData: UserObj;
+
+  let userDataRaw = await DBGetWithID("user", targetUserID);
+  if (!userDataRaw) {
+    throw new Error("Requested user does not exist");
+  }
+
+  try {
+    if (!isValidUserObj(userDataRaw)) {
+      // this will never happen. Error will be thrown in validation function
+      throw new Error("");
+    }
+  } catch (err) {
+    throw new Error("Error while fetching user data: " + err.message);
+  }
+
+  userData = { ...userDataRaw };
+
+  if (!requestingUserID) {
+    return userData;
+  }
+
+  const selfDataRaw = await DBGetWithID("user", requestingUserID);
+  if (!selfDataRaw) {
+    throw new Error("Self user doesn't exist");
+  }
+
+  try {
+    if (!isValidUserObj(selfDataRaw)) {
+      // this will never happen. Error will be thrown in validation function
+      throw new Error("");
+    }
+  } catch (err) {
+    throw new Error("Error while fetching user data: " + err.message);
+  }
+
+  selfData = { ...selfDataRaw };
+
+  const { mentorIDs: userMentorIDs } = userData;
+
+  // check if this is ourself
+  if (userData.id == selfData.id) {
+    // if so, send userData.
+    return userData;
+  }
+
+  // no users should have access to our mentee list except for ourselves.
+  // no use knowing we are a mentee either.
+  delete userData.menteeIDs;
+  delete userData.isMentee;
+
+  // no one should access our OAuthSubID or email either
+  delete userData.OAuthSubID;
+  delete userData.email;
+
+  // no one should access our chat list either
+  delete userData.chats;
+
+  // check if target user is our mentee
+  if (userMentorIDs && userMentorIDs.includes(requestingUserID)) {
+    return userData;
+  }
+
+  if (selfData.isMentor) {
+    return userData;
+  }
+  // target user is not a mentee. Delete mentee data
+  delete userData.assessments;
+  delete userData.mentorIDs;
+
+  return userData;
+}
+
+export async function RemoveMentorship(
+  mentorID: string,
+  menteeID: string,
+  initiator: "mentor" | "mentee"
+) {
+  // get both mentor and mentee
+  const mentorObj = await DBGetWithID("user", mentorID);
+  if (!mentorObj) {
+    throw new Error("Mentor does not exist");
+  }
+
+  const menteeObj = await DBGetWithID("user", menteeID);
+  if (!menteeObj) {
+    throw new Error("Mentee does not exist");
+  }
+
+  // remove mentor from mentee
+  const menteeMentorList: Array<string> = menteeObj.mentorIDs;
+  if (!menteeMentorList) {
+    throw new Error("Mentee does not have any mentors");
+  }
+
+  try {
+    menteeMentorList.splice(menteeMentorList.indexOf(mentorID), 1);
+  } catch {
+    throw new Error(
+      "Cannot remove mentee. They are not one of the mentor's mentees."
+    );
+  }
+
+  menteeObj.menteeIDs = menteeMentorList;
+  await DBSetWithID("user", menteeID, { menteeIDs: menteeMentorList }, true);
+
+  // remove mentee from mentor's mentee list
+  const mentorMenteeList: Array<string> = mentorObj.menteeIDs;
+  if (!mentorMenteeList) {
+    throw new Error("Mentor does not have any mentees");
+  }
+
+  try {
+    mentorMenteeList.splice(mentorMenteeList.indexOf(menteeID), 1);
+  } catch {
+    throw new Error(
+      "Cannot remove mentee. They are not one of the mentor's mentees."
+    );
+  }
+
+  menteeObj.menteeIDs = mentorMenteeList;
+  await DBSetWithID("user", mentorID, { menteeIDs: mentorMenteeList }, true);
+  console.log("removed mentorship relation", menteeObj, mentorObj);
+
+  let notiTitle = "";
+  let notiMessage = "";
+  let url = "";
+  const notiTargets: string[] = [];
+  if (initiator === "mentor") {
+    notiTitle = "Mentorship Removed";
+    notiMessage = `${mentorObj.fName} (@${mentorObj.username}) has removed you as their mentee.`;
+    notiTargets.push(menteeID);
+    url = `/app/my-mentor`;
+  } else {
+    notiTitle = "Mentorship Removed";
+    notiMessage = `${menteeObj.fName} (@${menteeObj.username}) has removed you as their mentor.`;
+    notiTargets.push(mentorID);
+    url = `/app/my-mentees`;
+  }
+
+  SendClientsDataWithUserID([mentorID, menteeID], "updateSelf", {});
+  AuthenticatedSocket.SendClientsMessageWithUserID(
+    notiTargets,
+    notiTitle,
+    notiMessage
+  );
+
+  await TrySendPushNotificationToUsers(notiTargets, notiTitle, {
+    body: notiMessage,
+    data: {
+      url: url,
+    },
+  });
 }

@@ -3,6 +3,8 @@ export type FunctionAny = (...args: any[]) => any;
 // this function is to replace FunctionAny, which is deprecated
 export type FunctionUnknown = (...args: any[]) => any;
 
+export type DBObj = { id?: string; [key: string]: any };
+
 export type SocialType =
   | "instagram"
   | "twitter"

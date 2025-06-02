@@ -1,4 +1,5 @@
 import { ClientSocket } from "@shared/classes/clientSocket/clientSocket";
+import { ClientSocketPostInstanceVariableUpdateFunction, ClientSocketPostLogoutFunction, ClientSocketPostProcessingFunction } from "@shared/types/socket";
 
 /**
  * Generates an array of ClientSocket instances for testing purposes.
@@ -15,13 +16,16 @@ import { ClientSocket } from "@shared/classes/clientSocket/clientSocket";
 export function GenerateSocketArray(
   count: number,
   address: string,
-  testingSuite: string
+  testingSuite: string,
+  postProcess?: ClientSocketPostProcessingFunction,
+  postProcessInstanceVariableFunction?: ClientSocketPostInstanceVariableUpdateFunction,
+  postLogoutProcess?: ClientSocketPostLogoutFunction,
 ): ClientSocket[] {
   const SocketArray: ClientSocket[] = [];
   for (let i = 0; i < count; i++) {
     const newSocket: ClientSocket = new ClientSocket(address, {
       auth: { token: `testing clientSocket.${testingSuite}.${i + 1}` },
-    });
+    }, postProcess, postProcessInstanceVariableFunction, postLogoutProcess);
     SocketArray.push(newSocket);
   }
   return SocketArray;
