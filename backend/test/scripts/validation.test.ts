@@ -3,7 +3,6 @@ import {
   isValidAssessmentQuestion,
   isValidNames,
   isValidUsername,
-  MAX_NAME_LENGTH,
   AnsweredAssessmentQuestionObj,
   isValidAnsweredAssessmentQuestion,
   isValidAnsweredAssessmentQuestions,
@@ -15,6 +14,8 @@ import {
   ObjectAny,
   SubmitGoalActions,
 } from "@shared/types/general";
+
+import { MAX_NAME_LENGTH } from "@shared/data/user";
 import { isValidEducation, isValidExperience, isValidMonthInteger, isValidMonthYearRange, isValidMonthYearRange_YearToo, isValidProject } from "@shared/validation/general";
 import { MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH } from "@shared/data/validation";
 

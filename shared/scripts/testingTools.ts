@@ -1,4 +1,4 @@
-import { ClientSocket } from "@shared/classes/clientSocket/clientSocket";
+import { ClientSocket } from "../classes/clientSocket/clientSocket";
 import { ClientSocketPostInstanceVariableUpdateFunction, ClientSocketPostLogoutFunction, ClientSocketPostProcessingFunction } from "@shared/types/socket";
 
 /**

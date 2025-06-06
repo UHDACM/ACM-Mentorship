@@ -459,7 +459,7 @@ export function AssessmentPage() {
                     body: `Successfully created assessment`,
                   })
                 );
-                dispatch(setClientUser(MyClientSocket!.user));
+                dispatch(setClientUser(MyClientSocket!.user!));
                 setSaving(false);
                 setChanged(false);
                 originalAssessment.current = assessmentCopy;

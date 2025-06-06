@@ -115,6 +115,8 @@ function _addInitialListenersToSocketIOServer() {
     if (!tokenWithBearer) {
       next(new Error(SocketServerErrorNoToken));
     }
+
+    console.log('Socket Attempt:', tokenWithBearer);
     
     // if testing, allow use of "testing" token to pass.
     if(process.env.TESTING == "true") {

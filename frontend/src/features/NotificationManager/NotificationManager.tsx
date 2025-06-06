@@ -34,7 +34,6 @@ export default function NotificationManager() {
 
     const checkPermission = () => {
       const current = Notification.permission;
-
       if (
         notificationsAllowed &&
         (current == "default" || current == "denied")
@@ -144,7 +143,18 @@ export default function NotificationManager() {
         await tryUnsubscribe();
       }
 
-      if (!SettingsAllowNotification(userSettings)) {
+
+      let tries = 0;
+      // waits for user settings to load
+      console.log('Checking for user settings to load...');
+      while (tries < 5 && MyClientSocket.userSettings === undefined) {
+        console.log('User settings not loaded yet, waiting...');
+        await sleep(1000);
+        tries++;
+      }
+
+      const userSettingsAllowNotifications = SettingsAllowNotification(MyClientSocket.userSettings)
+      if (userSettingsAllowNotifications == false) {
         // user has disabled notifications in their settings, unsubscribe from any existing notifications
         console.log(
           "NotificationManager: user has disabled notifications in settings, unsubscribing",
@@ -153,6 +163,8 @@ export default function NotificationManager() {
         await tryUnsubscribe();
         return;
       }
+
+      console.log('User settings loaded:', MyClientSocket.userSettings);
 
       // at this point, we have a connected socket, a user with an account, and notifications are allowed
       // we may already be subscribed, so check that first (and its validity)
@@ -209,7 +221,6 @@ export default function NotificationManager() {
   }, [
     ClientSocketState, // connecting or (more importantly) authed_nouser triggers re-check
     notificationsAllowed, // user browser's notification permission change triggers re-check
-    userSettings, // user settings can enable/disable notifications
   ]);
 
   return null;
@@ -291,8 +302,12 @@ export async function GetNotificationSubscription() {
   console.log("got service worker registration:", registration);
   if (!registration) return null;
 
-  const subscription = await registration.pushManager.getSubscription();
-  return subscription;
+  try {
+    const subscription = await registration.pushManager.getSubscription();
+    return subscription;
+  } catch {
+    return null;
+  }
 }
 
 export async function GetServiceWorkerRegistration() {

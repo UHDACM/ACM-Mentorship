@@ -1,0 +1,69 @@
+// NOTE: Learned push subscriptions cannot be grabbed in playwright context.
+
+
+
+import { test, expect } from "@playwright/test";
+import { getPushSubscription, setTestAuthToken, signUpUser } from "./testFunctions";
+import dotenv from "dotenv";
+import { sleep } from "../../src/scripts/tools";
+
+dotenv.config();
+
+const pageURL = process.env.VITE_AUTH0_REDIRECT_URI_BASE;
+test("pushSubscription is present as expected", async ({ page }) => {
+  // ================ SIGN UP ================
+  await test.step('Sign up a new user', async () => {
+    const noise = `${Date.now()}`.substring(7);
+    await setTestAuthToken(page, `signup.${noise}`, pageURL!);
+    // Set a unique test token for each signup to avoid conflicts
+    await page.goto(`${pageURL}/app`);
+
+    signUpUser(page, {
+      fName: "John",
+      mName: "A.",
+      lName: "Doe",
+      username: `signup.${noise}`,
+    }, {
+      closeDialogAfterSignup: true
+    });
+    
+    // wait until url is /app/home to ensure signup is complete
+    await page.waitForURL(`${pageURL}/app/home`, { timeout: 5000 });
+
+    // Verify that a pushSubscription is not present yet, as the user has not subscribed, nor have they allowed the notification permission
+    expect(await getPushSubscription(page)).toBeUndefined();
+  });
+  // ===========================================
+
+  // ================ ENABLE NOTIFICATIONS ================
+  await test.step('Enable notifications and verify pushSubscription', async () => {
+    // Click on the enable notifications button
+    await sleep(3000); // Wait for any permission dialogs and processing
+
+    await page.getByRole('button', { name: 'Enable Notifications' }).click();
+
+    // we have to handle the permission dialog manually in playwright
+    await page.context().grantPermissions(['notifications'], { origin: page.url() });
+
+    // reload the page to ensure the permission is registered
+    await page.reload();
+    // ensure page is loaded
+    await page.waitForLoadState('networkidle');
+
+    const notiStatus = await page.evaluate(() => Notification.permission);
+    expect(notiStatus).toBe('granted');
+
+    // Verify that a pushSubscription is not present yet, as the user has not subscribed, nor have they allowed the notification permission
+    expect(await getPushSubscription(page)).not.toBeUndefined();
+  });
+});
+
+// test('get started link', async ({ page }) => {
+//   await page.goto('https://playwright.dev/');
+
+//   // Click the get started link.
+//   await page.getByRole('link', { name: 'Get started' }).click();
+
+//   // Expects page to have a heading with the name of Installation.
+//   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+// });

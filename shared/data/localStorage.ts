@@ -1,3 +1,5 @@
 export const LocalStorageKeys = {
-  previousUserID: 'previousUserID'
+  previousUserID: 'previousUserID',
+  testMode: 'testMode',
+  testToken: 'testToken',
 };

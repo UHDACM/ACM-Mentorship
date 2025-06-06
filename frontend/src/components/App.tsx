@@ -65,21 +65,21 @@ export default function App() {
     async function CheckAuthenticated() {
       // await sleep(500);
       if (state == "authed_nouser") {
-        navigate("./new-user");
+        navigate("./new-user", { replace: true });
       } else if (state == "authed_user") {
         if (path == "/app" || path == "/app/new-user") {
-          navigate("./home");
+          navigate("./home", { replace: true });
         }
       }
       if (!isAuthenticated && !isLoading) {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     }
     CheckAuthenticated();
   }, [state, isAuthenticated, isLoading]);
 
   if (isLoading) {
-    return <p>Still Loading...</p>;
+    return <p>({isLoading}) Still Loading...</p>;
   }
 
   if (!isAuthenticated) {

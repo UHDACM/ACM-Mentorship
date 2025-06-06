@@ -74,8 +74,8 @@ export class ClientSocket {
   private postProcessInstanceVariableUpdate: ClientSocketPostInstanceVariableUpdateFunction =
     () => {};
   private postLogoutProcess: ClientSocketPostLogoutFunction = async () => {};
-  user: UserObj = {};
-  userSettings: UserSettings = {};
+  user: UserObj | undefined = undefined;
+  userSettings: UserSettings | undefined = undefined;
   state: ClientSocketState = "connecting";
   availableAssessmentQuestions: AssessmentQuestion[] = [];
   chats: Map<string, ChatObj> = new Map();
@@ -262,6 +262,17 @@ export class ClientSocket {
     }
   }
 
+  // private _showDialog(title: string, body?: string) {
+  //   if (!this.postProcess) {
+  //     return;
+  //   }
+  //   const messagePayload: ServerSocketPayloadMessage = {
+  //     title: title,
+  //     body: body
+  //   };
+  //   this.postProcess('message', messagePayload);
+  // }
+
   /**
    * Create a new user account
    *
@@ -322,8 +333,11 @@ export class ClientSocket {
     return await new Promise((res) => {
       const updateUserSettingsEvent: ServerSocketEvent = "updateUserSettings";
       this.socket.emit(updateUserSettingsEvent, settings, (v: boolean) => {
-        console.log('Updated settings:', v, settings);
         res(v);
+        if (v) {
+          // pass the new settings to the instance variable
+          this._setUserSettings(settings);
+        }
       });
     });
   }
@@ -890,10 +904,10 @@ export class ClientSocket {
   }
 
   public async requestUpdateSelf() {
-    if (!this.user.id) {
+    if (!this.user!.id) {
       return;
     }
-    const res = await this.GetUser(this.user.id);
+    const res = await this.GetUser(this.user!.id);
     if (!res) {
       throw new Error("Error while fetching your user data");
     }

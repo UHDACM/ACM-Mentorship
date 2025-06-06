@@ -12,7 +12,7 @@ import Transition from "../Transition/Transition";
 import HideOnMobile from "../RenderOnMobile/HideOnMobile";
 import styles from "./NavbarDesktop.module.css";
 import { HelpCircle } from "lucide-react";
-import useAuth from "../../hooks/UseAuth/useAuth";
+import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 
 export default function NavbarDesktop() {
   const [hover, setHover] = useState(false);
@@ -114,9 +114,12 @@ export function NavbarProfile({
 }) {
   const navigate = useNavigate();
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const openDelayRef = useRef<number>(undefined);
+
+  if (!MyClientSocket || !user) {
+    return <></>;
+  }
 
   const MenuButtons: ButtonMenuButtonProperties[] = [
     {
@@ -142,7 +145,7 @@ export function NavbarProfile({
     {
       text: "Logout",
       style: { ...defaultMenuButtonStyling, backgroundColor: "#933" },
-      onClick: () => logout(),
+      onClick: () => MyClientSocket?.logout(),
     },
   ];
 

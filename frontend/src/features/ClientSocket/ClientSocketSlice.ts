@@ -68,7 +68,7 @@ const ClientSocketSlice = createSlice({
     },
     setUserSettings(
       s: Draft<ClientSocketRootState>,
-      action: PayloadAction<UserSettings>
+      action: PayloadAction<UserSettings | undefined>
     ) {
       s.userSettings = action.payload;
     },

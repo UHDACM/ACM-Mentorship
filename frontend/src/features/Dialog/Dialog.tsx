@@ -7,6 +7,9 @@ import { ObjectAny } from "@shared/types/general";
 import { XIcon } from "lucide-react";
 // import { Checkbox } from "@radix-ui/react-checkbox";
 import { Checkbox } from "radix-ui";
+import { DialogAriaTable } from "./DialogData";
+
+
 
 const DialogInputDefaultStyling: React.CSSProperties = {
   fontSize: "1rem",
@@ -144,6 +147,7 @@ export default function Dialog() {
               right: 16,
               cursor: "pointer",
             }}
+            aria-label={DialogAriaTable.closeButton}
             onClick={HandleForceClose}
           />
           <DialogRadix.Title
@@ -261,7 +265,6 @@ export default function Dialog() {
               const buttonDisabled = disabledButtons[btnIndex];
               return (
                 <button
-                  aria-label="Close"
                   style={{
                     border: "1px solid #0004",
                     backgroundColor: "#ddd",

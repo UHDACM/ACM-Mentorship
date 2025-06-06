@@ -54,14 +54,28 @@ export function CreateClientSocketConnection(
     return;
   }
 
+  // check for test mode
+  const testMode = localStorage.getItem(LocalStorageKeys.testMode);
+
   // set creating = true, so subsequent calls while connecting are denied.
   CreatingConnection = true;
+
+  let token = '';
+  if (testMode === "true") {
+    if (import.meta.env.DEV == true) {
+      token = `testing ${localStorage.getItem(LocalStorageKeys.testToken) || ""}`;
+    }
+  }
+
+  if (!token) {
+    token = `Bearer ${userToken}`;
+  }
 
   MyClientSocket = new ClientSocket(
     import.meta.env.VITE_SERVER_SOCKET_URL,
     {
       auth: {
-        token: `Bearer ${userToken}`,
+        token: token,
       },
     },
     (event, payload) =>
@@ -90,7 +104,7 @@ function ClientSocketInstanceVariableUpdateHandler(
   }
 
   if (variable == "user") {
-    dispatch(setClientUser(MyClientSocket.user));
+    dispatch(setClientUser(MyClientSocket.user!));
   } else if (variable == "state") {
     dispatch(setClientState(MyClientSocket.state));
   } else if (variable == "availableAssessmentQuestions") {
@@ -147,7 +161,7 @@ function ClientSocketEventHandler(
       console.log("Received crap", payload.data.status);
       if (payload.data.status == "cancelled" || !payload.data.status) {
         // payload meant for mentor
-        if (payload.data.mentorID != MyClientSocket.user.id) {
+        if (payload.data.mentorID != MyClientSocket.user!.id) {
           return;
         }
 
@@ -182,7 +196,7 @@ function ClientSocketEventHandler(
         return;
       } else {
         // payload meant for mentee
-        if (payload.data.menteeID != MyClientSocket.user.id) {
+        if (payload.data.menteeID != MyClientSocket.user!.id) {
           return;
         }
         // get mentorship request mentee's name
@@ -216,7 +230,6 @@ function ClientSocketEventHandler(
       return;
     }
   } else if (event == "message") {
-    console.log("Received message payload:", payload);
     if (!isServerSocketPayloadMessage(payload)) {
       return;
     }

@@ -34,5 +34,6 @@
   },
   
   // shared is not imported here, as it is imported in individual files as needed
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["./test"]
 }

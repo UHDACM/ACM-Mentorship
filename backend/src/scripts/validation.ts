@@ -10,13 +10,10 @@ import {
   SendMessageAction,
   SendMessageActions,
   ObjectAny,
-  Certification,
-  Project,
-  Education
 } from "@shared/types/general";
+import { MAX_NAME_LENGTH } from "@shared/data/user";
 import { ALLOWED_USERNAME_CHARS, MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH, USERNAME_RESERVED_TESTING_PREFIX } from "@shared/data/validation";
 
-export const MAX_NAME_LENGTH = 36;
 /**
  * Validates the first name.
  * @param fName - The first name to validate.
@@ -32,7 +29,7 @@ export function isValidFirstName(fName: string): void {
   if (fNameLength < 1) {
     throw new Error("First name is too short.");
   }
-  if (fNameLength > MAX_NAME_LENGTH) {
+  if (fNameLength > MAX_USERNAME_LENGTH) {
     throw new Error("First name is too long.");
   }
 }

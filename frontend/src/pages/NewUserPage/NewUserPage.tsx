@@ -1,26 +1,26 @@
 import { FormEvent, useState } from "react";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import { ReduxRootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
-import useAuth from "../../hooks/UseAuth/useAuth";
+import { addDialog } from "../../features/Dialog/DialogSlice";
 
 export default function NewUserPage() {
   const ShowTutorial = useTutorialWithDialog();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
-  const { logout } = useAuth();
   const [fName, setFName] = useState("");
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
   const [username, setUsername] = useState("");
 
-  // if (!MyClientSocket) {
-  //   return <p>Connecting...</p>;
-  // }
+  if (!MyClientSocket) {
+    return <p>Connecting...</p>;
+  }
 
   function handleSubmit(e: FormEvent) {
     if (user) {
@@ -35,7 +35,12 @@ export default function NewUserPage() {
         }
         ShowTutorial("getStarted");
       }
-    );
+    ).catch((err) => {
+      dispatch(addDialog({
+        title: 'Error Creating Account',
+        subtitle: err.message,
+      }));
+    });
   }
 
   return (
@@ -78,6 +83,7 @@ export default function NewUserPage() {
           <input
             value={fName}
             onChange={(e) => setFName(e.target.value)}
+            aria-label="fName"
             style={{
               padding: 10,
               borderRadius: 5,
@@ -93,6 +99,7 @@ export default function NewUserPage() {
           </p>
           <input
             value={mName}
+            aria-label="mName"
             onChange={(e) => setMName(e.target.value)}
             style={{
               padding: 10,
@@ -110,6 +117,7 @@ export default function NewUserPage() {
           <input
             value={lName}
             onChange={(e) => setLName(e.target.value)}
+            aria-label="lName"
             style={{
               padding: 10,
               backgroundColor: "#333",
@@ -126,6 +134,7 @@ export default function NewUserPage() {
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            aria-label="username"
             style={{
               padding: 10,
               backgroundColor: "#333",
@@ -135,13 +144,13 @@ export default function NewUserPage() {
           />
         </div>
         <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
-          <MinimalisticButton style={{ marginTop: 10, fontSize: "1rem" }}>
+          <MinimalisticButton aria-label="submit" style={{ marginTop: 10, fontSize: "1rem" }}>
             Submit
           </MinimalisticButton>
         </div>
       </form>
       <span
-        onClick={() => logout()}
+        onClick={() => MyClientSocket?.logout()}
         style={{
           marginTop: "1rem",
           borderBottom: "1px solid #fff6",

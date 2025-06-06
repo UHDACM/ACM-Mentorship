@@ -27,4 +27,4 @@ function getQuestion() {
   });
 }
 
-getQuestion();
+// getQuestion();
