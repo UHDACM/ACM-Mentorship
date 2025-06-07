@@ -52,6 +52,7 @@ import {
   isValidEducation,
   isValidExperience,
   isValidMentorshipRequestObj,
+  isValidMessageContent,
   isValidProject,
   isValidSocial,
 } from "@shared/validation/general";
