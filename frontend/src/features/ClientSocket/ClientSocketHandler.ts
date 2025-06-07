@@ -43,9 +43,11 @@ export function CreateClientSocketConnection(
   {
     dispatch,
     navigate,
+    logout
   }: {
     dispatch: Dispatch;
     navigate: NavigateFunction;
+    logout: Function;
   },
   reconnect?: boolean
 ) {
@@ -85,7 +87,7 @@ export function CreateClientSocketConnection(
         { dispatch, navigate },
         variable
       ),
-    () => ClientSocketLogoutHandler()
+    () => ClientSocketLogoutHandler(logout)
   );
 }
 
@@ -106,6 +108,7 @@ function ClientSocketInstanceVariableUpdateHandler(
   if (variable == "user") {
     dispatch(setClientUser(MyClientSocket.user!));
   } else if (variable == "state") {
+    console.log('setting state in context', MyClientSocket.state);
     dispatch(setClientState(MyClientSocket.state));
   } else if (variable == "availableAssessmentQuestions") {
     dispatch(
@@ -148,6 +151,7 @@ function ClientSocketEventHandler(
     MyClientSocket = undefined;
     CreatingConnection = false;
     dispatch(resetClientSocketState());
+    MyClientSocket = undefined;
   } else if (event == "state") {
     if (!isClientSocketState(payload)) {
       return;
@@ -238,11 +242,14 @@ function ClientSocketEventHandler(
   }
 }
 
-async function ClientSocketLogoutHandler() {
+async function ClientSocketLogoutHandler(logout?: Function) {
   console.log("ClientSocket: Logging out, unsubscribing from notifications");
   await UnsubscribeFromNotifications();
   const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
   localStorage.setItem(localStoragePreviousUserIDKey, "");
+  if (logout) {
+    logout();
+  }
 }
 
 // class ClientSocket {

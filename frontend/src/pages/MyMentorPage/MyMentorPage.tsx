@@ -33,7 +33,7 @@ export default function MymentorPage() {
 function MyMentorPageDashboard() {
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const hasMentor = user?.mentorIDs && user.mentorIDs.length > 0 ? true : false;
-  const isMentee = user?.isMentee || false;
+  // const isMentee = user?.isMentee || false;
   const { recommendTodoCard } = UseRecommendTodos();
   const ShowTutorial = useTutorialWithDialog();
 
@@ -47,7 +47,10 @@ function MyMentorPageDashboard() {
               <>
                 {hasMentor && <CurrentMentorsInfo />}
                 {!hasMentor &&
-                  (isMentee ? (
+                  (
+                    true
+                    // isMentee
+                     ? (
                     <div
                       style={{
                         width: "100%",

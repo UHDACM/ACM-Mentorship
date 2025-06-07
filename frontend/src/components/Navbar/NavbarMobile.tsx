@@ -36,15 +36,19 @@ const NavbarMobile: React.FC = () => {
     {
       text: "You",
       dropdownItems: [
-        {
-          text: "Assessments",
-          href: `/app/assessments?id=${user?.id}`,
-        },
-        {
-          text: "Goals",
-          href: `/app/goals?id=${user?.id}`,
-        },
+        // {
+        //   text: "Assessments",
+        //   href: `/app/assessments?id=${user?.id}`,
+        // },
+        // {
+        //   text: "Goals",
+        //   href: `/app/goals?id=${user?.id}`,
+        // },
         { text: "Profile", href: `/app/user?id=${user?.id}` },
+        {
+          text: 'Settings',
+          href: `/app/settings`
+        },
       ],
     },
     { text: "Help", href: "/app/help" },

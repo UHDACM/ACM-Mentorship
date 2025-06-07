@@ -212,7 +212,7 @@ export type UserObj = {
   email?: string;
 
   id?: string;
-  isMentee?: boolean;
+  isMentee?: boolean; // TODO: defined but not used
   isMentor?: boolean;
   acceptingMentees?: boolean;
   displayPictureURL?: string;

@@ -24,7 +24,9 @@ interface ClientSocketRootState {
   previousUserID?: string | undefined;
 };
 
-const initialState: ClientSocketRootState = {};
+const initialState: ClientSocketRootState = {
+  state: 'disconnected'
+};
 
 const ClientSocketSlice = createSlice({
   name: "ClientSocket",

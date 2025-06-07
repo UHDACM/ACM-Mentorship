@@ -17,7 +17,8 @@ import { SettingsAllowNotification } from "@shared/scripts/notification";
  */
 export default function NoficiationEncourageEnable() {
   const dispatch = useDispatch();
-  const { user, userSettings } = useSelector(
+
+  const { user, userSettings, state } = useSelector(
     (g: ReduxRootState) => g.ClientSocket
   );
   const { notificationsAllowed } = useSelector(
@@ -30,6 +31,7 @@ export default function NoficiationEncourageEnable() {
   useEffect(() => {
     if (loadedUser) return;
     if (!user) return;
+    if (state != 'authed_user') return;
 
     setLoadedUser(true);
 
@@ -42,9 +44,11 @@ export default function NoficiationEncourageEnable() {
     if (hasEncouraged) return;
     setHasEncouraged(true);
     setTimeout(() => {
+      if (!MyClientSocket) return;
+      else if (!MyClientSocket.user) return;
       encourageEnableNotifications();
     }, 13000);
-  }, [notificationsAllowed, user, loadedUser, hasEncouraged]);
+  }, [notificationsAllowed, user, loadedUser, hasEncouraged, state]);
 
   const encourageEnableNotifications = () => {
     dispatch(

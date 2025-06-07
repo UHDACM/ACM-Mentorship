@@ -16,7 +16,7 @@ import useAuth from "../hooks/UseAuth/useAuth";
 import NoficiationEncourageEnable from "../features/NotificationManager/NotificationEncourageEnable";
 
 export default function App() {
-  const { getAccessTokenSilently, isLoading, isAuthenticated } = useAuth();
+  const { getAccessTokenSilently, isLoading, isAuthenticated, logout } = useAuth();
 
   const dispatch = useDispatch();
   const { state } = useSelector((store: ReduxRootState) => store.ClientSocket);
@@ -25,7 +25,7 @@ export default function App() {
 
   async function connectToServer(reconnect?: boolean) {
     const userToken = await getAccessTokenSilently();
-    CreateClientSocketConnection(userToken, { dispatch, navigate }, reconnect);
+    CreateClientSocketConnection(userToken, { dispatch, navigate, logout }, reconnect);
   }
 
   // on mount, load previousUserID from localStorage if exists into redux, and replace it with current userID in 10 seconds
@@ -85,6 +85,8 @@ export default function App() {
   if (!isAuthenticated) {
     return <p>Not authed</p>;
   }
+
+  console.log('state bru', state);
 
   if (!state || state == "connecting") {
     return <ConnectingPage />;
