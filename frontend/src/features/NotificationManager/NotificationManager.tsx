@@ -32,8 +32,14 @@ export default function NotificationManager() {
     // TODO: handle browsers that do not support the Permissions API
     // i.e.: poll Notification.permission every few seconds
 
+    const timeout = setTimeout(() => {
+      console.log("NotificationManager: permission check timeout reached");
+      handleNotificationState("denied");
+    }, 10000);
+
     const checkPermission = () => {
       const current = Notification.permission;
+      clearTimeout(timeout);
       if (
         notificationsAllowed &&
         (current == "default" || current == "denied")
@@ -47,10 +53,12 @@ export default function NotificationManager() {
     const check = async () => {
       checkPermission();
       setInterval(checkPermission, 5000); // poll every 5 seconds for browsers that don't support Permissions API
+
       try {
         const permission = await navigator.permissions.query({
           name: "notifications",
         });
+        clearTimeout(timeout);
         handleNotificationState(permission.state);
         permission.onchange = () => {
           handleNotificationState(permission.state);

@@ -41,7 +41,15 @@ export default function App() {
       return;
     }
 
+    // safety timeout to prevent infinite loop
+    const timeout = setTimeout(() => {
+      console.log('App: previousUserID loading timeout reached');
+      setLoadedPrevID(true);
+      dispatch(setPreviousUserID(''));
+    }, 10000);
+
     setLoadedPrevID(true);
+    clearTimeout(timeout);
     const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
     const prevID = localStorage.getItem(localStoragePreviousUserIDKey) || '';
     dispatch(setPreviousUserID(prevID));
