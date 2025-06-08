@@ -111,13 +111,16 @@ export class ClientSocket {
 
     // connect to server
     this.socket = io(`${socketServerURL}`, opts);
+    this._attachEssentialListeners();
 
     // this.socket.onAny((event, ...args) => {
     //   console.log(`Socket Event: ${event}`, args);
     // });
+
+
+    console.log("ClientSocket: initialized and connecting to server");
     const connectingState: ClientSocketState = "connecting";
     this._invokeHandler("state", connectingState);
-    this._attachEssentialListeners();
   }
 
   /**

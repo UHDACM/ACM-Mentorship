@@ -5,10 +5,8 @@ import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler"
 import { useNavigate } from "react-router-dom";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
-import UseRecommendTodos from "../../hooks/UseRecommendTodos/UseRecommendTodos";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
-import { PreviewAssessmentsPage, PreviewGoalsPage } from "../HomePage/HomePage";
 import { HelpCircle } from "lucide-react";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import { UserObj } from "@shared/types/general";
@@ -33,9 +31,6 @@ export default function MymentorPage() {
 function MyMentorPageDashboard() {
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
   const hasMentor = user?.mentorIDs && user.mentorIDs.length > 0 ? true : false;
-  // const isMentee = user?.isMentee || false;
-  const { recommendTodoCard } = UseRecommendTodos();
-  const ShowTutorial = useTutorialWithDialog();
 
   return (
     <>
@@ -45,51 +40,38 @@ function MyMentorPageDashboard() {
             name: "Mentor",
             children: (
               <>
-                {hasMentor && <CurrentMentorsInfo />}
-                {!hasMentor &&
-                  (
-                    true
-                    // isMentee
-                     ? (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "start",
-                      }}
-                    >
-                      <span
-                        style={{
-                          marginLeft: "1rem",
-                          fontSize: "1.25rem",
-                          borderBottom: "1px #fff6 solid",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => ShowTutorial("getAMentor")}
-                      >
-                        How does this work?
-                      </span>
-                      <MentorSearchTool />
-                    </div>
-                  ) : (
-                    recommendTodoCard("TakeFirstAssessment")
-                  ))}
+                {hasMentor && (
+                  <>
+                    <span style={{ fontSize: "1.5rem" }}>Your Mentors</span>
+                    <CurrentMentorsInfo />
+                    <div style={{ height: "2rem", width: "0.5rem" }} />
+                  </>
+                )}
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "start",
+                  }}
+                >
+                  <MentorSearchTool />
+                </div>
               </>
             ),
           },
-          {
-            name: "Goals",
-            children: (
-              <>
-                <PreviewGoalsPage />
-              </>
-            ),
-          },
-          {
-            name: "Assessments",
-            children: <PreviewAssessmentsPage />,
-          },
+          // {
+          //   name: "Goals",
+          //   children: (
+          //     <>
+          //       <PreviewGoalsPage />
+          //     </>
+          //   ),
+          // },
+          // {
+          //   name: "Assessments",
+          //   children: <PreviewAssessmentsPage />,
+          // },
         ]}
       />
       <div style={{ height: "5rem" }} />
@@ -198,6 +180,7 @@ function CurrentMentorsInfo() {
         <div
           className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"
           style={{ padding: "0.1rem", boxSizing: "border-box" }}
+          key={mentorObj.id}
         >
           <MentorTile mentor={mentorObj} key={mentorObj.id} />
         </div>
@@ -297,7 +280,10 @@ function MentorTile({ mentor }: { mentor: UserObj }) {
 }
 
 function MentorSearchTool() {
+  const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
+  const userMentorIDs = user?.mentorIDs || [];
   const [mentors, setMentors] = useState<UserObj[] | undefined>(undefined);
+  const ShowTutorial = useTutorialWithDialog();
 
   useEffect(() => {
     if (!mentors) {
@@ -307,6 +293,13 @@ function MentorSearchTool() {
         } else if (!(m instanceof Array)) {
           return;
         }
+
+        // for (const mentor of m) {
+        //   if (mentor.id == MyClientSocket?.user?.id) {
+        //     // remove self from mentor list
+        //     m.splice(m.indexOf(mentor), 1);
+        //   }
+        // }
         setMentors(m);
       });
     }
@@ -324,13 +317,32 @@ function MentorSearchTool() {
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "start",
+        flexDirection: "column",
         width: "100%",
         boxSizing: "border-box",
       }}
     >
       {mentors.length != 0 && (
-        <span style={{ fontSize: "1.5rem" }}>View Our Mentors</span>
+        <div style={{
+          display: 'flex', 
+          alignItems: 'start',
+          flexDirection: 'column',
+          marginBottom: '0.25rem'
+        }}>
+          <span style={{ fontSize: "1.5rem" }}>View Our Mentors</span>
+          <span
+            style={{
+              fontSize: "1.25rem",
+              borderBottom: "1px #fff6 solid",
+              cursor: "pointer",
+            }}
+            onClick={() => ShowTutorial("getAMentor")}
+          >
+            How does this work?
+          </span>
+        </div>
       )}
+
       {mentors.length == 0 && (
         <p style={{ margin: 0, marginLeft: "0.25rem", fontSize: "1.25rem" }}>
           No mentors available
@@ -338,6 +350,10 @@ function MentorSearchTool() {
       )}
       <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
         {mentors.map((mentor) => {
+          if (userMentorIDs && mentor.id && userMentorIDs.includes(mentor.id)) {
+            // skip mentors the user already has
+            return null;
+          }
           return (
             <div
               className="w-full xss:w-3/3 sm:w-1/2 lg:w-1/3 xl:1/5"

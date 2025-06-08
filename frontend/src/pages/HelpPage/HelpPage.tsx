@@ -30,26 +30,26 @@ export default function HelpPage() {
           },
         ],
       },
-      {
-        title: "Assessments",
-        description: "Understand assessments and their role in your mentoring journey.",
-        buttons: [
-          {
-            text: "Learn More",
-            onClick: () => ShowTutorial('selfAssessments')
-          },
-        ],
-      },
-      {
-        title: "Goals",
-        description: "Understand goals and their importance in your mentoring journey.",
-        buttons: [
-          {
-            text: "Learn More",
-            onClick: () => ShowTutorial('goals')
-          },
-        ],
-      },
+      // {
+      //   title: "Assessments",
+      //   description: "Understand assessments and their role in your mentoring journey.",
+      //   buttons: [
+      //     {
+      //       text: "Learn More",
+      //       onClick: () => ShowTutorial('selfAssessments')
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Goals",
+      //   description: "Understand goals and their importance in your mentoring journey.",
+      //   buttons: [
+      //     {
+      //       text: "Learn More",
+      //       onClick: () => ShowTutorial('goals')
+      //     },
+      //   ],
+    // },
       {
         title: "Mentoring",
         description: "Become a mentor, and learn their responsibilities",

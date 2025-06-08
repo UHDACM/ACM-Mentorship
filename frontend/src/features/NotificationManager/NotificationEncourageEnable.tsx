@@ -65,6 +65,10 @@ export default function NoficiationEncourageEnable() {
                 MyClientSocket?.UpdateUserSettings({
                   ...currentUserSettings,
                   allowNotifications: true,
+                  allowNotificationsFor: {
+                    messages: true,
+                    mentorshipRequests: true,
+                  }
                 });
               }
 

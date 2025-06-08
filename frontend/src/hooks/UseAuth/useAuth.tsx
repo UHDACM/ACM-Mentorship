@@ -4,14 +4,19 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler";
 import { LocalStorageKeys } from "@shared/data/localStorage";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addDialog, closeDialog } from "../../features/Dialog/DialogSlice";
 
 export default function useAuth() {
   // check for test mode
   // allows e2e tests to set testMode in localStorage to use test auth
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const testMode = localStorage.getItem(LocalStorageKeys.testMode);
 
   const {
-    getAccessTokenSilently,
+    getAccessTokenSilently: getAccessTokenSilentlyAuth0,
     logout: authLogout,
     loginWithRedirect: authLoginWithRedirect,
     isLoading,
@@ -34,6 +39,21 @@ export default function useAuth() {
 
   function loginWithRedirect() {
     authLoginWithRedirect({'authorizationParams': { scope: 'openid profile email' }});
+  }
+
+  async function getAccessTokenSilently() {
+    try {
+      return await getAccessTokenSilentlyAuth0();
+    } catch {
+      // if error occurs (e.g., token expired), redirect to login
+      navigate("/", { replace: true });
+      setTimeout(() => dispatch(addDialog({
+        title: "Please Log In",
+        subtitle: "Your session has expired, or is invalid. Please log in again.",
+        buttons: [{ text: "Okay", onClick: () => dispatch(closeDialog()) }],
+      })), 500); // delay to allow navigation to complete
+      return undefined;
+    }
   }
 
   return {

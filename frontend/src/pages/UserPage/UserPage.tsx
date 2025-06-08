@@ -245,7 +245,7 @@ function UserPageWithContext() {
       </MinimalisticButton>
       <div style={{ marginTop: "1rem" }} />
       <TopSection />
-      <UserStuff />
+      {/* <UserStuff /> */}
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <BioSection bio={bio} setBio={setBio} disabled={!CanMakeChanges} />
@@ -295,67 +295,67 @@ function UserPageWithContext() {
   );
 }
 
-function UserStuff() {
-  const navigate = useNavigate();
-  const { user, existingIncomingMentorshipRequest } =
-    useContext(UserPageContext);
-  const { user: self } = useSelector(
-    (store: ReduxRootState) => store.ClientSocket
-  );
+// function UserStuff() {
+//   const navigate = useNavigate();
+//   const { user, existingIncomingMentorshipRequest } =
+//     useContext(UserPageContext);
+//   const { user: self } = useSelector(
+//     (store: ReduxRootState) => store.ClientSocket
+//   );
 
-  if (!user || !self) {
-    return;
-  }
-  const allowedToViewAssessments =
-    user.id == self?.id ||
-    user.mentorIDs?.includes(self.id!) ||
-    (existingIncomingMentorshipRequest != "loading" &&
-      existingIncomingMentorshipRequest);
-  const { fName } = user;
-  return (
-    allowedToViewAssessments && (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "start",
-          // backgroundColor: "#292929",
-          // padding: "1rem",
-          marginTop: "0.5rem",
-          borderRadius: "0.5rem",
-        }}
-      >
-        <span style={{ fontSize: "1.25rem" }}>
-          {fName}
-          {fName?.charAt(fName.length - 1) == "s" ? "'" : "'s"} Stuff
-        </span>
-        <div style={{ display: "flex", marginLeft: 10, paddingTop: 5 }}>
-          {
-            <MinimalisticButton
-              style={{
-                fontSize: "0.8rem",
-              }}
-              onClick={() =>
-                navigate(`/app/assessments?id=${user.id}&origin=user`)
-              }
-            >
-              Assessments {">"}
-            </MinimalisticButton>
-          }
-          <MinimalisticButton
-            style={{
-              marginLeft: 10,
-              fontSize: "0.8rem",
-            }}
-            onClick={() => navigate(`/app/goals?id=${user.id}&origin=user`)}
-          >
-            Goals {">"}
-          </MinimalisticButton>
-        </div>
-      </div>
-    )
-  );
-}
+//   if (!user || !self) {
+//     return;
+//   }
+//   const allowedToViewAssessments =
+//     user.id == self?.id ||
+//     user.mentorIDs?.includes(self.id!) ||
+//     (existingIncomingMentorshipRequest != "loading" &&
+//       existingIncomingMentorshipRequest);
+//   const { fName } = user;
+//   return (
+//     allowedToViewAssessments && (
+//       <div
+//         style={{
+//           display: "flex",
+//           flexDirection: "column",
+//           alignItems: "start",
+//           // backgroundColor: "#292929",
+//           // padding: "1rem",
+//           marginTop: "0.5rem",
+//           borderRadius: "0.5rem",
+//         }}
+//       >
+//         <span style={{ fontSize: "1.25rem" }}>
+//           {fName}
+//           {fName?.charAt(fName.length - 1) == "s" ? "'" : "'s"} Stuff
+//         </span>
+//         <div style={{ display: "flex", marginLeft: 10, paddingTop: 5 }}>
+//           {
+//             <MinimalisticButton
+//               style={{
+//                 fontSize: "0.8rem",
+//               }}
+//               onClick={() =>
+//                 navigate(`/app/assessments?id=${user.id}&origin=user`)
+//               }
+//             >
+//               Assessments {">"}
+//             </MinimalisticButton>
+//           }
+//           <MinimalisticButton
+//             style={{
+//               marginLeft: 10,
+//               fontSize: "0.8rem",
+//             }}
+//             onClick={() => navigate(`/app/goals?id=${user.id}&origin=user`)}
+//           >
+//             Goals {">"}
+//           </MinimalisticButton>
+//         </div>
+//       </div>
+//     )
+//   );
+// }
 
 function NameSection({
   fName,
@@ -712,7 +712,7 @@ function RequestMentorButton() {
   }
 
   if (existingMentorshipRequestObj == "loading") {
-    console.log('still loading');
+    // console.log('still loading');
     return;
   }
 
@@ -881,7 +881,7 @@ function RequestMentorButton() {
     );
   }
 
-  console.log('rendering');
+  // console.log('rendering');
 
   return buttonElement;
 }
@@ -923,12 +923,10 @@ function MenteeButton() {
     });
   }, [self, user]);
 
-  console.log('mentee button render check');
   if (!user || !self || self.id == user.id) {
     return;
   }
 
-  console.log('mentee button render check 2', existingIncomingMentorshipRequest);
   if (existingIncomingMentorshipRequest == "loading") {
     return;
   }
@@ -1025,7 +1023,6 @@ function MenteeButton() {
   const UserIsOurMentee = user.mentorIDs?.includes(self.id!);
   let buttonElement: JSX.Element | undefined;
 
-  console.log('mentee button render');
 
   if (existingIncomingMentorshipRequest) {
     buttonElement = (

@@ -56,25 +56,25 @@ function HomePageDashboard() {
                     flexDirection: "column",
                   }}
                 >
-                  <span style={{ fontSize: "1.5rem" }}>Nothing to do...</span>
-                  <span style={{ fontSize: "1rem" }}>Yeah</span>
+                  <span style={{ fontSize: "1.5rem" }}>Nothing to do.</span>
+                  {/* <span style={{ fontSize: "1rem" }}>Yeah</span> */}
                 </div>
               )}
             </>
           ),
         },
-        {
-          name: "Goals",
-          children: (
-            <>
-              <PreviewGoalsPage />
-            </>
-          ),
-        },
-        {
-          name: "Assessments",
-          children: <PreviewAssessmentsPage />,
-        },
+        // {
+        //   name: "Goals",
+        //   children: (
+        //     <>
+        //       <PreviewGoalsPage />
+        //     </>
+        //   ),
+        // },
+        // {
+        //   name: "Assessments",
+        //   children: <PreviewAssessmentsPage />,
+        // },
       ]}
     ></FileTabContainer>
   );
@@ -188,7 +188,7 @@ export function PreviewAssessmentsPage() {
                     }
                     onDelete={() => handleDeleteAssessment(assessmentID)}
                     name={unixToDateString(assessmentPreviewObject.date)}
-                    canDelete={Object.keys(user?.assessments || []).length > 1}
+                    canDelete={true}
                   />
                 );
               })}

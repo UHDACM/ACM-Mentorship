@@ -38,7 +38,7 @@ let CreatingConnection = false;
  *
  * @param dispatch Redux dispatch function. Used by server socket to update store when needed
  */
-export function CreateClientSocketConnection(
+export async function CreateClientSocketConnection(
   userToken: string,
   {
     dispatch,
@@ -73,6 +73,8 @@ export function CreateClientSocketConnection(
     token = `Bearer ${userToken}`;
   }
 
+  dispatch(setClientState("connecting"));
+  // await sleep(100);
   MyClientSocket = new ClientSocket(
     import.meta.env.VITE_SERVER_SOCKET_URL,
     {

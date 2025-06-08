@@ -31,34 +31,34 @@ export default function UseRecommendTodos() {
       return [];
     }
 
-    if (!user?.isMentee || Object.keys(user.assessments || []).length == 0) {
-      recommendedTodos.push(["TakeFirstAssessment", undefined]);
-      // return recommendedTodos;
-    }
+    // if (!user?.isMentee || Object.keys(user.assessments || []).length == 0) {
+    //   recommendedTodos.push(["TakeFirstAssessment", undefined]);
+    //   // return recommendedTodos;
+    // }
 
-    const { experience, education, certifications, projects, softSkills, bio } =
+    // const { experience, education, certifications, projects, softSkills, bio } =
       user || {};
-    const filledSections =
-      (experience ? 1 : 0) +
-      (education ? 1 : 0) +
-      (certifications ? 1 : 0) +
-      (projects ? 1 : 0) +
-      (bio ? 1 : 0) +
-      (softSkills ? 1 : 0);
+    // const filledSections =
+    //   (experience ? 1 : 0) +
+    //   (education ? 1 : 0) +
+    //   (certifications ? 1 : 0) +
+    //   (projects ? 1 : 0) +
+    //   (bio ? 1 : 0) +
+    //   (softSkills ? 1 : 0);
 
-    const percentageSectionsFilled = filledSections / 5;
+    // const percentageSectionsFilled = filledSections / 5;
 
-    if (percentageSectionsFilled < 0.3) {
-      recommendedTodos.push(["FinishProfile", undefined]);
-    }
+    // if (percentageSectionsFilled < 0.3) {
+    //   recommendedTodos.push(["FinishProfile", undefined]);
+    // }
 
     if (!user?.mentorIDs || user?.mentorIDs.length == 0) {
       recommendedTodos.push(["FindMentor", undefined]);
     }
 
-    if (!user?.goals || Object.keys(user?.goals|| {}).length == 0) {
-      recommendedTodos.push(['CreateFirstGoal', undefined]);
-    }
+    // if (!user?.goals || Object.keys(user?.goals|| {}).length == 0) {
+    //   recommendedTodos.push(['CreateFirstGoal', undefined]);
+    // }
 
     if (user && user.mentorIDs && user.mentorIDs.length > 0) {
       // locate chat with mentorID

@@ -17,6 +17,17 @@ export default function useChatWithUser() {
       if (!MyClientSocket) {
         return;
       }
+
+      if (targetUserID == self?.id) {
+        // cannot chat with self
+        dispatch(addDialog({
+          title: "Cannot Chat with Yourself",
+          subtitle: "You cannot start a chat with yourself.",
+          buttons: [{ text: "Okay", onClick: () => dispatch(closeDialog()) }],
+        }));
+        return;
+      }
+
       user = await new Promise((res) => {
         MyClientSocket?.GetUser(targetUserID).then((v: UserObj | boolean) => {
           if (!v || typeof v == "boolean") {

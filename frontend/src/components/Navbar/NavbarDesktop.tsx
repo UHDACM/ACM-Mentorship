@@ -132,16 +132,16 @@ export function NavbarProfile({
       style: defaultMenuButtonStyling,
       onClick: () => navigate(`/app/settings`),
     },
-    {
-      text: "Assessments",
-      style: defaultMenuButtonStyling,
-      onClick: () => navigate(`/app/assessments?id=${user?.id}`),
-    },
-    {
-      text: "Goals",
-      style: defaultMenuButtonStyling,
-      onClick: () => navigate(`/app/goals?id=${user?.id}`),
-    },
+    // {
+    //   text: "Assessments",
+    //   style: defaultMenuButtonStyling,
+    //   onClick: () => navigate(`/app/assessments?id=${user?.id}`),
+    // },
+    // {
+    //   text: "Goals",
+    //   style: defaultMenuButtonStyling,
+    //   onClick: () => navigate(`/app/goals?id=${user?.id}`),
+    // },
     {
       text: "Logout",
       style: { ...defaultMenuButtonStyling, backgroundColor: "#933" },

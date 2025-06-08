@@ -24,7 +24,13 @@ export default function App() {
   const path = window.location.pathname;
 
   async function connectToServer(reconnect?: boolean) {
+    // force client state to 'connecting'
     const userToken = await getAccessTokenSilently();
+    if (!userToken) {
+      // failed to get token, cannot connect
+      // this will be handled by useAuth hook
+      return;
+    }
     CreateClientSocketConnection(userToken, { dispatch, navigate, logout }, reconnect);
   }
 
@@ -94,15 +100,13 @@ export default function App() {
     return <p>Not authed</p>;
   }
 
-  console.log('state bru', state);
-
   if (!state || state == "connecting") {
     return <ConnectingPage />;
   }
 
   if (state == "disconnected") {
     return (
-      <div
+    <div
         className="pageBase"
         style={{ justifyContent: "center", alignItems: "center" }}
       >
