@@ -6,6 +6,7 @@ import { MyClientSocket } from "../ClientSocket/ClientSocketHandler";
 import { sleep, urlBase64ToUint8Array } from "@shared/scripts/generalTools";
 import { isPushSubscription } from "@shared/validation/userPushSubscriptions";
 import { SettingsAllowNotification } from "@shared/scripts/notification";
+import env from "../../scripts/env";
 
 export default function NotificationManager() {
   const dispatch = useDispatch();
@@ -257,7 +258,7 @@ export async function EnsureServiceWorkerRegistered() {
     }
   };
 
-  if (import.meta.env.DEV) {
+  if (env.DEV) {
     console.log(
       "Vite development environment detected. Forcing service worker update."
     );
@@ -267,7 +268,7 @@ export async function EnsureServiceWorkerRegistered() {
   return registration;
 }
 
-const VapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || "";
+const VapidPublicKey = env.VITE_VAPID_PUBLIC_KEY || "";
 if (!VapidPublicKey) {
   throw new Error("VAPID_PUBLIC_KEY is not set in environment variables.");
 }

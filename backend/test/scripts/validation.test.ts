@@ -106,12 +106,12 @@ describe("Tests validation script", () => {
           start: [1, 2020],
           end: [12, 2021],
         })
-      ).toBe(true);
+      ).not.toThrow();
       expect(
         isValidMonthYearRange({
           start: [6, 1995],
         })
-      ).toBe(true);
+      ).not.toThrow();
     });
 
     it("should return false for invalid month-year ranges", () => {

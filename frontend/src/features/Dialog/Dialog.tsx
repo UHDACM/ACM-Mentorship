@@ -176,9 +176,11 @@ export default function Dialog() {
             } = DialogInput;
             const typeIsSelect = type == "select";
             const typeIsToggle = type == "toggle";
-            const typeIsInput = !(typeIsSelect || typeIsToggle);
+            const typeIsFile = type == "file";
+            const typeIsInput = !(typeIsSelect || typeIsToggle || typeIsFile);
             const OVRALL_Key = `DialogInput_${index}`;
             const DI_Key = name || label;
+            const DI_Accept = DialogInput.accept || undefined;
             const DI_Type = DialogInput.type;
             return (
               <div
@@ -199,6 +201,18 @@ export default function Dialog() {
                   <p style={{ margin: 0, marginRight: 20, ...labelStyle }}>
                     {label}
                   </p>
+                  {
+                    typeIsFile && (
+                      <input
+                        type="file"
+                        style={{
+                          ...DialogInputDefaultStyling,
+                          ...inputStyle,
+                        }}
+                        onChange={(e) => updateInputVal(DI_Key, e.target.files?.[0])}
+                      />
+                    )
+                  }
                   {typeIsInput && (
                     <input
                       value={inputVals[DI_Key] || ""}
@@ -209,6 +223,7 @@ export default function Dialog() {
                       }}
                       type={DI_Type}
                       placeholder={placeholder ? placeholder : DI_Key}
+                      accept={DI_Accept}
                       disabled={disabled}
                     />
                   )}
@@ -283,7 +298,7 @@ export default function Dialog() {
                         inputVals,
                         useDisableTill
                           ? () => setButtonDisabled(btnIndex, false)
-                          : undefined
+                          : () => undefined
                       );
                   }}
                   key={`DialogButton_${btnIndex}`}

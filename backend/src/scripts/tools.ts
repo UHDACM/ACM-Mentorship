@@ -1,5 +1,6 @@
 import { DocumentTestKey } from "@shared/data/db";
-import { collectionNames, DBDelete, DBGet } from "../../src/db";
+import { DBDelete, DBGet } from "../../src/db";
+import { collectionNames } from '@shared/types/db';
 
 /**
  * Returns a promise that resolves after `ms` milliseconds.

@@ -23,7 +23,6 @@ import {
   isValidMiddleName,
   isValidNames,
   isValidUsername,
-  MAX_BIO_LENGTH,
 } from "../scripts/validation";
 import { GetUserData, RemoveMentorship, SyncUserProfile } from "./entities/users";
 import {
@@ -56,7 +55,7 @@ import {
   isValidProject,
   isValidSocial,
 } from "@shared/validation/general";
-import { isValidUserObj } from "@shared/validation/user";
+import { validateUserObj } from "@shared/validation/user";
 import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequest";
 import { SocketPayloadCreateUser } from "@shared/types/clientSocketPayload";
 import { ClientSocketState, ServerSocketEvent, ServerSocketEvents } from "@shared/types/socket";
@@ -71,6 +70,7 @@ import { AddUserPushSubscription } from "./entities/userPushSubscriptions";
 import { GetUserSettings, UpdateUserSettings } from "./entities/userSettings";
 import { isUserSettings } from "@shared/validation/userSettings";
 import { DocumentTestKey } from "@shared/data/db";
+import { MAX_BIO_LENGTH } from "@shared/data/user";
 
 export type AuthenticatedSocketAdditionalParameters = {
   deleteAccountAfterDisconnect?: boolean;
@@ -425,15 +425,9 @@ export default class AuthenticatedSocket {
           handleUpdateProfileSubject + "No data was provided."
         );
         return;
-      } else if (!isValidUserObj(dataRaw)) {
-        callback(false);
-        this.sendClientMessage(
-          "Error",
-          handleUpdateProfileSubject + "Data is not valid."
-        );
       }
 
-      const data: ObjectAny = dataRaw;
+      validateUserObj(dataRaw)
       // extract all possible updates
       const {
         username,
@@ -449,8 +443,8 @@ export default class AuthenticatedSocket {
         isMentor,
         acceptingMentees,
         bio,
-      } = data;
-      console.log("processing update profile data", data);
+      } = dataRaw;
+      console.log("processing update profile data", dataRaw);
       const newUserObj: UserObj = {
         OAuthSubID: this.user.OAuthSubID,
       };
@@ -830,9 +824,7 @@ export default class AuthenticatedSocket {
           const dat = datProm.value;
           try {
             // wrapped in try catch in case validation throws an error.
-            if (!isValidUserObj(dat)) {
-              throw new Error();
-            }
+            validateUserObj(dat);
           } catch {
             AllAcceptingMentorIDs.delete(AllMentorIDs[index]); //Remove from set
             return;
@@ -1739,12 +1731,7 @@ export default class AuthenticatedSocket {
         // determine if user already has maximum number of mentors
         try {
           const userObj = await DBGetWithID("user", this.user.id);
-          if (!isValidUserObj(userObj)) {
-            // it won't ever enter here, as the error will be thrown in the validation
-            return;
-          }
-
-          // TODO: figure out why typing is off here (userObj is not recognized as valid userObj, even though it is)
+          validateUserObj(userObj)
 
           if (
             userObj.mentorIDs &&
@@ -1821,10 +1808,7 @@ export default class AuthenticatedSocket {
         // check if mentee already has maximum number of mentors
         try {
           const menteeObj = await DBGetWithID("user", menteeID);
-          if (!isValidUserObj(menteeObj)) {
-            // it won't ever enter here, as the error will be thrown in the validation
-            throw new Error("Invalid mentee user object");
-          }
+          validateUserObj(menteeObj);
 
           if (menteeObj.mentorIDs?.length >= MAX_NUMBER_OF_MENTORS_PER_MENTEE) {
             await RemoveMentorshipRequest(
@@ -2544,9 +2528,7 @@ export default class AuthenticatedSocket {
 
     const mentorData = await DBGetWithID("user", mentorID);
     try {
-      if (!isValidUserObj(mentorData)) {
-        throw new Error();
-      }
+      validateUserObj(mentorData);
     } catch {
       return undefined;
     }
@@ -2841,11 +2823,9 @@ export default class AuthenticatedSocket {
         this.sendClientMessage("Error", "Your account does not exist");
         this.socket.disconnect();
         return;
-      } else if (!isValidUserObj(self)) {
-        this.sendClientMessage("Error", "Your account information is invalid");
-        this.socket.disconnect();
-        return;
-      }
+      } 
+
+      validateUserObj(self); // throws error if invalid
       this.user = self;
     } catch {
       console.error("Fatal error, could not update self.");

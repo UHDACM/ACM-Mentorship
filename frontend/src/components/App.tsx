@@ -14,6 +14,7 @@ import NotificationManager from "../features/NotificationManager/NotificationMan
 import { LocalStorageKeys } from "@shared/data/localStorage";
 import useAuth from "../hooks/UseAuth/useAuth";
 import NoficiationEncourageEnable from "../features/NotificationManager/NotificationEncourageEnable";
+import { setAIResumeProfileButtonTimeoutEnd } from "../features/AIResumeProfileButton/AIResumeProfileButtonSlice";
 
 export default function App() {
   const { getAccessTokenSilently, isLoading, isAuthenticated, logout } = useAuth();
@@ -33,39 +34,6 @@ export default function App() {
     }
     CreateClientSocketConnection(userToken, { dispatch, navigate, logout }, reconnect);
   }
-
-  // on mount, load previousUserID from localStorage if exists into redux, and replace it with current userID in 10 seconds
-  const [loadedPrevID, setLoadedPrevID] = useState(false);
-  useEffect(() => {
-    if (loadedPrevID) return;
-    // only states where user has created an account
-    if (!MyClientSocket) {
-      return;
-    }
-    
-    if (state != 'authed_user') {
-      return;
-    }
-
-    // safety timeout to prevent infinite loop
-    const timeout = setTimeout(() => {
-      console.log('App: previousUserID loading timeout reached');
-      setLoadedPrevID(true);
-      dispatch(setPreviousUserID(''));
-    }, 10000);
-
-    setLoadedPrevID(true);
-    clearTimeout(timeout);
-    const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
-    const prevID = localStorage.getItem(localStoragePreviousUserIDKey) || '';
-    dispatch(setPreviousUserID(prevID));
-
-    setTimeout(() => {
-      console.log('App: updating previousUserID in localStorage to current userID:', MyClientSocket?.user?.id);
-      localStorage.setItem(localStoragePreviousUserIDKey, MyClientSocket?.user?.id || "");
-      dispatch(setPreviousUserID(MyClientSocket?.user?.id || ""));
-    }, 10000);
-  }, [state, loadedPrevID]);
 
   // on mount, connect to server if authenticated
   useEffect(() => {
@@ -126,6 +94,7 @@ export default function App() {
 
   return (
     <>
+      <StartupChecks />
       <Chat />
       <DesktopChatWidget />
       <MobileChatWidget />
@@ -137,4 +106,89 @@ export default function App() {
       <Outlet />
     </>
   );
+}
+
+
+/**
+ * Component to run startup checks on app load
+ * Separate from App to avoid multiple runs due to App re-renders
+ */
+function StartupChecks() {
+  return <>
+    <PreviousUserCheck />
+    <AIResumeProfileButtonStartupCheck />
+  </>
+}
+
+function PreviousUserCheck() {
+  const dispatch = useDispatch();
+  const { state } = useSelector((store: ReduxRootState) => store.ClientSocket);
+
+  // on mount, load previousUserID from localStorage if exists into redux, and replace it with current userID in 10 seconds
+  const [loadedPrevID, setLoadedPrevID] = useState(false);
+  useEffect(() => {
+    if (loadedPrevID) return;
+    // only states where user has created an account
+    if (!MyClientSocket) {
+      return;
+    }
+    
+    if (state != 'authed_user') {
+      return;
+    }
+
+    // safety timeout to prevent infinite loop
+    const timeout = setTimeout(() => {
+      console.log('App: previousUserID loading timeout reached');
+      setLoadedPrevID(true);
+      dispatch(setPreviousUserID(''));
+    }, 10000);
+
+    setLoadedPrevID(true);
+    clearTimeout(timeout);
+    const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
+    const prevID = localStorage.getItem(localStoragePreviousUserIDKey) || '';
+    dispatch(setPreviousUserID(prevID));
+
+    setTimeout(() => {
+      console.log('App: updating previousUserID in localStorage to current userID:', MyClientSocket?.user?.id);
+      localStorage.setItem(localStoragePreviousUserIDKey, MyClientSocket?.user?.id || "");
+      dispatch(setPreviousUserID(MyClientSocket?.user?.id || ""));
+    }, 10000);
+  }, [state, loadedPrevID]);
+
+  return null;
+}
+
+function AIResumeProfileButtonStartupCheck() {
+  const { previousUserID, user } = useSelector((store: ReduxRootState) => store.ClientSocket);
+  const dispatch = useDispatch();
+
+  const [checked, setChecked] = useState(false);
+  /**
+   * On mount, check if previousUserID in localStorage matches current userID
+   * If not, reset AIResumeProfileButton timeout end in redux and localStorage
+   * 
+   * This prevents users from abusing AI resume generation by refreshing to clear client side timeout
+   * Note: This is not foolproof, as users can still clear localStorage manually
+   * Note 2: Backend also enforces rate limiting, so this is just an additional layer of protection
+   */
+  useEffect(() => {
+    if (checked) return;
+    if (previousUserID == undefined) return;
+    if (!user) return;
+
+    setChecked(true);
+    if (previousUserID != user.id) {
+      dispatch(setAIResumeProfileButtonTimeoutEnd(-1));
+      localStorage.removeItem(LocalStorageKeys.AIResumeTimeoutEnd);
+      return;
+    }
+
+    const storedTimeoutEnd = localStorage.getItem(LocalStorageKeys.AIResumeTimeoutEnd);
+    if (!isNaN(Number(storedTimeoutEnd))) {
+      dispatch(setAIResumeProfileButtonTimeoutEnd(Number(storedTimeoutEnd)));
+    }
+  }, [previousUserID, user]);
+  return null;
 }

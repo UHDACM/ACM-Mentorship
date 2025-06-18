@@ -172,7 +172,7 @@ export type Experience = {
 
 export type MonthYearDateRange = {
   start: [number, number];
-  end?: [number, number];
+  end?: [number, number] | null;
 };
 
 export type Certification = {
@@ -199,11 +199,11 @@ export type Education = {
   range: MonthYearDateRange;
 };
 
-// TODO: continue merging user types from frontend and backend
+// TODO: add null to optional fields where applicable
 export type UserObj = {
-  fName?: string;
-  mName?: string;
-  lName?: string;
+  fName?: string | null;
+  mName?: string | null;
+  lName?: string | null;
 
   username?: string;
   usernameLower?: string;

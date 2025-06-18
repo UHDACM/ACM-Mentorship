@@ -4,7 +4,7 @@ import AuthenticatedSocket, {
   AllAcceptingMentorIDs,
   SendClientsDataWithUserID,
 } from "../AuthenticatedSocket";
-import { isValidUserObj } from "@shared/validation/user";
+import { validateUserObj } from "@shared/validation/user";
 import { TrySendPushNotificationToUsers } from "./notification";
 
 /**
@@ -126,10 +126,7 @@ export async function GetUserData(
   }
 
   try {
-    if (!isValidUserObj(userDataRaw)) {
-      // this will never happen. Error will be thrown in validation function
-      throw new Error("");
-    }
+    validateUserObj(userDataRaw);
   } catch (err) {
     throw new Error("Error while fetching user data: " + err.message);
   }
@@ -146,10 +143,7 @@ export async function GetUserData(
   }
 
   try {
-    if (!isValidUserObj(selfDataRaw)) {
-      // this will never happen. Error will be thrown in validation function
-      throw new Error("");
-    }
+    validateUserObj(selfDataRaw);
   } catch (err) {
     throw new Error("Error while fetching user data: " + err.message);
   }

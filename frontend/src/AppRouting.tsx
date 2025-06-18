@@ -20,7 +20,6 @@ import MyMenteesPage from "./pages/MyMenteesPage/MyMenteesPage";
 import MentorGuidelinesPage from "./pages/GuidelinesPage/MentorGuidelinesPage";
 import MenteeGuidelinesPage from "./pages/GuidelinesPage/MenteeGuidelinesPage";
 import HelpPage from "./pages/HelpPage/HelpPage";
-import { checkViteEnvironmentVariables } from "./scripts/envCheck";
 import UserSettingsPage from "./pages/UserSettingsPage/UserSettingsPage";
 import { ChangesPreventNavigationProvider } from "./context/ChangesPreventNavigation/ChangesPreventNavigation";
 
@@ -102,7 +101,6 @@ const router = createBrowserRouter([
 ]);
 
 export default function AppRouting() {
-  checkViteEnvironmentVariables();
   return (
     <>
       <Provider store={store}>

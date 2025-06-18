@@ -6,6 +6,9 @@ import dotenv from 'dotenv';
 import AuthenticatedSocket from './AuthenticatedSocket';
 import { CreateExpressServer } from '../server/server';
 import { SocketServerErrorImproperlyFormattedToken, SocketServerErrorNoToken } from '@shared/data/socketServer';
+
+import env from '../env/env';
+
 dotenv.config();
 
 let socketServerOnline = false;
@@ -59,7 +62,7 @@ export function StartServer() {
     const httpServer = http.createServer(CreateExpressServer());
     const io = new SocketIOServer(httpServer, {
       cors: {
-        origin: [process.env.CLIENT_ADDRESS],
+        origin: [env.CLIENT_ADDRESS],
         methods: ['GET', 'POST'],
       }
     });
@@ -77,8 +80,8 @@ export function StartServer() {
       res(true);
     });
 
-    httpServer.listen(process.env.SERVER_PORT, () => {
-      console.log('Server is online on port', process.env.SERVER_PORT);
+    httpServer.listen(env.SERVER_PORT, () => {
+      console.log('Server is online on port', env.SERVER_PORT);
     });
 
     interface NodeJSNetworkError extends Error {
@@ -119,7 +122,7 @@ function _addInitialListenersToSocketIOServer() {
     console.log('Socket Attempt:', tokenWithBearer);
     
     // if testing, allow use of "testing" token to pass.
-    if(process.env.TESTING == "true") {
+    if(env.TESTING) {
       
       let tokenSplit: string[];
       try {
@@ -153,17 +156,17 @@ function _addInitialListenersToSocketIOServer() {
 
     // make request to our server to verify token.
     try {
-      // console.log(`Veriyfing "${tokenWithBearer}" from http://localhost:${process.env.EXPRESS_SERVER_PORT}/verifyJWT`);
+      // console.log(`Veriyfing "${tokenWithBearer}" from http://localhost:${env.EXPRESS_SERVER_PORT}/verifyJWT`);
       // request fails if token is invalid.
-      const resRaw = (await fetch(`http://localhost:${process.env.SERVER_PORT}/verifyJWT`, {
+      const resRaw = (await fetch(`http://localhost:${env.SERVER_PORT}/verifyJWT`, {
           method: 'POST',
           headers: {
-              authorization: tokenWithBearer
+            authorization: tokenWithBearer
           }
       }));
       const res = await resRaw.json();
 
-      const moreDetails = await (await fetch(`${process.env.AUTH0_ISSUER_BASE_URL}/userinfo`, {
+      const moreDetails = await (await fetch(`${env.AUTH0_ISSUER_BASE_URL}/userinfo`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${tokenWithBearer.split(' ')[1]}`

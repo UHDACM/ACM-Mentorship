@@ -26,6 +26,7 @@ import { addDialog, closeDialog } from "../Dialog/DialogSlice";
 import { UnsubscribeFromNotifications } from "../NotificationManager/NotificationManager";
 import { LocalStorageKeys } from "@shared/data/localStorage";
 import { NavigateFunction } from "react-router-dom";
+import env from "../../scripts/env";
 
 // This file is used to create and manage the client socket connection.
 // it makes use of the ClientSocket class (in /shared)
@@ -64,7 +65,7 @@ export async function CreateClientSocketConnection(
 
   let token = '';
   if (testMode === "true") {
-    if (import.meta.env.DEV == true) {
+    if (env.DEV == true) {
       token = `testing ${localStorage.getItem(LocalStorageKeys.testToken) || ""}`;
     }
   }
@@ -76,7 +77,7 @@ export async function CreateClientSocketConnection(
   dispatch(setClientState("connecting"));
   // await sleep(100);
   MyClientSocket = new ClientSocket(
-    import.meta.env.VITE_SERVER_SOCKET_URL,
+    env.VITE_SERVER_SOCKET_URL,
     {
       auth: {
         token: token,
@@ -247,8 +248,11 @@ function ClientSocketEventHandler(
 async function ClientSocketLogoutHandler(logout?: Function) {
   console.log("ClientSocket: Logging out, unsubscribing from notifications");
   await UnsubscribeFromNotifications();
-  const localStoragePreviousUserIDKey = LocalStorageKeys.previousUserID;
-  localStorage.setItem(localStoragePreviousUserIDKey, "");
+  
+  // clear localStorage entries related to client current user
+  localStorage.setItem(LocalStorageKeys.previousUserID, "");
+  localStorage.removeItem(LocalStorageKeys.AIResumeTimeoutEnd);
+  
   if (logout) {
     logout();
   }

@@ -213,7 +213,6 @@ export function isValidMentorshipRequestAction(
   return MentorshipRequestActions.includes(s as MentorshipRequestAction);
 }
 
-export const MAX_BIO_LENGTH = 200;
 
 /**
  * Checks if a goal is valid.

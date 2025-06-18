@@ -4,9 +4,7 @@ import { sleep } from "@shared/scripts/generalTools";
 import { USERNAME_RESERVED_TESTING_PREFIX } from "@shared/data/validation";
 import { ClientSocketState } from "@shared/types/socket";
 import { GenerateSocketArray } from "@shared/scripts/testingTools";
-import { isValidMessageContent } from "@shared/validation/general";
 import { userSettingsTestCases } from "@shared/validation/userSettings.test";
-import { UserSettings } from "@shared/types/userSettings";
 
 /**
  * This file tests mentorship request related functionality of the ClientSocket class.

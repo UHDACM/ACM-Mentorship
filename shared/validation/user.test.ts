@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { isValidUserObj } from "./user";
+import { validateUserObj } from "./user";
 import { UserObj } from "@shared/types/general";
 
-describe("isValidUserObj", () => {
+describe("validateUserObj", () => {
   it("should return true for a valid UserObj with all fields", () => {
     const validUser: UserObj = {
       fName: "John",
@@ -68,7 +68,7 @@ describe("isValidUserObj", () => {
       chats: ["chat1", "chat2"],
     };
 
-    expect(isValidUserObj(validUser)).toBe(true);
+    expect(validateUserObj(validUser)).toBe(true);
   });
 
   it("should throw an error for invalid UserObj with incorrect field types", () => {
@@ -89,7 +89,7 @@ describe("isValidUserObj", () => {
       ],
     };
 
-    expect(() => isValidUserObj(invalidUser)).toThrowError();
+    expect(() => validateUserObj(invalidUser)).toThrowError();
   });
 
   it("should throw an error for UserObj with invalid nested objects", () => {
@@ -108,7 +108,7 @@ describe("isValidUserObj", () => {
       ],
     };
 
-    expect(() => isValidUserObj(invalidNestedUser)).toThrowError();
+    expect(() => validateUserObj(invalidNestedUser)).toThrowError();
   });
 
   // it("should throw an error for UserObj with missing required fields", () => {
@@ -117,7 +117,7 @@ describe("isValidUserObj", () => {
   //     username: "johndoe"
   //   };
 
-  //   expect(() => isValidUserObj(missingFieldsUser)).toThrowError();
+  //   expect(() => validateUserObj(missingFieldsUser)).toThrowError();
   // });
 
   it("should handle UserObj with optional fields missing", () => {
@@ -129,7 +129,7 @@ describe("isValidUserObj", () => {
       email: "john.doe@example.com",
     };
 
-    expect(isValidUserObj(userWithMissingOptionalFields)).toBe(true);
+    expect(validateUserObj(userWithMissingOptionalFields)).toBe(true);
   });
 
   it("should throw an error for UserObj with invalid array fields", () => {
@@ -141,6 +141,6 @@ describe("isValidUserObj", () => {
       menteeIDs: "not an array", // Invalid: should be an array
     };
 
-    expect(() => isValidUserObj(invalidArrayUser)).toThrowError();
+    expect(() => validateUserObj(invalidArrayUser)).toThrowError();
   });
 });

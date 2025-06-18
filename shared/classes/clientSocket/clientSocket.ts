@@ -51,7 +51,7 @@ import {
   SubmitAssessmentPayload,
   SubmitGoalPayload,
 } from "@shared/types/clientSocketPayload";
-import { isValidUserObj } from "@shared/validation/user";
+import { validateUserObj } from "@shared/validation/user";
 import {
   SocketServerErrorImproperlyFormattedToken,
   SocketServerErrorNoToken,
@@ -669,9 +669,7 @@ export class ClientSocket {
         }
 
         try {
-          if (!isValidUserObj(v)) {
-            throw new Error("");
-          }
+          validateUserObj(v);
         } catch {
           res(false);
           return;
@@ -705,9 +703,7 @@ export class ClientSocket {
         }
         for (let mentor of v) {
           try {
-            if (!isValidUserObj(mentor)) {
-              throw new Error();
-            }
+            validateUserObj(mentor);
           } catch {
             // skips current mentor if their user data is malformed
             continue;

@@ -1,12 +1,7 @@
-import { ENV_VAR_CHECK } from './scripts/env_check';
 import { StartServer } from './socket/socketServer';
+import env from './env/env';
 
-import dotenv from 'dotenv';
-
-
-dotenv.config();
-
-ENV_VAR_CHECK();
+env; // ensure env is loaded
 
 async function Start() {
   try {

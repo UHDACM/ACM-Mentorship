@@ -1,44 +1,18 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  query as firebaseQuery,
-  where,
-  orderBy,
-  doc,
-  setDoc,
-  addDoc,
-  getDoc,
-  deleteDoc,
-  or,
-  QueryFieldFilterConstraint,
-} from "firebase/firestore";
 import { LRUCache } from "lru-cache"; // for caching
 
-import dotenv from "dotenv";
+import { collectionName } from '@shared/types/db';
 import { DBObj } from "@shared/types/general";
-dotenv.config();
+import env from './env/env';
 
-// pulls info from .env
-const firebaseConfig = {
-  apiKey: process.env.FB_API_KEY,
-  authDomain: process.env.FB_AUTH_DOMAIN,
-  projectId: process.env.FB_PROJECT_ID,
-  storageBucket: process.env.FB_STORAGE_BUCKET,
-  messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
-  appId: process.env.FB_APP_ID,
-};
+import admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+
+admin.initializeApp({
+  credential: admin.credential.cert(env.FB_ADMIN_JSON)
+});
+
 const db = getFirestore();
-
-// list of all collection names
-export const collectionNames = ["user", "assessment", "mentorshipRequest", 'assessmentQuestion', 'goal', 'metrics', 'chat', 'message', 'userPushSubscriptions', 'userSettings'] as const;
-export type collectionName = (typeof collectionNames)[number];
 
 type comparisonOperator =
   | "<"
@@ -79,7 +53,7 @@ export async function DBGetWithID(
     }
 
     // if cache is empty, fetch from db
-    const res = (await getDoc(doc(db, collectionName, id))).data();
+    const res = (await db.collection(collectionName).doc(id).get()).data();
     if (!res) {
       // if no db hit, then mark in cache that this item does not exist.
       CacheSet(collectionName, id, 'Nonexistent');
@@ -99,66 +73,52 @@ export async function DBGet(
   collectionName: collectionName,
   queries?: queryTuple[],
   queryStyle?: queryStyle,
-  order?: orderTuple
+  order?: orderTuple,
+  limit?: number
 ): Promise<DBObj[]> {
-  let res;
-  if (!queries) {
-    if (!order) {
-      res = await getDocs(firebaseQuery(collection(db, collectionName)));
-    } else {
-      res = await getDocs(
-        firebaseQuery(collection(db, collectionName), orderBy(...order))
-      );
-    }
-  } else {
-    let compoundQuery: QueryFieldFilterConstraint[] = queries.map(
-      (qT: queryTuple) => where(...qT)
+  let queryRef: FirebaseFirestore.Query = db.collection(collectionName);
+
+  // --- Apply filters ---
+  if (queries && queries.length > 0) {
+    const filters = queries.map(([field, op, val]) =>
+      admin.firestore.Filter.where(field, op, val)
     );
 
-    const isOr = queryStyle == "or";
-    if (!order) {
-      if (!isOr) {
-        res = await getDocs(
-          firebaseQuery(collection(db, collectionName), ...compoundQuery)
-        );
-      } else {
-        res = await getDocs(
-          firebaseQuery(collection(db, collectionName), or(...compoundQuery))
-        );
-      }
+    if (queryStyle === "or") {
+      // Requires firebase-admin >= v11.9
+      queryRef = queryRef.where(admin.firestore.Filter.or(...filters));
     } else {
-      if (!isOr) {
-        res = await getDocs(
-          firebaseQuery(
-            collection(db, collectionName),
-            ...compoundQuery,
-            orderBy(...order)
-          )
-        );
-      } else {
-        res = await getDocs(
-          firebaseQuery(
-            collection(db, collectionName),
-            or(...compoundQuery),
-            orderBy(...order)
-          )
-        );
+      // AND logic = chain .where()
+      for (const [field, op, val] of queries) {
+        queryRef = queryRef.where(field, op, val);
       }
     }
   }
 
-  if (res.empty) {
-    return [];
-  } else {
-    // when successful get, store values in cache.
-    const returnArr: DBObj[] = [];
-    res.forEach((doc) => {
-      const val = { ...doc.data(), id: doc.id };
-      CacheSet(collectionName, doc.id, { ...val });
-      returnArr.push(val);
-    });
-    return returnArr;
+  if (limit) {
+    queryRef.limit(limit);
   }
+
+  // --- Apply ordering ---
+  if (order) {
+    const [field, direction] = order;
+    queryRef = queryRef.orderBy(field, direction);
+  }
+
+  // --- Execute query ---
+  const res = await queryRef.get();
+
+  if (res.empty) return [];
+
+  const results: DBObj[] = [];
+
+  res.forEach((doc) => {
+    const val = { ...doc.data(), id: doc.id };
+    CacheSet(collectionName, doc.id, val); // keep your caching logic
+    results.push(val);
+  });
+
+  return results;
 }
 
 export async function DBSet(
@@ -177,7 +137,7 @@ export async function DBSet(
       newObj = value;
     }
     CacheSet(collectionName, obj.id, { ...newObj, id: obj.id });
-    await setDoc(doc(db, collectionName, obj.id), newObj);
+    await db.collection(collectionName).doc(obj.id).set(newObj);
   });
 }
 
@@ -194,41 +154,54 @@ export async function DBSetWithID(
   } else {
     newObj = value;
   }
-
-  await setDoc(doc(db, collectionName, id), newObj);
+  await db.collection(collectionName).doc(id).set(newObj);
   CacheSet(collectionName, id, { ...newObj, id });
 }
 
+/**
+ * Create a new document with an auto-generated ID
+ */
 export async function DBCreate(collectionName: collectionName, value: object) {
-  const resID = (await addDoc(collection(db, collectionName), value)).id;
+  const docRef = await db.collection(collectionName).add(value); // add() auto-generates ID
+  const resID = docRef.id;
+
   CacheSet(collectionName, resID, { ...value, id: resID });
+
   return resID;
 }
 
-export async function DBCreateWithID(collectionName: collectionName, value: object, id: string) {
-  (await setDoc(doc(collection(db, collectionName), id), value));
+/**
+ * Create or overwrite a document with a specific ID
+ */
+export async function DBCreateWithID(
+  collectionName: collectionName,
+  value: object,
+  id: string
+) {
+  await db.collection(collectionName).doc(id).set(value);
+
   CacheSet(collectionName, id, { ...value, id });
 }
 
 export async function DBDelete(
   collectionName: collectionName,
   queries?: queryTuple[],
-  queryStyle?: queryStyle
+  queryStyle?: "and" | "or"
 ) {
+  // Get documents matching the query
   const docs = await DBGet(collectionName, queries, queryStyle);
+
+  // Delete all documents in parallel
   await Promise.all(
     docs.map(async (obj) => {
-      await deleteDoc(doc(db, collectionName, obj.id));
+      await db.collection(collectionName).doc(obj.id).delete();
       CacheDelete(collectionName, obj.id);
     })
   );
 }
 
-export async function DBDeleteWithID(
-  collectionName: collectionName,
-  id: string
-) {
-  await deleteDoc(doc(db, collectionName, id));
+export async function DBDeleteWithID(collectionName: collectionName, id: string) {
+  await db.collection(collectionName).doc(id).delete();
   CacheDelete(collectionName, id);
 }
 

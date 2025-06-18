@@ -8,8 +8,9 @@ import {
   isValidProject,
   isValidSocial,
 } from "./general";
+import { MAX_BIO_LENGTH } from "@shared/data/user";
 
-export function isValidUserObj(obj: unknown): obj is UserObj {
+export function validateUserObj(obj: unknown): asserts obj is UserObj {
   if (typeof obj !== "object" || obj === null) {
     throw new Error("UserObj must be a non-null object.");
   }
@@ -43,112 +44,155 @@ export function isValidUserObj(obj: unknown): obj is UserObj {
     chats,
   } = obj as UserObj;
 
+  const errors: string[] = [];
+
   if (OAuthSubID && typeof OAuthSubID !== "string") {
-    throw new Error("OAuthSubID must be a string.");
+    errors.push("OAuthSubID must be a string.");
   }
 
   if (fName && typeof fName !== "string") {
-    throw new Error("fName must be a string.");
+    errors.push("fName must be a string.");
   }
   if (mName && typeof mName !== "string") {
-    throw new Error("mName must be a string.");
+    errors.push("mName must be a string.");
   }
   if (lName && typeof lName !== "string") {
-    throw new Error("lName must be a string.");
+    errors.push("lName must be a string.");
   }
 
   // note: does not check for uniqueness
   if (username && typeof username !== "string") {
-    throw new Error("username must be a string.");
+    errors.push("username must be a string.");
   }
   if (usernameLower && typeof usernameLower !== "string") {
-    throw new Error("usernameLower must be a string.");
+    errors.push("usernameLower must be a string.");
   }
 
   if (email && typeof email !== "string") {
-    throw new Error("email must be a string.");
+    errors.push("email must be a string.");
   }
 
   if (id && typeof id !== "string") {
-    throw new Error("id must be a string.");
+    errors.push("id must be a string.");
   }
   if (isMentee && typeof isMentee !== "boolean") {
-    throw new Error("isMentee must be a boolean.");
+    errors.push("isMentee must be a boolean.");
   }
   if (isMentor && typeof isMentor !== "boolean") {
-    throw new Error("isMentor must be a boolean.");
+    errors.push("isMentor must be a boolean.");
   }
   if (acceptingMentees && typeof acceptingMentees !== "boolean") {
-    throw new Error("acceptingMentees must be a boolean.");
+    errors.push("acceptingMentees must be a boolean.");
   }
   if (displayPictureURL && typeof displayPictureURL !== "string") {
-    throw new Error("displayPictureURL must be a string.");
+    errors.push("displayPictureURL must be a string.");
   }
-  if (bio && typeof bio !== "string") {
-    throw new Error("bio must be a string.");
+  if (bio) {
+    if (typeof bio !== "string") {
+      errors.push("bio must be a string.");
+    } else if (bio.length > MAX_BIO_LENGTH) {
+      errors.push("bio is too long. Max length is " + MAX_BIO_LENGTH + " characters.");
+    }
   }
 
   if (assessments && !isValidAssessmentPreviewMap(assessments)) {
-    throw new Error("Invalid assessments.");
+    errors.push("Invalid assessments.");
   }
   if (menteeIDs && !Array.isArray(menteeIDs)) {
-    throw new Error("menteeIDs must be an array.");
+    errors.push("menteeIDs must be an array.");
   }
   if (mentorIDs && !Array.isArray(mentorIDs)) {
-    throw new Error("mentorIDs must be an array.");
+    errors.push("mentorIDs must be an array.");
   }
   if (mentorshipRequests && !Array.isArray(mentorshipRequests)) {
-    throw new Error("mentorshipRequests must be an array.");
+    errors.push("mentorshipRequests must be an array.");
   }
   if (softSkills && !Array.isArray(softSkills)) {
-    throw new Error("softSkills must be an array.");
+    errors.push("softSkills must be an array.");
   }
   if (goals && !isValidGoalPreviewMap(goals)) {
-    throw new Error("Invalid goals.");
+    errors.push("Invalid goals.");
   }
 
   if (education) {
     if (!Array.isArray(education)) {
-      throw new Error("education must be an array.");
+      errors.push("education must be an array.");
+    } else {
+      education.forEach((edu, idx) => {
+        try {
+          isValidEducation(edu);
+        } catch (e: any) {
+          errors.push(`education[${idx}]: ${e.message}`);
+        }
+      });
     }
-    education.forEach((edu) => isValidEducation(edu));
   }
 
   if (experience) {
     if (!Array.isArray(experience)) {
-      throw new Error("experience must be an array.");
+      errors.push("experience must be an array.");
+    } else {
+      experience.forEach((exp, idx) => {
+        try {
+          isValidExperience(exp);
+        } catch (e: any) {
+          errors.push(`experience[${idx}]: ${e.message}`);
+        }
+      });
     }
-    experience.forEach((exp) => isValidExperience(exp));
   }
 
   if (certifications) {
     if (!Array.isArray(certifications)) {
-      throw new Error("certifications must be an array.");
+      errors.push("certifications must be an array.");
+    } else {
+      certifications.forEach((cert, idx) => {
+        try {
+          isValidCertification(cert);
+        } catch (e: any) {
+          errors.push(`certifications[${idx}]: ${e.message}`);
+        }
+      });
     }
-    certifications.forEach((cert) => isValidCertification(cert));
   }
 
   if (projects) {
     if (!Array.isArray(projects)) {
-      throw new Error("projects must be an array.");
+      errors.push("projects must be an array.");
+    } else {
+      projects.forEach((proj, idx) => {
+        try {
+          isValidProject(proj);
+        } catch (e: any) {
+          errors.push(`projects[${idx}]: ${e.message}`);
+        }
+      });
     }
-    projects.forEach((proj) => isValidProject(proj));
   }
 
   if (socials) {
     if (!Array.isArray(socials)) {
-      throw new Error("socials must be an array.");
+      errors.push("socials must be an array.");
+    } else {
+      socials.forEach((social, idx) => {
+        try {
+          isValidSocial(social);
+        } catch (e: any) {
+          errors.push(`socials[${idx}]: ${e.message}`);
+        }
+      });
     }
-    socials.forEach((social) => isValidSocial(social));
   }
 
   if (testing && typeof testing !== "boolean") {
-    throw new Error("testing must be a boolean.");
+    errors.push("testing must be a boolean.");
   }
 
   if (chats && !Array.isArray(chats)) {
-    throw new Error("chats must be an array.");
+    errors.push("chats must be an array.");
   }
 
-  return true;
+  if (errors.length > 0) {
+    throw new Error(errors.join("\n"));
+  }
 }

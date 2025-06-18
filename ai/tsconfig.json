@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "strict": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+
+    "paths": {
+      // used to reference shared types (outside of base directory)
+      "@shared/*": ["../shared/*"]
+    },
+
+    // shared is not imported here, as it is imported in individual files as needed
+  },
+  "include": ["./src", "./test"]
+}

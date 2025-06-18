@@ -2,16 +2,19 @@ import { useDispatch } from "react-redux";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
 import { addDialog } from "../../features/Dialog/DialogSlice";
 import useAuth from "../../hooks/UseAuth/useAuth";
+import { useEffect } from "react";
 
 export default function LandingPage() {
   const dispatch = useDispatch();
-  const { loginWithRedirect } = useAuth();
+  const { loginWithRedirect, getAccessTokenSilently } = useAuth();
 
   function handleLearnMore() {
-    dispatch(addDialog({
-      title: 'Nothing',
-      subtitle: 'Nothing else available yet'
-    }));
+    dispatch(
+      addDialog({
+        title: "Nothing",
+        subtitle: "Nothing else available yet",
+      })
+    );
   }
 
   function handleLogin() {
@@ -20,8 +23,8 @@ export default function LandingPage() {
 
   return (
     <div
-    className={'pageBase'}
-    style={{justifyContent: 'center', alignItems: 'center'}}
+      className={"pageBase"}
+      style={{ justifyContent: "center", alignItems: "center" }}
     >
       {/* Shift slightly left to please visually */}
       <div style={{ marginLeft: -10 }}>
@@ -33,7 +36,7 @@ export default function LandingPage() {
           color: "white",
           fontSize: "1.1rem",
           fontWeight: 300,
-          textAlign: 'center'
+          textAlign: "center",
         }}
       >
         Inspiring the next generation, one person at a time

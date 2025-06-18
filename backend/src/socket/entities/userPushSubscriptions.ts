@@ -10,11 +10,12 @@ import {
   UserPushSubscriptions,
 } from "@shared/types/userPushSubscriptions";
 import { sleep } from "../../../src/scripts/tools";
+import env from "../../env/env";
 
 webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
+  env.VAPID_SUBJECT,
+  env.VAPID_PUBLIC_KEY,
+  env.VAPID_PRIVATE_KEY
 );
 
 // A sample testing subscription to use to indicate this userPushSubscription belongs to a testing user

@@ -1,7 +1,7 @@
 import { MentorshipRequestObj, MentorshipRequestStatus, UserObj } from "@shared/types/general";
 import { DBCreate, DBDeleteWithID, DBGetWithID, DBSetWithID } from "../../db";
 import { SendClientsDataWithUserID } from "../AuthenticatedSocket";
-import { isValidUserObj } from "@shared/validation/user";
+import { validateUserObj } from "@shared/validation/user";
 import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequest";
 import { isValidMentorshipRequestObj } from "@shared/validation/general";
 import { TrySendPushNotificationToUsers } from "./notification";
@@ -84,17 +84,15 @@ export async function RemoveMentorshipRequest(
   if (alertStatus == 'accepted' || alertStatus == 'declined') {
     notiTargets.push(menteeID);
     const mentorObj: unknown = await DBGetWithID("user", mentorID);
-    if (mentorObj && isValidUserObj(mentorObj)) {
-      PersonName = mentorObj.fName || "A user";
-    }
+    validateUserObj(mentorObj);
+    PersonName = mentorObj.fName || "A user";
     body = `${PersonName} has ${alertStatus} your mentorship request.`;
 
     url = `/app/user?id=${mentorID}`;
   } else if (alertStatus == 'cancelled') {
     const menteeObj: unknown = await DBGetWithID("user", menteeID);
-    if (menteeObj && isValidUserObj(menteeObj)) {
-      PersonName = menteeObj.fName || "A user";
-    }
+    validateUserObj(menteeObj);
+    PersonName = menteeObj.fName || "A user";
     body = `${PersonName} has cancelled their mentorship request.`;
     notiTargets.push(mentorID);
     url = `/app/my-mentees?tab=1`;
@@ -173,10 +171,7 @@ export async function AddMentorshipRequest(
   });
 
   const menteeObj: unknown = await DBGetWithID("user", menteeID);
-  if (!menteeObj || !isValidUserObj(menteeObj)) {
-    // this will likely never happen, but just in case
-    return;
-  }
+  validateUserObj(menteeObj);
   const menteeName = menteeObj.fName || "a user";
   // sends notification to mentor about new request (mentee does not get notification)
   await TrySendPushNotificationToUsers([mentorID], "New Mentorship Request", {
@@ -227,13 +222,9 @@ export async function setMentorshipBetweenUsers(
   // get both mentor and mentee
   // get both mentor and mentee
   const mentorObj = await DBGetWithID("user", mentorID);
-  if (!mentorObj || !isValidUserObj(mentorObj)) {
-    throw new Error("Mentor does not exist");
-  }
+  validateUserObj(mentorObj);
   const menteeObj = await DBGetWithID("user", menteeID);
-  if (!menteeObj || !isValidUserObj(menteeObj)) {
-    throw new Error("Mentee does not exist");
-  }
+  validateUserObj(menteeObj);
 
   // add mentee to mentor's mentee list
   let mentorMenteeList: Array<string> = mentorObj.menteeIDs;

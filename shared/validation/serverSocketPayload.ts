@@ -9,7 +9,7 @@ import {
   ServerSocketPayloadDataInitialData,
   ServerSocketPayloadMessage,
 } from "@shared/types/serverSocketPayload";
-import { isValidUserObj } from "./user";
+import { validateUserObj } from "./user";
 
 
 export function isValidServerSocketPayloadDataBase(input: unknown): input is ServerSocketPayloadDataBase {
@@ -82,7 +82,12 @@ export function isServerSocketPayloadDataInitialData(s: unknown): s is ServerSoc
   if (typeof data !== "object" || data === null) return false;
 
   const { user, availableAssessmentQuestions } = data as Record<string, unknown>;
-  if (!isValidUserObj(user)) return false;
+  try {
+    validateUserObj(user);
+  } catch (err) {
+    return false;
+  }
+  
   if (!Array.isArray(availableAssessmentQuestions)) return false;
   for (const question of availableAssessmentQuestions) {
     if (!isValidAssessmentQuestion(question)) return false;

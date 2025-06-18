@@ -1,31 +1,41 @@
 
 import MinimalisticButton from '../../components/MinimalisticButton/MinimalisticButton';
 import { useDispatch } from 'react-redux';
-import { addDialog, addDialogImmediate, closeDialog } from '../../features/Dialog/DialogSlice';
+import { addDialog, closeDialog } from '../../features/Dialog/DialogSlice';
+import env from '../../scripts/env';
 
 export default function Playground() {
   const dispatch = useDispatch();
 
-  function AddFiveDialogsPlusPriority() {
-    for (let i = 0; i < 5; i++) {
-      dispatch(addDialog(
+  function TryFileDialog() {
+    dispatch(addDialog({
+      title: 'Upload a file',
+      subtitle: 'Please upload a file using the input below.',
+      inputs: [
         {
-          title: `Dialog ${i + 1}`,
-          buttons: [
-            {
-              text: 'ADD PRIORITY',
-              onClick: () => {
-                dispatch(addDialogImmediate({
-                  title: 'Priority Dialog',
-                  showDelay: 1000,
-                }));
-                dispatch(closeDialog());
-              }
-            }
-          ]
+          label: 'Select File',
+          type: 'file',
+          name: 'uploadedFile',
         }
-      ));
-    }
+      ],
+      buttons: [
+        {
+          text: 'Submit',
+        
+          onClick: (inputs, enableCallback) => {
+            console.log('File input dialog submitted with inputs:', inputs);
+            enableCallback();
+            dispatch(closeDialog());
+          },
+          useDisableTill: true
+        }
+      ]
+    }));
+  }
+
+  // Only show playground in dev mode
+  if (!env.DEV) {
+    return null;
   }
 
   return (
@@ -33,7 +43,7 @@ export default function Playground() {
       <div
       className={'pageBase'}
       >
-        <MinimalisticButton onClick={AddFiveDialogsPlusPriority}>Add 5 Dialogs</MinimalisticButton>
+        <MinimalisticButton onClick={TryFileDialog}>Try File Dialog</MinimalisticButton>
       </div>
     </>
   );

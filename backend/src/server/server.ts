@@ -3,6 +3,7 @@ import { Express } from "express";
 import dotenv from "dotenv";
 import { auth } from "express-oauth2-jwt-bearer";
 import { DeleteTestData } from "../../src/scripts/tools";
+import env from "../env/env";
 dotenv.config();
 
 let ExpressServer: Express;
@@ -30,9 +31,9 @@ export function CreateExpressServer() {
   app.use(express.json());
 
   const jwtCheck = auth({  
-    audience: process.env.AUTH0_AUDIENCE,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    tokenSigningAlg: process.env.AUTH0_TOKEN_SIGNING_ALG,
+    audience: env.AUTH0_AUDIENCE,
+    issuerBaseURL: env.AUTH0_ISSUER_BASE_URL,
+    tokenSigningAlg: env.AUTH0_TOKEN_SIGNING_ALG,
   });
 
   app.get("/", (_, res) => {
@@ -42,7 +43,7 @@ export function CreateExpressServer() {
   // only for testing purposes
   app.get('/deleteTestData', async (_, res) => {
     // only for testing purposes
-    if (process.env.TESTING != 'true') {
+    if (!env.TESTING) {
       res.status(403).send('not allowed');
       return;
     }

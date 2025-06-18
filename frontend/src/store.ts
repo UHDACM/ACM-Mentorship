@@ -5,6 +5,7 @@ import AlertSlice from './features/Alert/AlertSlice';
 import ChatSlice from './features/Chat/ChatSlice';
 import NotificationManagerSlice from './features/NotificationManager/NotificationManagerSlice';
 import { enableMapSet } from 'immer';
+import AIResumeProfileButtonSlice from "./features/AIResumeProfileButton/AIResumeProfileButtonSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     Alert: AlertSlice,
     Chat: ChatSlice,
     NotificationManager: NotificationManagerSlice,
+    AIResumeProfileButton: AIResumeProfileButtonSlice
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({

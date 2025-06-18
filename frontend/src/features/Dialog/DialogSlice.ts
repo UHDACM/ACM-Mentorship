@@ -2,7 +2,7 @@
 import { createSlice, Draft, PayloadAction } from "@reduxjs/toolkit";
 import { ReactNode } from "react";
 
-export type DialogInputType = 'number' | 'text' | 'email' | 'select' | 'toggle';
+export type DialogInputType = 'number' | 'text' | 'email' | 'select' | 'toggle' | 'file';
 export type DialogInput = {
   label: string,
   type: DialogInputType,
@@ -10,6 +10,7 @@ export type DialogInput = {
   selectOptions?: string[] | boolean[] | number[],
   inputStyle?: React.CSSProperties,
   labelStyle?: React.CSSProperties,
+  accept?: string,
   containerStyle?: React.CSSProperties,
   initialValue?: string | number | undefined | boolean,
   placeholder?: string,
@@ -18,7 +19,7 @@ export type DialogInput = {
 
 export type DialogButton = {
   text?: string,
-  onClick?: (DialogFormParams: Object, enableCallback?: Function) => any,
+  onClick?: (DialogFormParams: Object, enableCallback: Function) => any,
   style?: React.CSSProperties,
 
   /**

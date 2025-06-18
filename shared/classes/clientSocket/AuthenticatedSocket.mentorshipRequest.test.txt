@@ -11,7 +11,7 @@ import { Socket } from "socket.io-client";
 import { SocketPayloadMentorshipCancel, SocketPayloadMentorshipSend } from "@shared/types/clientSocketPayload";
 import { UserObj } from "@shared/types/general";
 import { DBGet } from "src/db";
-import { isValidUserObj } from "@shared/validation/user";
+import { validateUserObj } from "@shared/validation/user";
 
 let socket1: Socket, socket2: Socket, socket3: Socket;
 let socket1Data: UserObj = {},
@@ -78,7 +78,7 @@ beforeAll(async () => {
       throw new Error("Could not find user that was just created");
     }
     const userObj = res[0];
-    if (!isValidUserObj(userObj)) {
+    if (!validateUserObj(userObj)) {
       throw new Error("UserObj is not valid");
     }
     if (i == 0) {

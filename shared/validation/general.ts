@@ -52,35 +52,44 @@ export function isValidSocial(social: unknown): social is SocialObj {
 export function isValidExperience(
   experience: unknown
 ): experience is Experience {
-  if (typeof experience != "object") {
-    throw new Error("Experience format was unexpected");
-  }
-  const { company, position, description, range } = experience as Experience;
-  if (!company || typeof company != "string" || company.trim().length < 1) {
-    throw new Error("Company name is missing from experience.");
+  const errors: string[] = [];
+
+  if (typeof experience != "object" || experience === null) {
+    errors.push("Experience format was unexpected");
   }
 
-  const validExperienceErrorHeader = `Experience at ${company} | `;
+  const { company, position, description, range } = experience as Experience;
+
+  if (!company || typeof company != "string" || company.trim().length < 1) {
+    errors.push("Company name is missing from experience.");
+  }
+
+  const validExperienceErrorHeader = `Experience at ${company ?? "[unknown company]"} | `;
+
   if (!position || typeof position != "string" || position.trim().length < 1) {
-    throw new Error(validExperienceErrorHeader + " Position was not provided");
-  } else if (
-    (description && typeof description != "string") ||
-    description.trim().length < 1
-  ) {
-    throw new Error(
+    errors.push(validExperienceErrorHeader + "Position was not provided");
+  }
+
+  if (!description || typeof description != "string") {
+    errors.push(
       validExperienceErrorHeader +
-        " Description was provided, but format was unexpected"
+        "Description is missing from education (or is not a string)."
     );
-  } else if (!range || !isValidMonthYearRange(range)) {
-    throw new Error(validExperienceErrorHeader + " Range is not valid");
+  } else if (description && description.trim().length < 1) {
+    errors.push(validExperienceErrorHeader + "Description was too short");
   }
 
   try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(validExperienceErrorHeader + " Range is not valid");
+    if (!range) {
+      errors.push(validExperienceErrorHeader + "Range must be { start, end }");
     }
+    isValidMonthYearRange(range);
   } catch (err) {
-    throw new Error(validExperienceErrorHeader + (err as Error).message);
+    errors.push(validExperienceErrorHeader + (err as Error).message);
+  }
+
+  if (errors.length > 0) {
+    throw new Error(errors.join(" | "));
   }
 
   return true;
@@ -90,20 +99,20 @@ export const isValidMonthYearRange_YearToo = -100000;
 const isValidMonthYearRange_YearTooOldError = `Oh imortal one, please reach out to HR, we've been meaning to speak with you`;
 export function isValidMonthYearRange(
   range: unknown
-): range is MonthYearDateRange {
+): asserts range is MonthYearDateRange {
   if (!range || typeof range !== "object") {
-    throw new Error("Invalid range format");
+    throw new Error("Invalid range format. Range must be an object { start, end }.");
   }
 
   const { start, end } = range as MonthYearDateRange;
 
   if (!start || !Array.isArray(start) || start.length !== 2) {
-    throw new Error("Start date format does not make sense.");
+    throw new Error("Start must be an array of integers: [month, year].");
   }
 
   // Validate the start date
   if (!isValidMonthInteger(start[0])) {
-    throw new Error("Invalid start month");
+    throw new Error("Invalid start month. Start month must be an integer between 1 and 12.");
   }
 
   if (start[1] < isValidMonthYearRange_YearToo) {
@@ -111,20 +120,19 @@ export function isValidMonthYearRange(
   }
 
   // Validate the end date if provided
-  if (end) {
+  if (end != null) {
     if (!Array.isArray(end) || end.length !== 2) {
-      throw new Error("End date format does not make sense.");
+      throw new Error("End must be an array of integers: [month, year].");
     }
 
     if (!isValidMonthInteger(end[0])) {
-      throw new Error("Invalid end month");
+      throw new Error("Invalid end month. End month must be an integer between 1 and 12.");
     }
 
     if (end[1] < isValidMonthYearRange_YearToo) {
       throw new Error(isValidMonthYearRange_YearTooOldError);
     }
   }
-  return true;
 }
 
 export function isValidMonthInteger(monthInteger: number) {
@@ -132,64 +140,90 @@ export function isValidMonthInteger(monthInteger: number) {
 }
 
 export function isValidProject(project: unknown): project is Project {
-  if (typeof project != "object") {
-    throw new Error("Project format was unexpected");
+  const errors: string[] = [];
+
+  if (typeof project != "object" || project === null) {
+    errors.push("Project format was unexpected");
   }
+
   const { name, position, description, range } = project as Project;
+
   if (!name || typeof name != "string" || name.trim().length < 1) {
-    throw new Error("Project name is missing from experience.");
+    errors.push("Project name is missing from experience.");
   }
-  const validProjectErrorHeader = `Project name: ${name} | `;
+
+  const validProjectErrorHeader = `Project name: ${name ?? "[unknown project]"} | `;
+
   if (!position || typeof position != "string" || position.trim().length < 1) {
-    throw new Error(validProjectErrorHeader + " Position was not provided");
-  } else if (
-    (description && typeof description != "string") ||
-    description.trim().length < 1
-  ) {
-    throw new Error(
+    errors.push(validProjectErrorHeader + "Position was not provided");
+  }
+
+  if (!description || typeof description != "string") {
+    errors.push(
       validProjectErrorHeader +
-        " Description was provided, but format was unexpected"
+        "Description is missing from education (or is not a string)."
     );
+  } else if (description && description.trim().length < 1) {
+    errors.push(validProjectErrorHeader + "Description was too short");
   }
 
   try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(validProjectErrorHeader + " Range is not valid");
+    if (!range) {
+      errors.push(validProjectErrorHeader + "Range must be { start, end }");
     }
+    isValidMonthYearRange(range);
   } catch (err) {
-    throw new Error(validProjectErrorHeader + (err as Error).message);
+    errors.push(validProjectErrorHeader + (err as Error).message);
   }
+
+  if (errors.length > 0) {
+    throw new Error(errors.join(" | "));
+  }
+
   return true;
 }
 
 export function isValidEducation(education: unknown): education is Education {
-  if (typeof education != "object") {
-    throw new Error("Experience format was unexpected");
+  const errors: string[] = [];
+
+  if (typeof education != "object" || education === null) {
+    errors.push("Education format was unexpected");
   }
+
   const { school, degree, fieldOfStudy, range } = education as Education;
+
   if (!school || typeof school != "string" || school.trim().length < 1) {
-    throw new Error("Education school is missing from experience.");
+    errors.push("Education school is missing from education.");
   }
-  const educationErrorHeader = `Error processing education "${school}":`;
+
+  const educationErrorHeader = `Education at ${school ?? "[unknown school]"} | `;
+
   if (!degree || typeof degree != "string" || degree.trim().length < 1) {
-    throw new Error(educationErrorHeader + " Position was not provided");
-  } else if (
-    !fieldOfStudy ||
-    typeof fieldOfStudy != "string" ||
-    fieldOfStudy.trim().length < 1
-  ) {
-    throw new Error(
+    errors.push(educationErrorHeader + "Degree was not provided");
+  }
+
+  if (!fieldOfStudy || typeof fieldOfStudy != "string") {
+    errors.push(
       educationErrorHeader +
-        " Description was provided, but format was unexpected"
+        "Field of study is missing from education (or is not a string)."
     );
+  } else if (fieldOfStudy.trim().length < 1) {
+    errors.push(educationErrorHeader + "Field of study was too short");
   }
+
   try {
-    if (!range || !isValidMonthYearRange(range)) {
-      throw new Error(educationErrorHeader + " Range is not valid");
+    if (!range) {
+      errors.push(educationErrorHeader + "Range must be { start, end }");
     }
+    isValidMonthYearRange(range);
   } catch (err) {
-    throw new Error(educationErrorHeader + (err as Error).message);
+    errors.push(educationErrorHeader + (err as Error).message);
   }
+
+  if (errors.length > 0) {
+    throw new Error(errors.join(" | "));
+  }
+
   return true;
 }
 

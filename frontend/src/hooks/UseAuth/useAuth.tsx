@@ -7,6 +7,7 @@ import { LocalStorageKeys } from "@shared/data/localStorage";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addDialog, closeDialog } from "../../features/Dialog/DialogSlice";
+import env from "../../scripts/env";
 
 export default function useAuth() {
   // check for test mode
@@ -25,7 +26,7 @@ export default function useAuth() {
 
   if (testMode === "true") {
     // in test mode, use test auth
-    if (import.meta.env.DEV == true) {
+    if (env.DEV == true) {
       return GetTestAuth();
     }
     // in non-test environment but testMode is true, fallback to real auth
