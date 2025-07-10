@@ -5,6 +5,11 @@ export interface Metric extends DBObj {
     tokensUsedLastHour: MetricCountTimestampObj,
     requestsMadeLastHour: MetricCountTimestampObj
   } | null;
+
+  MentorFinder?: {
+    tokensUsedLastHour: MetricCountTimestampObj,
+    requestsMadeLastHour: MetricCountTimestampObj
+  } | null;
 };
 
 export interface MetricCountTimestampObj {

@@ -21,6 +21,23 @@ export function isMetric(obj: unknown): obj is Metric {
   }
   // ============================
 
+  // checks MentorFinder ==============
+  // note: left optional on purpose, older metric docs won't have this
+  const { MentorFinder } = obj as Metric;
+  if (MentorFinder != null) {
+    if (typeof MentorFinder !== 'object') {
+      return false;
+    }
+    const { tokensUsedLastHour, requestsMadeLastHour } = MentorFinder;
+    if (tokensUsedLastHour != null && !isCountTimestampObj(tokensUsedLastHour)) {
+      return false;
+    }
+    if (requestsMadeLastHour != null && !isCountTimestampObj(requestsMadeLastHour)) {
+      return false;
+    }
+  }
+  // ============================
+
 
   return true;
 }

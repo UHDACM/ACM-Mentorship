@@ -4,7 +4,7 @@ import { validateUserObj } from "@shared/validation/user";
 import env from "../env/env";
 import { MAX_BIO_LENGTH } from "@shared/data/user";
 
-const genAI = new GoogleGenAI({
+export const genAI = new GoogleGenAI({
   apiKey: env.AI_API_KEY,
 });
 

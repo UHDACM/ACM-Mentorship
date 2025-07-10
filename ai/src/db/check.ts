@@ -87,3 +87,71 @@ export function GetUserAIResumeTimeoutEnd(userID: string): number | undefined {
   }
   return undefined;
 }
+
+/**
+ * Same idea as the AI resume quota above, but for the mentor finder tool.
+ * Kept separate so a user burning through resume generations doesn't lock
+ * them out of searching for a mentor.
+ */
+export const UsersOnMentorFinderTimeout = new LRUCache<string, TimeoutInformation>({ max: CacheSize });
+export async function CheckUserBelowMentorFinderQuota(userID: string): Promise<boolean> {
+  if (CheckUserHasMentorFinderTimeout(userID)) {
+    return false;
+  }
+
+  const result = await DBGetWithID('metrics', userID);
+
+  if (!result) {
+    return true;
+  }
+
+  if (!isMetric(result)) {
+    return false;
+  }
+
+  const mentorFinderMetrics = result.MentorFinder;
+  if (!mentorFinderMetrics) {
+    // no metrics, user is good
+    return true;
+  }
+
+  if (mentorFinderMetrics.tokensUsedLastHour.count >= env.AI_LIMITS.tokensUsedLastHour) {
+    if (DateUnixIsFromCurrentHour(mentorFinderMetrics.tokensUsedLastHour.timestamp)) {
+      AddUserToMentorFinderTimeoutCacheTillNextHour(userID);
+      return false;
+    }
+  } else if (mentorFinderMetrics.requestsMadeLastHour.count >= env.AI_LIMITS.requestsMadeLastHour) {
+    if (DateUnixIsFromCurrentHour(mentorFinderMetrics.requestsMadeLastHour.timestamp)) {
+      AddUserToMentorFinderTimeoutCacheTillNextHour(userID);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function AddUserToMentorFinderTimeoutCacheTillNextHour(userID: string) {
+  const now = new Date();
+  const nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 0, 0);
+  UsersOnMentorFinderTimeout.set(userID, { timeoutEnd: nextHour.getTime() });
+}
+
+export function CheckUserHasMentorFinderTimeout(userID: string): boolean {
+  const userTimeoutInfo = UsersOnMentorFinderTimeout.get(userID);
+  if (userTimeoutInfo) {
+    if (Date.now() < userTimeoutInfo.timeoutEnd) {
+      return true;
+    }
+  }
+
+  UsersOnMentorFinderTimeout.delete(userID);
+  return false;
+}
+
+export function GetUserMentorFinderTimeoutEnd(userID: string): number | undefined {
+  const userTimeoutInfo = UsersOnMentorFinderTimeout.get(userID);
+  if (userTimeoutInfo) {
+    return userTimeoutInfo.timeoutEnd;
+  }
+  return undefined;
+}
