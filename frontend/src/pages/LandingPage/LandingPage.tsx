@@ -2,11 +2,10 @@ import { useDispatch } from "react-redux";
 import MentorshipLogo from "../../components/MentorshipLogo/MentorshipLogo";
 import { addDialog } from "../../features/Dialog/DialogSlice";
 import useAuth from "../../hooks/UseAuth/useAuth";
-import { useEffect } from "react";
 
 export default function LandingPage() {
   const dispatch = useDispatch();
-  const { loginWithRedirect, getAccessTokenSilently } = useAuth();
+  const { loginWithRedirect } = useAuth();
 
   function handleLearnMore() {
     dispatch(

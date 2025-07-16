@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import env from "../../scripts/env";
 import { ReduxRootState } from "../../store";
 import { setAIMentorFinderTimeoutEnd } from "./AIMentorFinderSlice";
-import { UserObj } from "@shared/types/general";
 import { MentorMatchResult } from "@shared/types/mentorFinder";
 import { isMentorMatchResult } from "@shared/validation/mentorFinder";
 import useAuth from "../../hooks/UseAuth/useAuth";
