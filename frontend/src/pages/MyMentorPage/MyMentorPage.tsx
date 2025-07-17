@@ -349,7 +349,21 @@ function AIMentorFinder() {
         </MinimalisticButton>
       </div>
 
-      {results && (
+      {results && results.length == 0 && (
+        <p
+          style={{
+            margin: 0,
+            marginTop: "0.5rem",
+            fontSize: "1.1rem",
+            opacity: 0.8,
+          }}
+        >
+          Nothing matched that. Try describing what you want help with a
+          different way.
+        </p>
+      )}
+
+      {results && results.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
           {results.map((r) => (
             <div
@@ -358,6 +372,16 @@ function AIMentorFinder() {
               key={r.mentor.id}
             >
               <MentorTile mentor={r.mentor} />
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "0.8rem",
+                  opacity: 0.7,
+                  padding: "0.25rem",
+                }}
+              >
+                {r.reason}
+              </span>
             </div>
           ))}
         </div>
