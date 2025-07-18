@@ -5,11 +5,10 @@ import { MyClientSocket } from "../../features/ClientSocket/ClientSocketHandler"
 import { useNavigate } from "react-router-dom";
 import MinimalisticButton from "../../components/MinimalisticButton/MinimalisticButton";
 import FileTabContainer from "../../components/FileTabContainer/FileTabContainer";
-import { IoChatbubbleOutline } from "react-icons/io5";
-import useChatWithUser from "../../hooks/UseChatWithUser/UseChatWithUser";
 import { HelpCircle } from "lucide-react";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import { UserObj } from "@shared/types/general";
+import MentorTile from "../../components/MentorTile/MentorTile";
 import { MentorMatchResult } from "@shared/types/mentorFinder";
 import useAIMentorFinder from "../../features/AIMentorFinder/useAIMentorFinder";
 import { addDialog } from "../../features/Dialog/DialogSlice";
@@ -189,96 +188,6 @@ function CurrentMentorsInfo() {
           <MentorTile mentor={mentorObj} key={mentorObj.id} />
         </div>
       ))}
-    </div>
-  );
-}
-
-function MentorTile({ mentor }: { mentor: UserObj }) {
-  const chatWithUser = useChatWithUser();
-  const navigate = useNavigate();
-  const {
-    username, // @ts-ignore
-    fName, // @ts-ignore
-    mName, // @ts-ignore
-    lName, // @ts-ignore
-    bio,
-    id,
-    displayPictureURL,
-  } = mentor;
-  return (
-    <div
-      style={{
-        display: "flex",
-        padding: "0.5rem",
-        borderRadius: "0.5rem",
-        border: "1px solid #fff3",
-        backgroundColor: "#333",
-        boxSizing: "border-box",
-        width: "100%",
-      }}
-    >
-      <img
-        style={{
-          width: "20%",
-          aspectRatio: 1 / 1,
-          height: "30%",
-          objectFit: "cover",
-          borderRadius: "50%",
-        }}
-        src={displayPictureURL}
-      />
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          marginLeft: "0.5rem",
-        }}
-      >
-        <span
-          style={{
-            fontSize: "1.25rem",
-            lineHeight: "1.25rem",
-            marginTop: "0.25rem",
-          }}
-        >
-          {fName} {mName} {lName}
-        </span>
-        <span
-          style={{ fontSize: "0.8rem", opacity: 0.6, marginLeft: "0.5rem" }}
-        >
-          @{username}
-        </span>
-        <span style={{ marginLeft: "0.5rem" }}>{bio || "No bio"}</span>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "0.25rem",
-            width: "100%",
-            justifyContent: "end",
-            flexWrap: "wrap",
-            gap: "0.25rem",
-          }}
-        >
-          <MinimalisticButton
-            style={{ fontSize: "0.8rem" }}
-            onClick={() => (id ? navigate(`/app/user?id=${id}`) : undefined)}
-          >
-            View Profile
-          </MinimalisticButton>
-          <MinimalisticButton
-            style={{
-              fontSize: "0.8rem",
-              display: "flex",
-              alignItems: "center",
-            }}
-            onClick={() => (id ? chatWithUser(id) : undefined)}
-          >
-            Chat <IoChatbubbleOutline style={{ marginLeft: "0.25rem" }} />
-          </MinimalisticButton>
-        </div>
-      </div>
     </div>
   );
 }
