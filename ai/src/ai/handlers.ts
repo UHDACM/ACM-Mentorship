@@ -242,6 +242,10 @@ export async function findMentorsHandler(params: FindMentorsParams) {
 
   const mentors: UserObj[] = [];
   for (const doc of mentorDocs) {
+    if (doc.id == userID) {
+      // a mentor searching for a mentor shouldn't get themselves back
+      continue;
+    }
     try {
       validateUserObj(doc);
     } catch {

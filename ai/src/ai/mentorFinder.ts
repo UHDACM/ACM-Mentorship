@@ -67,7 +67,16 @@ export async function findMentors(
       })
     ).text || "";
 
-  const parsed = JSON.parse(response);
+  // model likes to wrap the array in a ```json block even though we told it not to
+  const cleaned = response.replace(/```json|```/g, "").trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    console.error("Mentor finder got back invalid json:", cleaned);
+    return [];
+  }
 
   if (!Array.isArray(parsed)) {
     return [];
