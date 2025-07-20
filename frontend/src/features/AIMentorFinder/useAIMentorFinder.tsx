@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import env from "../../scripts/env";
 import { ReduxRootState } from "../../store";
-import { setAIMentorFinderTimeoutEnd } from "./AIMentorFinderSlice";
+import { setAIMentorFinderIsSearching, setAIMentorFinderTimeoutEnd } from "./AIMentorFinderSlice";
 import { MentorMatchResult } from "@shared/types/mentorFinder";
 import { isMentorMatchResult } from "@shared/validation/mentorFinder";
 import useAuth from "../../hooks/UseAuth/useAuth";
 
 export default function useAIMentorFinder() {
   const dispatch = useDispatch();
-  const { timeoutEnd } = useSelector(
+  const { isSearching, timeoutEnd } = useSelector(
     (store: ReduxRootState) => store.AIMentorFinder
   );
   const { user } = useSelector((store: ReduxRootState) => store.ClientSocket);
@@ -44,6 +44,7 @@ export default function useAIMentorFinder() {
   const FindMentors = async (query: string): Promise<MentorMatchResult[]> => {
     if (!user) return [];
     if (isTimedOut) return [];
+    if (isSearching) return [];
 
     const token = await getAccessTokenSilently();
 
@@ -52,6 +53,7 @@ export default function useAIMentorFinder() {
     }
 
     let res;
+    dispatch(setAIMentorFinderIsSearching(true));
     try {
       const body = {
         query,
@@ -69,6 +71,8 @@ export default function useAIMentorFinder() {
       ).json();
     } catch (error) {
       throw new Error("Network error, please try again later.");
+    } finally {
+      dispatch(setAIMentorFinderIsSearching(false));
     }
 
     const { success, data, error, timeoutEnd } = res;
@@ -89,5 +93,5 @@ export default function useAIMentorFinder() {
     return data.filter(isMentorMatchResult);
   };
 
-  return { isTimedOut, FindMentors, timeoutEnd };
+  return { isTimedOut, isSearching, FindMentors, timeoutEnd };
 }

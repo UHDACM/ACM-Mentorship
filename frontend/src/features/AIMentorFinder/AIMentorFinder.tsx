@@ -11,7 +11,7 @@ export default function AIMentorFinder() {
   const [results, setResults] = useState<MentorMatchResult[] | undefined>(
     undefined
   );
-  const { FindMentors, isTimedOut } = useAIMentorFinder();
+  const { FindMentors, isTimedOut, isSearching } = useAIMentorFinder();
   const dispatch = useDispatch();
 
   async function handleFind() {
@@ -67,8 +67,11 @@ export default function AIMentorFinder() {
             color: "white",
           }}
         />
-        <MinimalisticButton onClick={handleFind} disabled={isTimedOut}>
-          Find Mentors
+        <MinimalisticButton
+          onClick={handleFind}
+          disabled={isTimedOut || isSearching}
+        >
+          {isSearching ? "Searching..." : "Find Mentors"}
         </MinimalisticButton>
       </div>
 
