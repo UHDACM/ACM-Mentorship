@@ -5,6 +5,7 @@ import MinimalisticButton from "../../components/MinimalisticButton/Minimalistic
 import MentorTile from "../../components/MentorTile/MentorTile";
 import { addDialog } from "../Dialog/DialogSlice";
 import useAIMentorFinder from "./useAIMentorFinder";
+import { MAX_MENTOR_QUERY_LENGTH } from "@shared/data/mentorFinder";
 
 export default function AIMentorFinder() {
   const [query, setQuery] = useState("");
@@ -56,6 +57,7 @@ export default function AIMentorFinder() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key == "Enter" && handleFind()}
           placeholder="ex: someone who does backend work and can help me prep for interviews"
+          maxLength={MAX_MENTOR_QUERY_LENGTH}
           style={{
             flex: 1,
             minWidth: "15rem",

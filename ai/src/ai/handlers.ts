@@ -15,6 +15,7 @@ import env from "../env/env";
 import { isMetric } from "@shared/validation/metric";
 import { Metric } from "@shared/types/metric";
 import { MentorMatchResult } from "@shared/types/mentorFinder";
+import { MAX_MENTOR_QUERY_LENGTH } from "@shared/data/mentorFinder";
 import { DateUnixIsFromCurrentHour } from "src/tools";
 
 interface GenerateUserObjParams {
@@ -186,6 +187,12 @@ export async function findMentorsHandler(params: FindMentorsParams) {
 
   if (!query || typeof query !== "string") {
     throw new FindMentorsError("query is required and must be a string");
+  }
+
+  if (query.length > MAX_MENTOR_QUERY_LENGTH) {
+    throw new FindMentorsError(
+      `query must be ${MAX_MENTOR_QUERY_LENGTH} characters or less`
+    );
   }
 
   const tokenCount = Math.ceil(query.length / 4);
