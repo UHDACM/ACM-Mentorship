@@ -247,10 +247,16 @@ export async function findMentorsHandler(params: FindMentorsParams) {
     "and"
   );
 
+  // the mentor list on the frontend skips these too
+  const existingMentorIDs = userData.mentorIDs || [];
+
   const mentors: UserObj[] = [];
   for (const doc of mentorDocs) {
     if (doc.id == userID) {
       // a mentor searching for a mentor shouldn't get themselves back
+      continue;
+    }
+    if (doc.id && existingMentorIDs.includes(doc.id)) {
       continue;
     }
     try {
