@@ -75,6 +75,16 @@ export default function AIMentorFinder() {
         >
           {isSearching ? "Searching..." : "Find Mentors"}
         </MinimalisticButton>
+        {results && (
+          <MinimalisticButton
+            onClick={() => {
+              setResults(undefined);
+              setQuery("");
+            }}
+          >
+            Clear
+          </MinimalisticButton>
+        )}
       </div>
 
       {results && results.length == 0 && (
