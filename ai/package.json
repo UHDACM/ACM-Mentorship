@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register ./src/index.ts",
     "build": "rm -rf ./dist && npm i && tsc -b && tsc-alias",
-    "start": "node -r tsconfig-paths/register ./dist/ai/src",
+    "start": "node ./dist/ai/src",
     "test": "vitest check.ai.test.ts"
   },
   "keywords": [],

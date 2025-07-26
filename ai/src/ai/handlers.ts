@@ -16,7 +16,7 @@ import { isMetric } from "@shared/validation/metric";
 import { Metric } from "@shared/types/metric";
 import { MentorMatchResult } from "@shared/types/mentorFinder";
 import { MAX_MENTOR_QUERY_LENGTH } from "@shared/data/mentorFinder";
-import { DateUnixIsFromCurrentHour } from "src/tools";
+import { DateUnixIsFromCurrentHour } from "../tools";
 
 interface GenerateUserObjParams {
   text?: string;
