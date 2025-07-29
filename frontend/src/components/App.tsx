@@ -15,6 +15,7 @@ import { LocalStorageKeys } from "@shared/data/localStorage";
 import useAuth from "../hooks/UseAuth/useAuth";
 import NoficiationEncourageEnable from "../features/NotificationManager/NotificationEncourageEnable";
 import { setAIResumeProfileButtonTimeoutEnd } from "../features/AIResumeProfileButton/AIResumeProfileButtonSlice";
+import { setAIMentorFinderTimeoutEnd } from "../features/AIMentorFinder/AIMentorFinderSlice";
 
 export default function App() {
   const { getAccessTokenSilently, isLoading, isAuthenticated, logout } = useAuth();
@@ -117,6 +118,7 @@ function StartupChecks() {
   return <>
     <PreviousUserCheck />
     <AIResumeProfileButtonStartupCheck />
+    <MentorFinderStartupCheck />
   </>
 }
 
@@ -188,6 +190,31 @@ function AIResumeProfileButtonStartupCheck() {
     const storedTimeoutEnd = localStorage.getItem(LocalStorageKeys.AIResumeTimeoutEnd);
     if (!isNaN(Number(storedTimeoutEnd))) {
       dispatch(setAIResumeProfileButtonTimeoutEnd(Number(storedTimeoutEnd)));
+    }
+  }, [previousUserID, user]);
+  return null;
+}
+
+function MentorFinderStartupCheck() {
+  const { previousUserID, user } = useSelector((store: ReduxRootState) => store.ClientSocket);
+  const dispatch = useDispatch();
+
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    if (checked) return;
+    if (previousUserID == undefined) return;
+    if (!user) return;
+
+    setChecked(true);
+    if (previousUserID != user.id) {
+      dispatch(setAIMentorFinderTimeoutEnd(-1));
+      localStorage.removeItem(LocalStorageKeys.MentorFinderTimeoutEnd);
+      return;
+    }
+
+    const storedTimeoutEnd = localStorage.getItem(LocalStorageKeys.MentorFinderTimeoutEnd);
+    if (!isNaN(Number(storedTimeoutEnd))) {
+      dispatch(setAIMentorFinderTimeoutEnd(Number(storedTimeoutEnd)));
     }
   }, [previousUserID, user]);
   return null;
