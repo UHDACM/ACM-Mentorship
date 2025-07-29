@@ -252,6 +252,7 @@ async function ClientSocketLogoutHandler(logout?: Function) {
   // clear localStorage entries related to client current user
   localStorage.setItem(LocalStorageKeys.previousUserID, "");
   localStorage.removeItem(LocalStorageKeys.AIResumeTimeoutEnd);
+  localStorage.removeItem(LocalStorageKeys.MentorFinderTimeoutEnd);
   
   if (logout) {
     logout();
