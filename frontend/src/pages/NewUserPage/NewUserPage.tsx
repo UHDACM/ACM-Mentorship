@@ -7,6 +7,7 @@ import { ReduxRootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import useTutorialWithDialog from "../../hooks/UseTutorialWithDialog/useTutorialWithDialog";
 import { addDialog } from "../../features/Dialog/DialogSlice";
+import { REGISTRATION_OPEN } from "@shared/data/registration";
 
 export default function NewUserPage() {
   const ShowTutorial = useTutorialWithDialog();
@@ -20,6 +21,45 @@ export default function NewUserPage() {
 
   if (!MyClientSocket) {
     return <p>Connecting...</p>;
+  }
+
+  if (!REGISTRATION_OPEN) {
+    return (
+      <div className={"pageBase"} style={{ alignItems: "center" }}>
+        <MentorshipLogo />
+        <p
+          style={{
+            fontSize: "2rem",
+            color: "white",
+            textAlign: "center",
+            margin: 0,
+            marginBottom: 5,
+          }}
+        >
+          Signups are closed
+        </p>
+        <p
+          style={{
+            fontSize: "1.75rem",
+            color: "#fffa",
+            textAlign: "center",
+            margin: 0,
+          }}
+        >
+          This platform is being retired and isn't taking new accounts
+        </p>
+        <span
+          onClick={() => MyClientSocket?.logout()}
+          style={{
+            marginTop: "1rem",
+            borderBottom: "1px solid #fff6",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </span>
+      </div>
+    );
   }
 
   function handleSubmit(e: FormEvent) {

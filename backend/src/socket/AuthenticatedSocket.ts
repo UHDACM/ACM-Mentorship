@@ -58,6 +58,7 @@ import {
 import { validateUserObj } from "@shared/validation/user";
 import { MAX_NUMBER_OF_MENTORS_PER_MENTEE } from "@shared/data/mentorshipRequest";
 import { SocketPayloadCreateUser } from "@shared/types/clientSocketPayload";
+import { REGISTRATION_OPEN } from "@shared/data/registration";
 import { ClientSocketState, ServerSocketEvent, ServerSocketEvents } from "@shared/types/socket";
 import { ServerSocketDataPayloadType, ServerSocketPayloadDataInitialData, ServerSocketPayloadMessage } from "@shared/types/serverSocketPayload";
 import {
@@ -311,6 +312,15 @@ export default class AuthenticatedSocket {
         this.sendClientMessage(
           "Error",
           createUserSubject + "No data was provided."
+        );
+        return;
+      }
+
+      if (!REGISTRATION_OPEN) {
+        callback(false);
+        this.sendClientMessage(
+          "Error",
+          "Account creation is closed. This platform is being retired."
         );
         return;
       }
